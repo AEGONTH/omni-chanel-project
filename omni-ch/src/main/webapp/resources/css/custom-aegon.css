@@ -1,0 +1,386 @@
+/* AEGON Custom-Theme for BI by Moth */
+/* Updated: 20151016*/
+
+/* config */
+@font-face {
+    font-family: 'circularbold';
+    src: url('../resources/fonts/circular/circularbold.eot');
+    src: url('../resources/fonts/circular/circularbold.eot?#iefix') format('embedded-opentype'),
+         url('../resources/fonts/circular/circularbold.woff2') format('woff2'),
+         url('../resources/fonts/circular/circularbold.woff') format('woff'),
+         url('../resources/fonts/circular/circularbold.ttf') format('truetype'),
+         url('../resources/fonts/circular/circularbold.svg#circularbold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'superspace_regularregular';
+    src: url('../resources/fonts/superspace/superspace_regular.eot');
+    src: url('../resources/fonts/superspace/superspace_regular.eot?#iefix') format('embedded-opentype'),
+         url('../resources/fonts/superspace/superspace_regular.woff2') format('woff2'),
+         url('../resources/fonts/superspace/superspace_regular.woff') format('woff'),
+         url('../resources/fonts/superspace/superspace_regular.ttf') format('truetype'),
+         url('../resources/fonts/superspace/superspace_regular.svg#superspace_regularregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+body {
+	margin:0px;
+	font-family: superspace_regularregular;
+}
+.ui-widget
+, .ui-widget input
+, .ui-widget select
+, .ui-widget textarea
+, .ui-widget button
+, .ui-widget.ui-outputlabel {
+	font: normal normal normal 18px/1 superspace_regularregular;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;	
+}
+.aegon-color {color:rgb(0,92,174);}
+.bg-color {background-color:#FFF;}
+
+/* Common */
+.aegon-logo-medium {
+	background-image:url("../resources/image/aegon.png"); 
+	background-repeat: no-repeat; 
+	background-size: contain; 
+	margin:20px auto; 
+	height:80px; 
+	width:200px;
+}
+.aegon-logo-small {
+	background-image:url("../resources/image/aegon.png"); 
+	background-repeat: no-repeat; 
+	background-size: 150px 55px; 
+	width: 150px;
+	height: 55px;
+}
+.adams-logo-medium {
+	background-image:url("../resources/image/ADAMS_logo.png"); 
+	background-repeat: no-repeat; 
+	background-size: contain; 
+	height:80px; 
+	width: 250px;
+}
+.bold {font-weight: bold;}
+.txt-center {text-align: center;}
+.txt-left {text-align: left;}
+.txt-right {text-align: right;}
+.capitalized {text-transform: capitalize;}
+.fs11 {font-size: 1.1em;}
+.fs09 {font-size: 0.9em;}
+.fs075 {font-size: 0.75em;}
+
+.margin-center {margin-left: auto; margin-right: auto;}
+
+.w100 {width: 100%;}
+.w90 {width:90%;}
+.emptyBox10 {display: block;width: 100%;height: 10px;overflow: hidden;}
+.bottom-shadow {box-shadow: 0 2px 1px rgba(0,0,0,0.1), 0 0 1px rgba(0,0,0,0.1);}
+.box-shadow-2 {box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.1);}
+.hidden {display:none;}
+.white {color:#FFF;}
+.cursor-default {cursor: default;}
+.cursor-pointer {cursor: pointer;}
+.margin-bottom-small {margin-bottom: 5px;}
+.margin-top-small {margin-top: 5px;}
+.margin-top-normal {margin-top: 15px;}
+
+/* Animate */
+.animate-01 {
+	transition: all 0.5s ease-in-out
+}
+.animate-02 {
+	transition: all 0.5s ease 0s;
+}
+hr.faded {
+  clear: both;
+  float: none;
+  width: 100%;
+  height: 1px;
+  margin: 1.4em 0;
+  border: none;
+  background: #ddd;
+  background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      right bottom,
+      color-stop(0, rgb(255,255,255)),
+      color-stop(0.1, rgb(221,221,221)),
+      color-stop(0.9, rgb(221,221,221)),
+      color-stop(1, rgb(255,255,255))
+  );
+  background-image: -moz-linear-gradient(
+      left center,
+      rgb(255,255,255) 0%,
+      rgb(221,221,221) 10%,
+      rgb(221,221,221) 90%,
+      rgb(255,255,255) 100%
+  );
+}
+hr.carved {
+  clear: both;
+  float: none;
+  width: 100%;
+  height: 2px;
+  margin: 1.4em 0;
+  border: none;
+  background: #ddd;
+  background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0.5, rgb(221,221,221)),
+      color-stop(0.5, rgb(255,255,255))
+  );
+  background-image: -moz-linear-gradient(
+      center top,
+      rgb(221,221,221) 50%,
+      rgb(255,255,255) 50%
+  );
+}
+
+.input-group {
+	position: relative;
+    display: table;
+    border-collapse: separate;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+.input-group-icon {
+	display: table-cell;
+	padding: 6px 12px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1;
+    color: #555555;
+    text-align: center;
+    background-color: #eeeeee;
+    border: 1px solid #cccccc;
+    border-right: none;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+  	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+.input-group .ui-widget {border-top-left-radius: 0; border-bottom-left-radius: 0; display:table-cell;}
+.input-group .ui-inputtext
+, .input-group .ui-password {font-size: 1.1em;}
+
+/* ## Fix Font Awesome Icon ## */
+.ui-icon.fa {
+     text-indent:0px;
+     background-image:none;
+}
+/* ## Fix .fa-lg ## */
+.ui-icon.fa.fa-lg {
+	width: 1.33333em;
+	height: 20px;
+}
+/* ## Fix .fa-2x position on button ## */
+.ui-button-icon-only .ui-icon.fa.fa-2x, 
+.ui-button-text-icon-left .ui-icon.fa.fa-2x, 
+.ui-button-text-icon-right .ui-icon.fa.fa-2x {margin-top:-14px}
+
+/* ## Override Theme ## */
+/* panel */
+.ui-panel.ui-widget {font-size: 1em;}
+.ui-panel.ui-widget.ui-widget-content {padding: 2px;}
+.ui-panel .ui-panel-titlebar {
+	color:#FFF;
+	background:#005CAE none repeat scroll 0% 0%;
+	border:none;
+	border-bottom-left-radius: 2px !important;
+	border-bottom-right-radius: 2px !important;
+}
+/* Dialog */
+.ui-dialog.ui-widget-content .ui-dialog-title {font-size: 1.1em;}
+.ui-dialog.ui-widget-content .ui-dialog-titlebar-close {margin-top: 0;}
+/*.ui-dialog-footer.ui-widget-content {font-size:1em;}*/
+.ui-dialog.ui-widget {font-size:1em;}
+
+/* commandButton*/
+.ui-button.ui-widget {
+	display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    /*padding: 5px 10px;*/
+    line-height: 1.42857143;
+    border-radius: 4px;
+    text-shadow: none;
+    box-shadow:none;
+    font-size: 1.1em;
+}
+.ui-button.ui-state-default {background-color: #C3C3C3;}
+.ui-button.ui-state-hover {background-color: #E8E8E8;}
+.ui-button.ui-state-focus {
+    box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 0.7) inset !important;
+    background-color: #E8E8E8;
+}
+
+.blue-btn.ui-button, .green-btn.ui-button, .red-btn.ui-button, .yellow-btn.ui-button {color: #FFF;}
+
+.blue-btn.ui-button {background-color: #0277BD;}
+.blue-btn.ui-state-hover {background-color: #0591E4;}
+.blue-btn.ui-state-focus {background-color: #0591E4;}
+
+.green-btn.ui-button {background-color: #43A047;}
+.green-btn.ui-state-hover {background-color: #3FBD44;}
+.green-btn.ui-state-focus {background-color: #3FBD44;}
+
+.red-btn.ui-button {background-color: #E53935;}
+.red-btn.ui-state-hover {background-color: #F92520;}
+.red-btn.ui-state-focus {background-color: #F92520;}
+
+.yellow-btn.ui-button {background-color: #AFB42B;}
+.yellow-btn.ui-state-hover {background-color: #C7CE23;}
+.yellow-btn.ui-state-focus {background-color: #C7CE23;}
+
+/* ##Override Icon## */
+/* Calendar Button */
+.ui-button-icon-only .ui-icon.ui-icon-calendar {
+	background-image: none; 
+	background-repeat: no-repeat;
+	font: normal normal normal 14px/1 FontAwesome; 
+	font-size: inherit;
+	text-rendering: auto;
+	text-indent: 0px;
+	display: block;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.ui-button-icon-only .ui-icon.ui-icon-calendar:before {content: "\f073";}
+
+/* Caret Down */
+.ui-selectonemenu .ui-selectonemenu-trigger.ui-state-default {background-color: #C3C3C3; background-image: none;}
+.ui-selectonemenu .ui-selectonemenu-trigger.ui-state-hover {background-color: #E8E8E8; }
+.ui-selectonemenu .ui-selectonemenu-trigger.ui-state-focus {background-color: #E8E8E8; box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 0.7) inset !important;}
+.ui-selectonemenu-trigger .ui-icon.ui-icon-triangle-1-s.ui-c {
+	background-image: none; 
+	background-repeat: no-repeat;
+	background-color: inherit;
+	font: normal normal normal 14px/1 FontAwesome; 
+	font-size: inherit;
+	text-rendering: auto;
+	text-indent: 0px;
+	display: block;
+	margin-left: 3px;
+	text-shadow: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.ui-selectonemenu-trigger .ui-icon.ui-icon-triangle-1-s.ui-c:before {content: "\f0d7";}
+
+/* Data Table */
+.ui-datatable.ui-widget {font-size:1em;}
+.ui-datatable .ui-datatable-tablewrapper th, .ui-datatable .ui-datatable-tablewrapper tfoot td {background-image: none; text-shadow: none;}
+
+/* Customize Class */
+/* ## Fix Select One Menu width 100% ## */
+.w100.ui-selectonemenu.ui-widget {width:92.5% !important;}
+.w100.ui-selectonemenu.ui-widget .ui-selectonemenu-label.ui-inputfield {width:100% !important;}
+
+/* ## Custom Icon ## */
+.ui-menuitem-icon.ui-flag-th {background: url('../resources/image/flag30/thailand.png') no-repeat;}
+.ui-menuitem-icon.ui-flag-us {background: url('../resources/image/flag30/usa.png') no-repeat;}
+.ui-menuitem-icon.ui-icon.custom-icon-fw {background-size: 16px;padding-right: 0.3em;}
+
+/* ## Custom Checkbox ## */
+.ui-selectmanycheckbox label {
+  margin: -1px 15px 0px 0px !important;
+  color: #546e7a;
+  font-size: 14px;
+}
+.ui-chkbox .ui-chkbox-box {
+  background: none;
+  box-shadow: none;
+  margin-right: 5px;
+  margin-top: 2px;
+  color: #a9a9a9;
+  border: solid 1px #546e7a;
+  cursor: pointer;
+  width: 16px !important;
+  height: 16px !important;
+  background-color: #ffffff;
+}
+.ui-chkbox .ui-state-active {
+  border-color: #546e7a;
+}
+.ui-chkbox .ui-state-focus {
+  outline: dotted 1px #778d9b;
+  outline-offset: 2px;
+}
+.ui-chkbox-box .ui-icon-blank {
+  background-image: none !important;
+  background-size: 100%;
+  background-position: center;
+  border-bottom: solid 2px transparent;
+  border-right: solid 2px transparent;
+  width: 5px;
+  height: 10px;
+  position: relative;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  -webkit-transform: rotate(0deg) scale(1);
+  -moz-transform: rotate(0deg) scale(1);
+  -o-transform: rotate(0deg) scale(1);
+  -ms-transform: rotate(0deg) scale(1);
+  transform: rotate(0deg) scale(1);
+}
+.ui-chkbox-box .ui-icon-check {
+  border-radius: 0px;
+  background-image: none !important;
+  background-size: 100%;
+  position: relative;
+  background-position: center;
+  background-color: transparent;
+  border-bottom: solid 3px #26C6DA;
+  border-right: solid 3px #26C6DA;
+  width: 5px;
+  height: 10px;
+  margin-left: 4px;
+  margin-top: -4px;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  -ms-transition: all 0.3s ease;
+  -o-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+  -webkit-transform: rotate(45deg) scale(1.7);
+  -moz-transform: rotate(45deg) scale(1.7);
+  -o-transform: rotate(45deg) scale(1.7);
+  -ms-transform: rotate(45deg) scale(1.7);
+  transform: rotate(45deg) scale(1.7);
+}
+.ui-chkbox .ui-chkbox-label {
+  margin: 3px 15px 0px 5px !important;
+  font-size: 14px;
+  color: #546e7a;
+}
+
+/* for Responsive */
+.ui-custom-fluid div {width:100%;}
+.ui-custom-fluid .ui-selectonemenu {width:100% !important;}
+.ui-custom-fluid .ui-selectonemenu .ui-selectonemenu-label {width:95% !important;}
+
+/* ## Custom Grid ## */
+.grid-borderless.ui-panelgrid .ui-panelgrid-content.ui-grid.ui-grid-responsive {border:0}
+.grid-bg-transparent.ui-panelgrid .ui-panelgrid-content.ui-grid {background-color: transparent;}
+.grid-row-gap div.ui-grid-row {padding-bottom:0.5em;}
+.grid-row-gap div.ui-grid-row .ui-panelgrid-cell.grid-label-col.ui-grid-col-6 {margin-top:5px;}
+.grid-no-line-separate.ui-panelgrid .ui-grid-responsive .ui-grid-row  {border-top:none;}

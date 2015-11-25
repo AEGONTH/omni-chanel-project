@@ -1,0 +1,162 @@
+.hidden {display:none}
+
+.ui-widget-header {
+	background: #0079C2 no-repeat;
+}
+
+.center {
+	text-align: center;
+}
+
+.right {
+	text-align: right;
+}
+
+.left {
+	text-align:left;
+}
+
+.capitalized {
+    text-transform: capitalize;
+}
+
+.full-width {width:100%;}
+.emptyBox10 {display: block;width: 100%;height: 10px;overflow: hidden;}
+.fs12{font-size:12px !important;}
+
+.ui-menuitem-icon.ui-flag-th {
+	background: url('../resources/image/flag30/thailand.png') no-repeat;
+}
+
+.ui-menuitem-icon.ui-flag-us {
+	background: url('../resources/image/flag30/usa.png') no-repeat;
+}
+
+.ui-menuitem-icon.ui-icon.custom-icon-fw {
+	background-size:16px;
+	padding-right: 0.3em;
+}
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active{color:#0079C2}
+
+.input-wrapper {position:relative; display:table; border-collapse:separate;}
+.input-wrapper-addon{
+	padding: 6px 12px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1;
+    color: #555555;
+    text-align: center;
+    background-color: #eeeeee;
+    border: 1px solid #cccccc;
+    border-radius: 4px;}
+.input-wrapper-addon:first-child {border-right: 0;border-bottom-right-radius: 0;border-top-right-radius: 0;}
+.input-wrapper:last-child {border-bottom-left-radius: 0;border-top-left-radius: 0;}
+
+.bottom-shadow {box-shadow: 0 2px 1px rgba(0,0,0,0.1), 0 0 1px rgba(0,0,0,0.1);}
+
+.btn {
+	display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 5px 10px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    border-radius: 4px;
+}
+
+.btn-shadow {box-shadow: 0 4px 2px -2px gray;}
+.btn-no-shadow {box-shadow:none;}
+.btn-shadow:active, .btn-no-shadow:active {box-shadow: inset 0 2px 2px gray;}
+
+.ui-button.btn-flat {background:#EAF4FD no-repeat;color: #1d5987; border-color:#c5dbec;}
+.ui-button.btn-flat:hover {background:#E5F3FF no-repeat;}
+
+.ui-button.btn-green {background:#5CB85C no-repeat;}
+.ui-button.btn-green:hover {background:#3AC162 no-repeat;border-color:#7FD67F;}
+
+.ui-button.btn-yellow {background:#EB9316 no-repeat;}
+.ui-button.btn-yellow:hover {border: 1px solid rgb(255, 187, 91);}
+
+.ui-button.btn-primary {background:#337ab7 no-repeat;}
+.ui-button.btn-primary:hover {border: 1px solid #245580;}
+
+.ui-button.btn-red {background: #D0525D no-repeat;}
+.ui-button.btn-red:hover {background:#C3303D; border-color:#C3303D;}
+
+.ui-button.btn-green, .ui-button.btn-yellow, .ui-button.btn-red, .ui-button.btn-primary {color:#FFF !important;border: 1px solid transparent;}
+
+
+.tbl-flat .ui-state-default, .ui-widget-content.ui-state-default {background: #EAF4FD no-repeat;}
+.tbl-flat .ui-state-hover, .ui-widget-content.ui-state-hover {background: rgba(0, 121, 194, 0.3) no-repeat;color: #33AFDE;}
+
+hr.faded {
+  clear: both;
+  float: none;
+  width: 100%;
+  height: 1px;
+  margin: 1.4em 0;
+  border: none;
+  background: #ddd;
+  background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      right bottom,
+      color-stop(0, rgb(255,255,255)),
+      color-stop(0.1, rgb(221,221,221)),
+      color-stop(0.9, rgb(221,221,221)),
+      color-stop(1, rgb(255,255,255))
+  );
+  background-image: -moz-linear-gradient(
+      left center,
+      rgb(255,255,255) 0%,
+      rgb(221,221,221) 10%,
+      rgb(221,221,221) 90%,
+      rgb(255,255,255) 100%
+  );
+}
+
+hr.carved {
+  clear: both;
+  float: none;
+  width: 100%;
+  height: 2px;
+  margin: 1.4em 0;
+  border: none;
+  background: #ddd;
+  background-image: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0.5, rgb(221,221,221)),
+      color-stop(0.5, rgb(255,255,255))
+  );
+  background-image: -moz-linear-gradient(
+      center top,
+      rgb(221,221,221) 50%,
+      rgb(255,255,255) 50%
+  );
+}
+
+.aeg-logo-bg {
+	position: absolute; 
+    height: 200px; 
+    width: 200px; 
+    padding: 0px; 
+    background-color: #FFFFFF; 
+    top: 0px; 
+    left: 0px; 
+    transform: rotate(71deg) skew(0deg);
+    -webkit-transform: rotate(71deg) skew(0deg); 
+}
+
+* {
+	font-size:14px;
+}

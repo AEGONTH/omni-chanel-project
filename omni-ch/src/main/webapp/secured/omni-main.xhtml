@@ -1,0 +1,221 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/templates/mainTemplate.xhtml">
+	
+	<ui:define name="head">
+		<title>Omni Channel</title>
+		<style>
+		.ui-paginator.ui-paginator-bottom.ui-widget-header.ui-corner-bottom {border-radius: 0;}
+		.ui-dialog-content.ui-widget-content .ui-widget .ui-panelgrid-content.ui-grid-responsive .ui-grid-row .ui-panelgrid-cell {font-size:1.1em;}
+		.ui-dialog-content.ui-widget-content .ui-selectonemenu .ui-selectonemenu-trigger {padding:0 5px;}
+		.decresed-gap {margin-top: -4px;}
+		.ui-panelgrid-content.ui-widget-content.ui-grid.ui-grid-responsive .ui-grid-row {margin-bottom: 5px;}
+		.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
+			max-height: 75vh;
+			min-width: 600px;
+			overflow-y: auto;
+		}
+		.w90.ui-selectonemenu.ui-widget {width:82.5% !important;}
+		.w90.ui-selectonemenu.ui-widget .ui-selectonemenu-label.ui-inputfield {width:100% !important;}
+		
+		@media screen and (max-width: 640px) {
+			.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
+				min-width: 310px;
+			}
+			.ui-grid-responsive .ui-grid-row .ui-panelgrid-cell.ui-grid-col-4.txt-right {
+				text-align:left;
+			}
+		}
+		</style>
+		<f:loadBundle var="omniMsg" basename="com.adms.msg.omni.omniMsg"/>
+	</ui:define>
+	
+	<ui:define name="content">
+		<p:panelGrid layout="grid" columns="1" columnClasses="ui-grid-col-12" styleClass="grid-borderless grid-bg-transparent">
+			<p:panel header="Customer's Waiting List">
+				<h:form id="frmWL">
+					<p:dataTable id="dtWaitingList" widgetVar="dtWaitingList"
+						value="#{omniMainView.omniLogMotorHist}"
+						var="log"
+						paginator="true"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+						paginatorPosition="bottom" emptyMessage="No Records"
+						rows="#{omniMainView.defaultRowPerPage}"
+						rowKey="#{log.id}"
+						rowIndexVar="idx"
+						reflow="true"
+						selectionMode="single"
+						style="margin-top: 10px;">
+						
+						<p:ajax event="rowSelect" listener="#{omniMainView.onRowSelect}" oncomplete="PF('dlgCustomer').show();" update="@form, frmDlg" />
+						
+						<p:column headerText="Customer Name">
+							<h:outputText value="#{log.omniLogMotor.customer.fullName}" />
+						</p:column>
+						
+						<p:column headerText="Mobile">
+							<h:outputText value="#{log.omniLogMotor.customer.mobileNo}" >
+							</h:outputText>
+						</p:column>
+						
+						<p:column headerText="Status">
+							<h:outputText value="#{log.status.value}" />
+						</p:column>
+						
+						<p:column headerText="Due Date" styleClass="txt-center">
+							<h:outputText value="#{of:formatDate(log.dueDate, 'dd-MM-yyyy HH:mm')}"/>
+						</p:column>
+					</p:dataTable>
+					
+					<hr class="faded"/>
+					<p:commandButton value="Add" icon="fa fa-plus-square fa-fw" actionListener="#{omniMainView.onClickAddNew}" oncomplete="PF('dlgCustomer').show()" styleClass="blue-btn" update="frmDlg"/>
+				</h:form>
+			</p:panel>
+		</p:panelGrid>
+		
+		<h:form id="frmDlg">
+			<p:dialog id="dlgCustomer" widgetVar="dlgCustomer" 
+			dynamic="true" modal="true"
+			fitViewport="true" resizable="false"
+			closable="true" styleClass="dlgCustomSize">
+				<f:facet name="header">
+					<h:outputText value="Customer Info" />
+				</f:facet>
+				
+				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
+				
+					<p:outputLabel value="First Name" style="font-weight:bold;"/>
+					<p:inputText value="#{omniMainView.cFirstName}" styleClass="decresed-gap w90"/>
+					
+					<p:outputLabel value="Last Name" style="font-weight:bold;"/>
+					<p:inputText value="#{omniMainView.cLastName}" styleClass="decresed-gap w90"/>
+				
+					<p:outputLabel value="Gender" style="font-weight:bold;"/>
+					<p:selectOneMenu value="#{omniMainView.sex}" styleClass="decresed-gap w90">
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.sexSelection}"/>
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Tel." style="font-weight:bold;"/>
+					<p:inputText type="tel" value="#{omniMainView.tel}" styleClass="tel-mask decresed-gap w90">
+						<pe:keyFilter mask="pnum" preventPaste="false"/>
+					</p:inputText>
+					
+					<p:outputLabel value="Email" style="font-weight:bold;"/>
+					<p:inputText value="#{omniMainView.email}" styleClass="decresed-gap w90"/>
+					
+					<p:outputLabel value="Address" style="font-weight:bold;"/>
+					<p:inputText value="#{omniMainView.address1}" styleClass="decresed-gap w90"/>
+					
+					<h:outputText value=" " />
+					<p:inputText value="#{omniMainView.address2}" styleClass="decresed-gap w90"/>
+					
+					<h:outputText value=" " />
+					<p:inputText value="#{omniMainView.address3}" styleClass="decresed-gap w90"/>
+					
+					<p:outputLabel value="Post Code" style="font-weight:bold;"/>
+					<p:inputText value="#{omniMainView.postCode}" styleClass="decresed-gap w90"/>
+					
+					<p:outputLabel value="Province" style="font-weight:bold;"/>
+					<p:selectOneMenu value="#{omniMainView.province}" styleClass="decresed-gap w90">
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.provinceSelection}" />
+					</p:selectOneMenu>
+				</p:panelGrid>
+				
+				<hr class="faded"/>
+				
+				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
+				
+				<p:outputLabel value="Brand" style="font-weight:bold;"/>
+					<p:selectOneMenu value="#{omniMainView.motorBrand}" styleClass="decresed-gap w90">
+						<p:ajax listener="#{omniMainView.brandSelectionListener}" update="stBrandModel"/>
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.motorBrandSelection}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Model" style="font-weight:bold;"/>
+					<p:selectOneMenu id="stBrandModel" value="#{omniMainView.brandModel}" disabled="#{empty omniMainView.brandModelSelection}" styleClass="decresed-gap w90">
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.brandModelSelection}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Car Year" style="font-weight:bold;"/>
+					<p:selectOneMenu id="stCarYear" value="#{omniMainView.carYear}" styleClass="decresed-gap w90">
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.carYearSelection}" />
+					</p:selectOneMenu>
+					
+					<h:outputText value=" " />
+					<h:outputText value=" " />
+					
+					<p:outputLabel value="Insurer" style="font-weight:bold;"/>
+					<p:selectOneMenu value="#{omniMainView.insurerCode}" styleClass="decresed-gap w90">
+						<p:ajax listener="#{omniMainView.insurerSelectionListener}" update="stProduct"/>
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.insurerSelection}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Product" style="font-weight:bold;"/>
+					<p:selectOneMenu id="stProduct" value="#{omniMainView.inceProductCode}" disabled="#{empty omniMainView.inceProductSelection}" styleClass="decresed-gap w90">
+						<p:ajax listener="#{omniMainView.productSelectionListener}" update="stPlan"/>
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.inceProductSelection}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Plan" style="font-weight:bold;"/>
+					<p:selectOneMenu id="stPlan" value="#{omniMainView.productPlan}" disabled="#{empty omniMainView.productPlanSelection}" styleClass="decresed-gap w90">
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.productPlanSelection}" />
+					</p:selectOneMenu>
+				
+				</p:panelGrid>
+				
+				<hr class="faded"/>
+				
+				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
+				
+					<p:outputLabel value="Channel" style="font-weight:bold;"/>
+					<p:selectOneMenu value="#{omniMainView.channel}" styleClass="decresed-gap w90">
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.channelSelection}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Contact Reason" style="font-weight:bold;"/>
+					<p:selectOneMenu value="#{omniMainView.contactReason}" styleClass="decresed-gap w90">
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.contactReasonSelection}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Tracking Status" style="font-weight:bold;"/>
+					<p:selectOneMenu value="#{omniMainView.trackingStatus}" styleClass="decresed-gap w90">
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.trackingStatusSelection}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Contact Details" style="font-weight:bold;"/>
+					<p:inputTextarea value="#{omniMainView.contactDetails}" styleClass="w90"/>
+					
+					<p:outputLabel value="Due Date" style="font-weight:bold;"/>
+					<p:calendar value="#{omniMainView.dueDate}" pattern="dd/MM/yyyy HH:mm" timeControlType="slider" showOtherMonths="true"></p:calendar>
+				</p:panelGrid>
+				
+				<f:facet name="footer">
+					<p:commandButton value="Submit" actionListener="#{omniMainView.saveCustomerInfo(null)}" styleClass="green-btn"/>
+					<p:commandButton value="Cancel" type="button" process="@this" onclick="PF('dlgCustomer').hide()" styleClass=""/>
+				</f:facet>
+			</p:dialog>
+		</h:form>
+		
+		<script>
+// 			$(document).ready(function() {
+// 				$('.tel-mask').mask('999-999-9999');
+// 			});
+		</script>
+	</ui:define>
+	
+</ui:composition>

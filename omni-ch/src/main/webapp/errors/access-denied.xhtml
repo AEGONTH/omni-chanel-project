@@ -1,0 +1,23 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/templates/blankTemplate.xhtml">
+
+	<ui:define name="head">
+		<title>Access Denied!</title>
+		
+		<style>
+		</style>
+	</ui:define>
+	
+	<ui:define name="content">
+		<h1>Access Denied!</h1>
+		<h:form>
+			<p:commandLink action="#{loginSession.signOut}" ajax="false">
+				<h:outputText value="Back to Login" />
+			</p:commandLink>
+		</h:form>
+	</ui:define>
+
+</ui:composition>

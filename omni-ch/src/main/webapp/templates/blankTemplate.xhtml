@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+		<f:facet name="first">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+			<meta charset="UTF-8"/>
+			<meta http-equiv="pragma" content="no-cache" />
+			<meta http-equiv="cache-control" content="no-cache" />
+			<meta http-equiv="expires" content="0" />
+			<link rel="shortcut icon" href="#{request.contextPath}/resources/image/ico/favicon.ico" type="image/x-icon" />
+			<link rel="icon" href="#{request.contextPath}/resources/image/ico/favicon.ico" type="image/x-icon"/>
+			<link rel="stylesheet" href="#{request.contextPath}/resources/font-awesome-4.4.0/css/font-awesome.css"/>
+		</f:facet>
+		<h:outputScript library="primefaces" name="jquery/jquery.js" target="head" />
+		<h:outputScript library="primefaces" name="jquery/jquery-plugins.js" target="head" />
+		<h:outputScript target="head">$ = jQuery;</h:outputScript>
+		<h:outputStylesheet library="css" name="custom-aegon.css" />
+		<ui:insert name="head" />
+	</h:head>
+	
+	<h:body styleClass="bg-color">
+		<ui:insert name="content" />
+	</h:body>
+
+</html>

@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	template="/templates/blankTemplate.xhtml">
+
+	<ui:define name="head">
+		<title>Sign In</title>
+		<style>
+		.wrapper {max-width:900px; margin:0 auto; display:block;padding: 0 5px;}
+		.panel-login {margin-top: 50px; max-width: 400px; background-color: #F7F7F7;
+			-moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    		-webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    		box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);}
+		.panel-login .ui-panel-content.ui-widget-content {padding-bottom: 30px;}
+		.panel-login .ui-panel-footer { text-align:center;}
+		.input-w {max-width: 200px;}
+		.btn-login {max-width: 200px; height: 30px;}
+		
+		@media only screen and (max-width: 20em) {
+			.panel-login {
+				height: 100vh;
+				margin-top: 5px;
+				margin-bottom: 5px;
+			}
+		}
+		</style>
+	</ui:define>
+	
+	<ui:define name="content">
+		<div class="wrapper">
+			<h:form id="loginForm">
+				<p:focus for="@form"/>
+				<p:panel styleClass="panel-login margin-center">
+					<div class="aegon-logo-medium"></div>
+					<div style="margin-top: 50px;">
+						<p:messages id="msgLogin" closable="true" style="font-size:0.9em;"/>
+					</div>
+					<div class="input-group margin-center margin-bottom-small">
+						<span class="input-group-icon">
+							<i class="fa fa-user fa-fw"/>
+						</span>
+						<p:inputText id="username" placeholder="Username" value="#{loginView.username}" styleClass="input-w"/>
+					</div>
+					
+					<div class="input-group margin-center">
+						<span class="input-group-icon">
+							<i class="fa fa-key fa-fw"/>
+						</span>
+						<p:password id="pwd" placeholder="Password" value="#{loginView.password}" styleClass="input-w"/>	
+					</div>
+					
+					<div class="margin-center txt-center margin-top-normal">
+						<p:commandButton value="Sign In" action="#{loginView.doLogin}" update="@form" styleClass="w100 green-btn btn-login margin-center"/>
+					</div>
+				</p:panel>
+			</h:form>
+		</div>
+		
+		<script>
+			$(document).ready(function(){
+
+			});
+		</script>
+	</ui:define>
+</ui:composition>
