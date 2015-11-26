@@ -29,6 +29,7 @@ import com.adms.cs.service.ParamConfigService;
 import com.adms.cs.service.ProductPlanService;
 import com.adms.cs.service.ProvinceService;
 import com.adms.entity.cs.CategoryData;
+import com.adms.entity.cs.Customer;
 import com.adms.entity.cs.OmniLogMotor;
 import com.adms.entity.cs.OmniLogMotorHist;
 import com.adms.entity.cs.ParamConfig;
@@ -87,13 +88,13 @@ public class OmniMainView extends BaseBean {
 	private String productPlan;
 	
 	private List<SelectItem> channelSelection;
-	private CategoryData channel;
+	private String channel;
 	
 	private List<SelectItem> contactReasonSelection;
-	private CategoryData contactReason;
+	private String contactReason;
 	
 	private List<SelectItem> trackingStatusSelection;
-	private CategoryData trackingStatus;
+	private String trackingStatus;
 	
 	private String contactDetails;
 	
@@ -149,6 +150,7 @@ public class OmniMainView extends BaseBean {
 		if(logId == null) {
 			//TODO Insert new Record
 			CategoryDataService categoryDataService = Faces.evaluateExpressionGet("#{categoryDataService}");
+			
 			OmniLogMotor omniLogMotor = new OmniLogMotor();
 			omniLogMotor.setCar(categoryDataService.find(new CategoryData().setCode(this.brandModel)).get(0));
 			omniLogMotor.setCarYear(this.carYear.toString());
@@ -156,6 +158,12 @@ public class OmniMainView extends BaseBean {
 			//TODO Insert and Update flag (already inserted)
 			
 		}
+	}
+	
+	private boolean isNewCustomer(String mobileNo, String firstName, String lastName) {
+		boolean flag = false;
+		
+		return flag;
 	}
 	
 	public void onRowSelect(SelectEvent event) throws NumberFormatException, Throwable {
@@ -178,9 +186,9 @@ public class OmniMainView extends BaseBean {
 				, logHist.getOmniLogMotor().getProductPlan().getProduct().getInsurer().getInsurerCode()
 				, logHist.getOmniLogMotor().getProductPlan().getProduct().getProductCode()
 				, logHist.getOmniLogMotor().getProductPlan().getPlanCode()
-				, logHist.getChannel()
-				, logHist.getContactReason()
-				, logHist.getStatus()
+				, logHist.getChannel().getCode()
+				, logHist.getContactReason().getCode()
+				, logHist.getStatus().getCode()
 				, logHist.getDetail()
 				, logHist.getDueDate());
 		
@@ -191,8 +199,8 @@ public class OmniMainView extends BaseBean {
 			, ParamConfig sex
 			, String motorBrand, String brandModel, Integer carYear
 			, String insurerCode, String inceProductCode, String productPlan
-			, CategoryData channel, CategoryData contactReason, CategoryData trackingStatus, String contactDetails
-			, Date dueDate) throws Throwable {
+			, String channel, String contactReason, String trackingStatus
+			, String contactDetails, Date dueDate) throws Throwable {
 		this.logId = logId;
 		this.cFirstName = cFirstName;
 		this.cLastName = cLastName;
@@ -203,7 +211,7 @@ public class OmniMainView extends BaseBean {
 		this.address3 = address3;
 		this.postCode = postCode;
 		
-		initProvince();
+//		initProvince();
 		this.province = province;
 		this.sex = sex;
 		
@@ -220,9 +228,15 @@ public class OmniMainView extends BaseBean {
 		initProductPlans();
 		this.productPlan = productPlan;
 		
+		initChannels();
 		this.channel = channel;
+		
+		initContactReason();
 		this.contactReason = contactReason;
+		
+		initTrackingStatus();
 		this.trackingStatus = trackingStatus;
+		
 		this.contactDetails = contactDetails;
 		this.dueDate = dueDate;
 	}
@@ -328,6 +342,7 @@ public class OmniMainView extends BaseBean {
 	}
 	
 	private void initProvince() throws Throwable {
+		province = null;
 		provinceSelection = new ArrayList<>();
 		ProvinceService provinceService = Faces.evaluateExpressionGet("#{provinceService}");
 		provinceSelection = provinceService.findAll().stream().map(m -> new SelectItem(m, m.getProvinceNameTh())).collect(Collectors.toList());
@@ -508,11 +523,11 @@ public class OmniMainView extends BaseBean {
 		this.channelSelection = channelSelection;
 	}
 
-	public CategoryData getChannel() {
+	public String getChannel() {
 		return channel;
 	}
 
-	public void setChannel(CategoryData channel) {
+	public void setChannel(String channel) {
 		this.channel = channel;
 	}
 
@@ -524,11 +539,11 @@ public class OmniMainView extends BaseBean {
 		this.contactReasonSelection = contactReasonSelection;
 	}
 
-	public CategoryData getContactReason() {
+	public String getContactReason() {
 		return contactReason;
 	}
 
-	public void setContactReason(CategoryData contactReason) {
+	public void setContactReason(String contactReason) {
 		this.contactReason = contactReason;
 	}
 
@@ -540,11 +555,11 @@ public class OmniMainView extends BaseBean {
 		this.trackingStatusSelection = trackingStatusSelection;
 	}
 
-	public CategoryData getTrackingStatus() {
+	public String getTrackingStatus() {
 		return trackingStatus;
 	}
 
-	public void setTrackingStatus(CategoryData trackingStatus) {
+	public void setTrackingStatus(String trackingStatus) {
 		this.trackingStatus = trackingStatus;
 	}
 

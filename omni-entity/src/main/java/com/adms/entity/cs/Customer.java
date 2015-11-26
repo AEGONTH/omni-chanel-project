@@ -104,192 +104,207 @@ public class Customer extends BaseAuditDomain {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public Customer setId(Long id) {
 		this.id = id;
+		return this;
 	}
 
 	public String getTitle() {
 		return title;
 	}
 
-	public void setTitle(String title) {
+	public Customer setTitle(String title) {
 		this.title = title;
+		return this;
 	}
 
 	public String getFirstName() {
 		return firstName;
 	}
 
-	public void setFirstName(String firstName) {
+	public Customer setFirstName(String firstName) {
 		this.firstName = firstName;
+		return this;
 	}
 
 	public String getLastName() {
 		return lastName;
 	}
 
-	public void setLastName(String lastName) {
+	public Customer setLastName(String lastName) {
 		this.lastName = lastName;
+		return this;
 	}
 
 	public String getCitizenId() {
 		return citizenId;
 	}
 
-	public void setCitizenId(String citizenId) {
+	public Customer setCitizenId(String citizenId) {
 		this.citizenId = citizenId;
+		return this;
 	}
 
 	public String getPassportId() {
 		return passportId;
 	}
 
-	public void setPassportId(String passportId) {
+	public Customer setPassportId(String passportId) {
 		this.passportId = passportId;
+		return this;
 	}
 
 	public ParamConfig getGender() {
 		return gender;
 	}
 
-	public void setGender(ParamConfig gender) {
+	public Customer setGender(ParamConfig gender) {
 		this.gender = gender;
+		return this;
 	}
 
 	public Date getDob() {
 		return dob;
 	}
 
-	public void setDob(Date dob) {
+	public Customer setDob(Date dob) {
 		this.dob = dob;
+		return this;
 	}
 
 	public String getMarital() {
 		return marital;
 	}
 
-	public void setMarital(String marital) {
+	public Customer setMarital(String marital) {
 		this.marital = marital;
+		return this;
 	}
 
 	public String getFullName() {
 		return fullName;
 	}
 
-	public void setFullName(String fullName) {
+	public Customer setFullName(String fullName) {
 		this.fullName = fullName;
+		return this;
 	}
 
 	public String getHomeNo() {
 		return homeNo;
 	}
 
-	public void setHomeNo(String homeNo) {
+	public Customer setHomeNo(String homeNo) {
 		this.homeNo = homeNo;
+		return this;
 	}
 
 	public String getMobileNo() {
 		return mobileNo;
 	}
 
-	public void setMobileNo(String mobileNo1) {
-		this.mobileNo = mobileNo1;
+	public Customer setMobileNo(String mobileNo) {
+		this.mobileNo = mobileNo;
+		return this;
 	}
 
 	public String getOtherNo() {
 		return otherNo;
 	}
 
-	public void setOtherNo(String mobileNo2) {
-		this.otherNo = mobileNo2;
+	public Customer setOtherNo(String otherNo) {
+		this.otherNo = otherNo;
+		return this;
 	}
 
 	public String getOfficeNo() {
 		return officeNo;
 	}
 
-	public void setOfficeNo(String officeNo) {
+	public Customer setOfficeNo(String officeNo) {
 		this.officeNo = officeNo;
-	}
-
-	@Override
-	public String toString() {
-		return "Customer [id=" + id + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", fullName=" + fullName + ", citizenId=" + citizenId + ", passportId=" + passportId + ", gender="
-				+ gender + ", dob=" + dob + ", marital=" + marital + ", homeNo=" + homeNo + ", mobileNo1=" + mobileNo
-				+ ", mobileNo2=" + otherNo + ", officeNo=" + officeNo + "]";
+		return this;
 	}
 
 	public String getNationality() {
 		return nationality;
 	}
 
-	public void setNationality(String nationality) {
+	public Customer setNationality(String nationality) {
 		this.nationality = nationality;
+		return this;
 	}
 
 	public String getCitizenship() {
 		return citizenship;
 	}
 
-	public void setCitizenship(String citizenship) {
+	public Customer setCitizenship(String citizenship) {
 		this.citizenship = citizenship;
+		return this;
 	}
 
 	public String getEmail() {
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public Customer setEmail(String email) {
 		this.email = email;
+		return this;
 	}
 
 	public String getAddress1() {
 		return address1;
 	}
 
-	public void setAddress1(String address1) {
+	public Customer setAddress1(String address1) {
 		this.address1 = address1;
+		return this;
 	}
 
 	public String getAddress2() {
 		return address2;
 	}
 
-	public void setAddress2(String address2) {
+	public Customer setAddress2(String address2) {
 		this.address2 = address2;
+		return this;
 	}
 
 	public String getAddress3() {
 		return address3;
 	}
 
-	public void setAddress3(String address3) {
+	public Customer setAddress3(String address3) {
 		this.address3 = address3;
+		return this;
 	}
 
 	public String getPostCode() {
 		return postCode;
 	}
 
-	public void setPostCode(String postCode) {
+	public Customer setPostCode(String postCode) {
 		this.postCode = postCode;
+		return this;
 	}
 
 	public Province getProvince() {
 		return province;
 	}
 
-	public void setProvince(Province province) {
+	public Customer setProvince(Province province) {
 		this.province = province;
+		return this;
 	}
 
 	public String getVisible() {
 		return visible;
 	}
 
-	public void setVisible(String visible) {
+	public Customer setVisible(String visible) {
 		this.visible = visible;
+		return this;
 	}
 	
 }

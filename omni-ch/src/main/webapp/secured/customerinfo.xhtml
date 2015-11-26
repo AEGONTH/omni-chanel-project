@@ -10,11 +10,11 @@
 	<ui:define name="head">
 		<title>Omni Channel</title>
 		<style>
-		.container {width:100%; float:left;}
-		.action-div {display:block; padding:2px 10px;}
-		.action-div .ui-button {display:inline-block;zoom:1.1;}
-		.fright {float:right;}
-		.lright {float:left;}
+		.ui-paginator.ui-paginator-bottom.ui-widget-header.ui-corner-bottom {border-radius: 0;}
+		.ui-dialog-content.ui-widget-content .ui-widget .ui-panelgrid-content.ui-grid-responsive .ui-grid-row .ui-panelgrid-cell {font-size:1.1em;}
+		.ui-dialog-content.ui-widget-content .ui-selectonemenu .ui-selectonemenu-trigger {padding:0 5px;}
+		.decresed-gap {margin-top: -4px;}
+		.ui-panelgrid-content.ui-widget-content.ui-grid.ui-grid-responsive .ui-grid-row {margin-bottom: 5px;}
 		.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
 			max-height: 75vh;
 			min-width: 600px;
@@ -27,22 +27,18 @@
 			.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
 				min-width: 310px;
 			}
+			.ui-grid-responsive .ui-grid-row .ui-panelgrid-cell.ui-grid-col-4.txt-right {
+				text-align:left;
+			}
 		}
 		</style>
 		<f:loadBundle var="omniMsg" basename="com.adms.msg.omni.omniMsg"/>
 	</ui:define>
 	
 	<ui:define name="content">
-		<h:form id="frmWL">
-			
-			<div class="container">
-				<div class="action-div">
-					<p:commandButton value="Add" icon="fa fa-plus-square fa-fw" actionListener="#{omniMainView.onClickAddNew}" oncomplete="PF('dlgCustomer').show()" styleClass="blue-btn fright" update="frmDlg"/>
-				</div>
-			</div>
-			
-			<p:panelGrid layout="grid" columns="1" columnClasses="ui-grid-col-12" styleClass="grid-borderless grid-bg-transparent">
-				<p:panel header="Customer's Waiting List">
+		<p:panelGrid layout="grid" columns="1" columnClasses="ui-grid-col-12" styleClass="grid-borderless grid-bg-transparent">
+			<p:panel header="Customer's Waiting List">
+				<h:form id="frmWL">
 					<p:dataTable id="dtWaitingList" widgetVar="dtWaitingList"
 						value="#{omniMainView.omniLogMotorHist}"
 						var="log"
@@ -75,9 +71,12 @@
 							<h:outputText value="#{of:formatDate(log.dueDate, 'dd-MM-yyyy HH:mm')}" styleClass="#{of:daysBetween(now, log.dueDate) le 0 ? 'overdue' : ''}"/>
 						</p:column>
 					</p:dataTable>
-				</p:panel>
-			</p:panelGrid>
-		</h:form>
+					
+					<hr class="faded"/>
+					<p:commandButton value="Add" icon="fa fa-plus-square fa-fw" actionListener="#{omniMainView.onClickAddNew}" oncomplete="PF('dlgCustomer').show()" styleClass="blue-btn" update="frmDlg"/>
+				</h:form>
+			</p:panel>
+		</p:panelGrid>
 		
 		<h:form id="frmDlg">
 			<p:dialog id="dlgCustomer" widgetVar="dlgCustomer" 

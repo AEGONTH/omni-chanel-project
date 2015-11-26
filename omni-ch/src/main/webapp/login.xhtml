@@ -52,9 +52,16 @@
 					</div>
 					
 					<div class="margin-center txt-center margin-top-normal">
-						<p:commandButton value="Sign In" action="#{loginView.doLogin}" update="@form" styleClass="w100 green-btn btn-login margin-center"/>
+						<p:commandButton value="Sign In" action="#{loginView.doLogin}" onclick="PF('progressDialog').show()" update="@form" styleClass="w100 green-btn btn-login margin-center"/>
 					</div>
 				</p:panel>
+				
+				<p:dialog widgetVar="progressDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" style="max-width:500px;">
+					<h:panelGrid columns="2">
+						<i class="fa fa-cog fa-spin fa-4x" style="margin-right: 12px; vertical-align: middle;"></i>
+						<h:outputText value="Please wait..." style="white-space: nowrap;"/>
+					</h:panelGrid>
+				</p:dialog>
 			</h:form>
 		</div>
 		
