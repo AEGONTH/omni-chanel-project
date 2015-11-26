@@ -80,6 +80,7 @@
 		</h:form>
 		
 		<h:form id="frmDlg">
+			<p:remoteCommand name="wgSearchCusByTel" actionListener="#{omniMainView.onBlurTel}" update="frmDlg:dlgCustomer"/>
 			<p:dialog id="dlgCustomer" widgetVar="dlgCustomer" 
 			dynamic="true" modal="true"
 			fitViewport="true" resizable="false"
@@ -88,10 +89,10 @@
 					<h:outputText value="Customer Info" />
 				</f:facet>
 				
-				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
+				<p:panelGrid id="gridCustomerInfo" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
 				
 					<p:outputLabel value="Tel." style="font-weight:bold;"/>
-					<p:inputText type="tel" value="#{omniMainView.tel}" styleClass="tel-mask decresed-gap w90">
+					<p:inputText type="tel" value="#{omniMainView.tel}" styleClass="tel-mask decresed-gap w90" onblur="wgSearchCusByTel()">
 						<pe:keyFilter mask="pnum" preventPaste="false"/>
 					</p:inputText>
 					

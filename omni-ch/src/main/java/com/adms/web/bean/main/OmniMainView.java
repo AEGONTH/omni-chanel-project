@@ -22,6 +22,7 @@ import org.omnifaces.util.Faces;
 import org.primefaces.event.SelectEvent;
 
 import com.adms.cs.service.CategoryDataService;
+import com.adms.cs.service.CustomerService;
 import com.adms.cs.service.InceProductService;
 import com.adms.cs.service.InsurerService;
 import com.adms.cs.service.OmniLogMotorHistService;
@@ -45,6 +46,9 @@ public class OmniMainView extends BaseBean {
 	@ManagedProperty("#{omniLogMotorHistService}")
 	private OmniLogMotorHistService omniLogMotorHistService;
 	
+	@ManagedProperty("#{customerService}")
+	private CustomerService customerService;
+	
 	private final String[] masterCategories = new String[]{"OMNI_MOTOR_CAT", "MOTOR_BRAND_HONDA", "MOTOR_BRAND_TOYOTA", "OMNI_CHANNEL", "OMNI_CONTACT_REASON", "OMNI_TRACKING_STATUS"};
 	
 	private List<OmniLogMotorHist> omniLogMotorHist;
@@ -60,6 +64,8 @@ public class OmniMainView extends BaseBean {
 	private String address2;
 	private String address3;
 	private String postCode;
+	
+	private Customer customer;
 	
 	private List<SelectItem> provinceSelection;
 	private Province province;
@@ -146,6 +152,29 @@ public class OmniMainView extends BaseBean {
 		setDataToDialog(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 	
+	public void onBlurTel() throws Throwable {
+		if(this.customer == null && !StringUtils.isBlank(this.tel)) {
+			DetachedCriteria criteria = DetachedCriteria.forClass(Customer.class);
+			criteria
+				.add(Restrictions.eq("mobileNo", this.tel))
+				.add(Restrictions.eq("visible", "Y"));
+			List<Customer> list = customerService.findByCriteria(criteria);
+			
+			if(list != null && list.size() > 0) {
+				this.customer = list.get(0);
+				this.cFirstName = this.customer.getFirstName();
+				this.cLastName = this.customer.getLastName();
+				this.sex = this.customer.getGender();
+				this.email = this.customer.getEmail();
+				this.address1 = this.customer.getAddress1();
+				this.address2 = this.customer.getAddress2();
+				this.address3 = this.customer.getAddress3();
+				this.postCode = this.customer.getPostCode();
+				this.province = this.customer.getProvince();
+			}
+		}
+	}
+	
 	public void saveCustomerInfo(Long logId) throws Throwable {
 		if(logId == null) {
 			//TODO Insert new Record
@@ -201,6 +230,8 @@ public class OmniMainView extends BaseBean {
 			, String insurerCode, String inceProductCode, String productPlan
 			, String channel, String contactReason, String trackingStatus
 			, String contactDetails, Date dueDate) throws Throwable {
+		this.customer = null;
+		
 		this.logId = logId;
 		this.cFirstName = cFirstName;
 		this.cLastName = cLastName;
@@ -633,6 +664,18 @@ public class OmniMainView extends BaseBean {
 
 	public void setProvinceSelection(List<SelectItem> provinceSelection) {
 		this.provinceSelection = provinceSelection;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
+	
+	public void setCustomerService(CustomerService customerService) {
+		this.customerService = customerService;
 	}
 
 	private enum TrackingStatus {
