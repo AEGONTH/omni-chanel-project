@@ -80,7 +80,6 @@
 		</h:form>
 		
 		<h:form id="frmDlg">
-			<p:remoteCommand name="wgSearchCusByTel" actionListener="#{omniMainView.onBlurTel}" update="frmDlg:dlgCustomer"/>
 			<p:dialog id="dlgCustomer" widgetVar="dlgCustomer" 
 			dynamic="true" modal="true"
 			fitViewport="true" resizable="false"
@@ -92,8 +91,9 @@
 				<p:panelGrid id="gridCustomerInfo" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
 				
 					<p:outputLabel value="Tel." style="font-weight:bold;"/>
-					<p:inputText type="tel" value="#{omniMainView.tel}" styleClass="tel-mask decresed-gap w90" onblur="wgSearchCusByTel()">
+					<p:inputText type="tel" value="#{omniMainView.tel}" styleClass="tel-mask decresed-gap w90">
 						<pe:keyFilter mask="pnum" preventPaste="false"/>
+						<f:ajax event="blur" listener="#{omniMainView.onBlurTel}" render="gridCustomerInfo"/>
 					</p:inputText>
 					
 					<p:outputLabel value="First Name" style="font-weight:bold;"/>
@@ -132,9 +132,9 @@
 				
 				<hr class="faded"/>
 				
-				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
+				<p:panelGrid id="gridProduct" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
 				
-				<p:outputLabel value="Brand" style="font-weight:bold;"/>
+					<p:outputLabel value="Brand" style="font-weight:bold;"/>
 					<p:selectOneMenu value="#{omniMainView.motorBrand}" styleClass="decresed-gap w90">
 						<p:ajax listener="#{omniMainView.brandSelectionListener}" update="stBrandModel"/>
 						<f:selectItem itemLabel="Please Select"/>
@@ -180,7 +180,7 @@
 				
 				<hr class="faded"/>
 				
-				<p:panelGrid layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
+				<p:panelGrid id="gridLogging" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
 				
 					<p:outputLabel value="Channel" style="font-weight:bold;"/>
 					<p:selectOneMenu value="#{omniMainView.channel}" styleClass="decresed-gap w90">

@@ -68,10 +68,10 @@ public class OmniMainView extends BaseBean {
 	private Customer customer;
 	
 	private List<SelectItem> provinceSelection;
-	private Province province;
+	private String province;
 	
 	private List<SelectItem> sexSelection;
-	private ParamConfig sex;
+	private String sex;
 	
 	private Map<String, CategoryData> categoryMap;
 	
@@ -162,15 +162,18 @@ public class OmniMainView extends BaseBean {
 			
 			if(list != null && list.size() > 0) {
 				this.customer = list.get(0);
+				System.out.println(customer);
 				this.cFirstName = this.customer.getFirstName();
 				this.cLastName = this.customer.getLastName();
-				this.sex = this.customer.getGender();
+				this.sex = this.customer.getGender().getParamKey();
 				this.email = this.customer.getEmail();
 				this.address1 = this.customer.getAddress1();
 				this.address2 = this.customer.getAddress2();
 				this.address3 = this.customer.getAddress3();
 				this.postCode = this.customer.getPostCode();
-				this.province = this.customer.getProvince();
+				this.province = this.customer.getProvince().getProvinceCode();
+//				RequestContext rc = RequestContext.getCurrentInstance();
+//				rc.update("frmDlg:gridCustomerInfo");
 			}
 		}
 	}
@@ -207,8 +210,8 @@ public class OmniMainView extends BaseBean {
 				, logHist.getOmniLogMotor().getCustomer().getAddress2()
 				, logHist.getOmniLogMotor().getCustomer().getAddress3()
 				, logHist.getOmniLogMotor().getCustomer().getPostCode()
-				, logHist.getOmniLogMotor().getCustomer().getProvince()
-				, logHist.getOmniLogMotor().getCustomer().getGender()
+				, logHist.getOmniLogMotor().getCustomer().getProvince().getProvinceCode()
+				, logHist.getOmniLogMotor().getCustomer().getGender().getParamKey()
 				, logHist.getOmniLogMotor().getCar().getParent().getCode()
 				, logHist.getOmniLogMotor().getCar().getCode()
 				, new Integer(logHist.getOmniLogMotor().getCarYear())
@@ -224,8 +227,8 @@ public class OmniMainView extends BaseBean {
 	}
 	
 	private void setDataToDialog(Long logId, String cFirstName, String cLastName, String tel, String email
-			, String address1, String address2, String address3, String postCode, Province province
-			, ParamConfig sex
+			, String address1, String address2, String address3, String postCode, String province
+			, String sex
 			, String motorBrand, String brandModel, Integer carYear
 			, String insurerCode, String inceProductCode, String productPlan
 			, String channel, String contactReason, String trackingStatus
@@ -293,7 +296,7 @@ public class OmniMainView extends BaseBean {
 		ResourceBundle globalMsg = Faces.evaluateExpressionGet("#{globalMsg}");
 		sexSelection = new ArrayList<>();
 		for(ParamConfig c : list) {
-			sexSelection.add(new SelectItem(c, globalMsg.getString(c.getParamValue())));
+			sexSelection.add(new SelectItem(c.getParamKey(), globalMsg.getString(c.getParamValue())));
 		}
 	}
 	
@@ -376,7 +379,7 @@ public class OmniMainView extends BaseBean {
 		province = null;
 		provinceSelection = new ArrayList<>();
 		ProvinceService provinceService = Faces.evaluateExpressionGet("#{provinceService}");
-		provinceSelection = provinceService.findAll().stream().map(m -> new SelectItem(m, m.getProvinceNameTh())).collect(Collectors.toList());
+		provinceSelection = provinceService.findAll().stream().map(m -> new SelectItem(m.getProvinceCode(), m.getProvinceNameTh())).collect(Collectors.toList());
 	}
 	
 	private List<CategoryData> getCategoryDataByParent(String parentCode) {
@@ -442,11 +445,11 @@ public class OmniMainView extends BaseBean {
 		this.sexSelection = sexSelection;
 	}
 
-	public ParamConfig getSex() {
+	public String getSex() {
 		return sex;
 	}
 
-	public void setSex(ParamConfig sex) {
+	public void setSex(String sex) {
 		this.sex = sex;
 	}
 
@@ -650,11 +653,11 @@ public class OmniMainView extends BaseBean {
 		this.postCode = postCode;
 	}
 
-	public Province getProvince() {
+	public String getProvince() {
 		return province;
 	}
 
-	public void setProvince(Province province) {
+	public void setProvince(String province) {
 		this.province = province;
 	}
 
