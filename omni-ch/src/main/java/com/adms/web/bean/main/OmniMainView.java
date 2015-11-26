@@ -306,19 +306,25 @@ public class OmniMainView extends BaseBean {
 		DetachedCriteria criteria = DetachedCriteria.forClass(CategoryData.class);
 		criteria.add(Restrictions.in("parent.code", masterCategories));
 		
-		categoryMap = categoryDataService.findByCriteria(criteria).stream().collect(Collectors.toMap(CategoryData::getCode, (p) -> p));
+		categoryMap = categoryDataService.findByCriteria(criteria)
+				.stream()
+				.collect(Collectors.toMap(CategoryData::getCode, (p) -> p));
 	}
 	
 	private void initBrand() throws Throwable {
 		String parent = masterCategories[0];
 		motorBrandSelection = getCategoryDataByParent(parent)
-				.stream().map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
+				.stream()
+				.sorted((c1, c2) -> c1.getCode().compareTo(c2.getCode()))
+				.map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
 	}
 	
 	private void initModelByBrand(String brandCode) throws Throwable {
 		brandModel = null;
 		brandModelSelection = getCategoryDataByParent(brandCode)
-				.stream().map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
+				.stream()
+				.sorted((c1, c2) -> c1.getCode().compareTo(c2.getCode()))
+				.map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
 	}
 	
 	private void initCarYears() throws Throwable {
