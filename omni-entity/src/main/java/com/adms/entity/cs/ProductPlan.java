@@ -43,6 +43,14 @@ public class ProductPlan extends BaseDomain {
 	@Column(name="EXCESS_AMT")
 	private BigDecimal excessAmt;
 
+	public ProductPlan() {
+		
+	}
+	
+	public ProductPlan(String planCode) {
+		this.planCode = planCode;
+	}
+
 	public Long getId() {
 		return id;
 	}

@@ -9,11 +9,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.adms.common.domain.BaseDomain;
+import com.adms.common.domain.BaseAuditDomain;
 
 @Entity
 @Table(name="OMNI_LOG_MOTOR")
-public class OmniLogMotor extends BaseDomain {
+public class OmniLogMotor extends BaseAuditDomain {
 	
 	private static final long serialVersionUID = 203410334685936715L;
 

@@ -22,7 +22,10 @@
 		}
 		.w90.ui-selectonemenu.ui-widget {width:82.5% !important;}
 		.w90.ui-selectonemenu.ui-widget .ui-selectonemenu-label.ui-inputfield {width:100% !important;}
-		.overdue {color: #FF0000;}
+		.overdue-txt {}
+		.overdue-bg {background-color: red !important;}
+		.custom-ft .ui-datatable .ui-column-filter {display:inline-block;}
+		.custom-ft.ui-filter-column .ui-column-filter.ui-inputfield.ui-inputtext.ui-widget {display: inline-block;}
 		@media screen and (max-width: 640px) {
 			.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
 				min-width: 310px;
@@ -54,7 +57,7 @@
 						rowIndexVar="idx"
 						reflow="true"
 						selectionMode="single"
-						style="margin-top: 10px;">
+						style="margin-top: 10px;" styleClass="">
 						
 						<p:ajax event="rowSelect" listener="#{omniMainView.onRowSelect}" oncomplete="PF('dlgCustomer').show();" update="@form, frmDlg" />
 						
@@ -62,7 +65,7 @@
 							<h:outputText value="#{log.omniLogMotor.customer.fullName}" />
 						</p:column>
 						
-						<p:column headerText="Mobile">
+						<p:column headerText="Mobile" styleClass="custom-ft" filterBy="#{log.omniLogMotor.customer.mobileNo}" filterMatchMode="startsWith">
 							<h:outputText value="#{log.omniLogMotor.customer.mobileNo}" >
 							</h:outputText>
 						</p:column>
@@ -72,7 +75,7 @@
 						</p:column>
 						
 						<p:column headerText="Due Date" styleClass="txt-center">
-							<h:outputText value="#{of:formatDate(log.dueDate, 'dd-MM-yyyy HH:mm')}" styleClass="#{of:daysBetween(now, log.dueDate) le 0 ? 'overdue' : ''}"/>
+							<h:outputText value="#{of:formatDate(log.dueDate, 'dd-MM-yyyy HH:mm')}" styleClass="duedatetxt #{of:daysBetween(now, log.dueDate) le 0 ? 'overdue-txt' : ''}"/>
 						</p:column>
 					</p:dataTable>
 				</p:panel>
@@ -87,20 +90,23 @@
 				<f:facet name="header">
 					<h:outputText value="Customer Info" />
 				</f:facet>
-				
+				<p:messages id="dlgMsg" closable="true"/>
 				<p:panelGrid id="gridCustomerInfo" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
 				
 					<p:outputLabel value="Tel." style="font-weight:bold;"/>
-					<p:inputText type="tel" value="#{omniMainView.tel}" styleClass="tel-mask decresed-gap w90">
+					<p:inputText type="tel" value="#{omniMainView.tel}" required="true" requiredMessage="Tel. is required" disabled="#{not empty omniMainView.logId}" styleClass="tel-mask decresed-gap w90">
 						<pe:keyFilter mask="pnum" preventPaste="false"/>
-						<f:ajax event="blur" listener="#{omniMainView.onBlurTel}" render="gridCustomerInfo"/>
+						<f:ajax event="blur" listener="#{omniMainView.onBlurTel}" />
 					</p:inputText>
 					
+					<p:outputLabel value="Citizen ID" style="font-weight:bold;"/>
+					<p:inputText value="#{omniMainView.citizenId}" required="false" requiredMessage="Citizen ID is required" styleClass="decresed-gap w90"/>
+					
 					<p:outputLabel value="First Name" style="font-weight:bold;"/>
-					<p:inputText value="#{omniMainView.cFirstName}" styleClass="decresed-gap w90"/>
+					<p:inputText value="#{omniMainView.cFirstName}" required="true" requiredMessage="First Name is required" styleClass="decresed-gap w90"/>
 					
 					<p:outputLabel value="Last Name" style="font-weight:bold;"/>
-					<p:inputText value="#{omniMainView.cLastName}" styleClass="decresed-gap w90"/>
+					<p:inputText value="#{omniMainView.cLastName}" required="true" requiredMessage="Last Name is required" styleClass="decresed-gap w90"/>
 				
 					<p:outputLabel value="Gender" style="font-weight:bold;"/>
 					<p:selectOneMenu value="#{omniMainView.sex}" styleClass="decresed-gap w90">
@@ -135,20 +141,20 @@
 				<p:panelGrid id="gridProduct" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
 				
 					<p:outputLabel value="Brand" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.motorBrand}" styleClass="decresed-gap w90">
+					<p:selectOneMenu value="#{omniMainView.motorBrand}" required="true" requiredMessage="Brand is required" styleClass="decresed-gap w90">
 						<p:ajax listener="#{omniMainView.brandSelectionListener}" update="stBrandModel"/>
 						<f:selectItem itemLabel="Please Select"/>
 						<f:selectItems value="#{omniMainView.motorBrandSelection}" />
 					</p:selectOneMenu>
 					
 					<p:outputLabel value="Model" style="font-weight:bold;"/>
-					<p:selectOneMenu id="stBrandModel" value="#{omniMainView.brandModel}" disabled="#{empty omniMainView.brandModelSelection}" styleClass="decresed-gap w90">
+					<p:selectOneMenu id="stBrandModel" value="#{omniMainView.brandModel}" required="true" requiredMessage="Model is required" disabled="#{empty omniMainView.brandModelSelection}" styleClass="decresed-gap w90">
 						<f:selectItem itemLabel="Please Select"/>
 						<f:selectItems value="#{omniMainView.brandModelSelection}" />
 					</p:selectOneMenu>
 					
 					<p:outputLabel value="Car Year" style="font-weight:bold;"/>
-					<p:selectOneMenu id="stCarYear" value="#{omniMainView.carYear}" styleClass="decresed-gap w90">
+					<p:selectOneMenu id="stCarYear" value="#{omniMainView.carYear}" required="true" requiredMessage="Car Year is required" styleClass="decresed-gap w90">
 						<f:selectItem itemLabel="Please Select"/>
 						<f:selectItems value="#{omniMainView.carYearSelection}" />
 					</p:selectOneMenu>
@@ -156,22 +162,28 @@
 					<h:outputText value=" " />
 					<h:outputText value=" " />
 					
+					<p:outputLabel value="List Source" style="font-weight:bold;"/>
+					<p:selectOneMenu value="#{omniMainView.listSource}" required="true" requiredMessage="List Source is required" styleClass="decresed-gap w90">
+						<f:selectItem itemLabel="Please Select"/>
+						<f:selectItems value="#{omniMainView.listSourceSelection}" />
+					</p:selectOneMenu>
+					
 					<p:outputLabel value="Insurer" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.insurerCode}" styleClass="decresed-gap w90">
+					<p:selectOneMenu value="#{omniMainView.insurerCode}" required="true" requiredMessage="Insurer is required" styleClass="decresed-gap w90">
 						<p:ajax listener="#{omniMainView.insurerSelectionListener}" update="stProduct"/>
 						<f:selectItem itemLabel="Please Select"/>
 						<f:selectItems value="#{omniMainView.insurerSelection}" />
 					</p:selectOneMenu>
 					
 					<p:outputLabel value="Product" style="font-weight:bold;"/>
-					<p:selectOneMenu id="stProduct" value="#{omniMainView.inceProductCode}" disabled="#{empty omniMainView.inceProductSelection}" styleClass="decresed-gap w90">
+					<p:selectOneMenu id="stProduct" value="#{omniMainView.inceProductCode}" required="true" requiredMessage="Product is required" disabled="#{empty omniMainView.inceProductSelection}" styleClass="decresed-gap w90">
 						<p:ajax listener="#{omniMainView.productSelectionListener}" update="stPlan"/>
 						<f:selectItem itemLabel="Please Select"/>
 						<f:selectItems value="#{omniMainView.inceProductSelection}" />
 					</p:selectOneMenu>
 					
 					<p:outputLabel value="Plan" style="font-weight:bold;"/>
-					<p:selectOneMenu id="stPlan" value="#{omniMainView.productPlan}" disabled="#{empty omniMainView.productPlanSelection}" styleClass="decresed-gap w90">
+					<p:selectOneMenu id="stPlan" value="#{omniMainView.productPlan}" required="true" requiredMessage="Plan is required" disabled="#{empty omniMainView.productPlanSelection}" styleClass="decresed-gap w90">
 						<f:selectItem itemLabel="Please Select"/>
 						<f:selectItems value="#{omniMainView.productPlanSelection}" />
 					</p:selectOneMenu>
@@ -195,7 +207,7 @@
 					</p:selectOneMenu>
 					
 					<p:outputLabel value="Tracking Status" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.trackingStatus}" styleClass="decresed-gap w90">
+					<p:selectOneMenu value="#{omniMainView.trackingStatus}" required="true" requiredMessage="Tracking Status is required" styleClass="decresed-gap w90">
 						<f:selectItem itemLabel="Please Select"/>
 						<f:selectItems value="#{omniMainView.trackingStatusSelection}" />
 					</p:selectOneMenu>
@@ -204,11 +216,11 @@
 					<p:inputTextarea value="#{omniMainView.contactDetails}" styleClass="w90"/>
 					
 					<p:outputLabel value="Due Date" style="font-weight:bold;"/>
-					<p:calendar value="#{omniMainView.dueDate}" pattern="dd/MM/yyyy HH:mm" timeControlType="slider" showOtherMonths="true"></p:calendar>
+					<p:calendar value="#{omniMainView.dueDate}" required="true" requiredMessage="Due Date is required" pattern="dd/MM/yyyy HH:mm" mindate="#{of:formatDate(now,'dd/MM/yyyy')}" timeControlType="slider" showOtherMonths="true"></p:calendar>
 				</p:panelGrid>
 				
 				<f:facet name="footer">
-					<p:commandButton value="Submit" actionListener="#{omniMainView.saveCustomerInfo(null)}" styleClass="green-btn"/>
+					<p:commandButton value="Submit" actionListener="#{omniMainView.saveCustomerInfo}" update="dlgMsg, frmWL" styleClass="green-btn"/>
 					<p:commandButton value="Cancel" type="button" process="@this" onclick="PF('dlgCustomer').hide()" styleClass=""/>
 				</f:facet>
 			</p:dialog>
@@ -217,6 +229,9 @@
 		<script>
 // 			$(document).ready(function() {
 // 				$('.tel-mask').mask('999-999-9999');
+// 			});
+// 			$(document).ready(function() {
+// 					$('.duedatetxt.overdue-txt').parent().addClass('overdue-bg');
 // 			});
 		</script>
 	</ui:define>

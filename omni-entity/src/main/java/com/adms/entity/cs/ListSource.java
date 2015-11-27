@@ -26,6 +26,14 @@ public class ListSource extends BaseDomain {
 	@Column(name="LIST_SOURCE_VALUE")
 	private String listSourceValue;
 
+	public ListSource() {
+		
+	}
+	
+	public ListSource(String listSourceCode) {
+		this.listSourceCode = listSourceCode;
+	}
+	
 	public Long getId() {
 		return id;
 	}

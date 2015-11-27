@@ -13,11 +13,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.adms.common.domain.BaseDomain;
+import com.adms.common.domain.BaseAuditDomain;
 
 @Entity
 @Table(name="OMNI_LOG_MOTOR_HIST")
-public class OmniLogMotorHist extends BaseDomain {
+public class OmniLogMotorHist extends BaseAuditDomain {
 
 	private static final long serialVersionUID = -3733399494331331694L;
 

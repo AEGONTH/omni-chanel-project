@@ -16,8 +16,8 @@ public class TestProject {
 
 	public static void main(String[] args) {
 		try {
-			Integer a = 100;
-			Integer b = 100;
+			String a = "a";
+			String b = "a";
 			
 			System.out.println(a == b);
 			System.out.println(a.compareTo(b));

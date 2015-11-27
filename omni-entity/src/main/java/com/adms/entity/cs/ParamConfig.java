@@ -33,32 +33,36 @@ public class ParamConfig extends BaseDomain {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public ParamConfig setId(Long id) {
 		this.id = id;
+		return this;
 	}
 
 	public String getParamGroup() {
 		return paramGroup;
 	}
 
-	public void setParamGroup(String paramGroup) {
+	public ParamConfig setParamGroup(String paramGroup) {
 		this.paramGroup = paramGroup;
+		return this;
 	}
 
 	public String getParamKey() {
 		return paramKey;
 	}
 
-	public void setParamKey(String paramKey) {
+	public ParamConfig setParamKey(String paramKey) {
 		this.paramKey = paramKey;
+		return this;
 	}
 
 	public String getParamValue() {
 		return paramValue;
 	}
 
-	public void setParamValue(String paramValue) {
+	public ParamConfig setParamValue(String paramValue) {
 		this.paramValue = paramValue;
+		return this;
 	}
 	
 }

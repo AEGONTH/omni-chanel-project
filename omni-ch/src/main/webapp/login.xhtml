@@ -52,7 +52,7 @@
 					</div>
 					
 					<div class="margin-center txt-center margin-top-normal">
-						<p:commandButton value="Sign In" action="#{loginView.doLogin}" onclick="PF('progressDialog').show()" update="@form" styleClass="w100 green-btn btn-login margin-center"/>
+						<p:commandButton value="Sign In" action="#{loginView.doLogin}" onstart="PF('progressDialog').show()" oncomplete="PF('progressDialog').hide()" update="@form" styleClass="w100 green-btn btn-login margin-center"/>
 					</div>
 				</p:panel>
 				
