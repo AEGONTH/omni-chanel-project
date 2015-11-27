@@ -232,7 +232,10 @@ public class OmniMainView extends BaseBean {
 			newHist.setDetail(StringUtils.isBlank(contactDetails) ? null : contactDetails);
 			newHist.setDueDate(dueDate);
 			newHist.setLogDate(new Date());
-			newHist.setOmniLogMotor(hist.getOmniLogMotor());
+			omniLogMotor = hist.getOmniLogMotor();
+			omniLogMotor.setCustomer(getValidatedCustomer());
+			newHist.setOmniLogMotor(omniLogMotor);
+			
 			newHist.setStatus(categoryMap.get(trackingStatus));
 			omniLogMotorHistService.add(newHist, loginSession.getUsername());
 		}
@@ -331,6 +334,7 @@ public class OmniMainView extends BaseBean {
 	public void onRowSelect(SelectEvent event) throws NumberFormatException, Throwable {
 		OmniLogMotorHist logHist =(OmniLogMotorHist) event.getObject();
 		logHistId = logHist.getId();
+		customer = logHist.getOmniLogMotor().getCustomer();
 		setDataToDialog(logHist.getOmniLogMotor().getId()
 				, logHist.getOmniLogMotor().getCustomer().getCitizenId()
 				, logHist.getOmniLogMotor().getCustomer().getFirstName()
