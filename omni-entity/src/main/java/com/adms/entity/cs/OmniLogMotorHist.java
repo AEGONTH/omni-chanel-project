@@ -52,6 +52,21 @@ public class OmniLogMotorHist extends BaseAuditDomain {
 	@Column(name="DUE_DATE")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dueDate;
+	
+	@ManyToOne
+	@JoinColumn(name="CAR_CODE", referencedColumnName="CATEGORY_CODE")
+	private CategoryData car;
+	
+	@Column(name="CAR_YEAR")
+	private String carYear;
+	
+	@ManyToOne
+	@JoinColumn(name="PLAN_CODE", referencedColumnName="PLAN_CODE")
+	private ProductPlan productPlan;
+	
+	@ManyToOne
+	@JoinColumn(name="LIST_SOURCE_CODE", referencedColumnName="LIST_SOURCE_CODE")
+	private ListSource listSource;
 
 	public Long getId() {
 		return id;
@@ -121,6 +136,42 @@ public class OmniLogMotorHist extends BaseAuditDomain {
 
 	public OmniLogMotorHist setDueDate(Date dueDate) {
 		this.dueDate = dueDate;
+		return this;
+	}
+
+	public CategoryData getCar() {
+		return car;
+	}
+
+	public OmniLogMotorHist setCar(CategoryData car) {
+		this.car = car;
+		return this;
+	}
+
+	public String getCarYear() {
+		return carYear;
+	}
+
+	public OmniLogMotorHist setCarYear(String carYear) {
+		this.carYear = carYear;
+		return this;
+	}
+
+	public ProductPlan getProductPlan() {
+		return productPlan;
+	}
+
+	public OmniLogMotorHist setProductPlan(ProductPlan productPlan) {
+		this.productPlan = productPlan;
+		return this;
+	}
+
+	public ListSource getListSource() {
+		return listSource;
+	}
+
+	public OmniLogMotorHist setListSource(ListSource listSource) {
+		this.listSource = listSource;
 		return this;
 	}
 	

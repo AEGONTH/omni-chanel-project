@@ -1,12 +1,15 @@
 package com.adms.web.bean.login;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
+import org.omnifaces.config.WebXml;
 import org.omnifaces.util.Faces;
 
 import com.adms.web.base.bean.BaseBean;
@@ -22,13 +25,24 @@ public class LoginSession extends BaseBean {
 	private Map<String, List<String>> rolePrivileges;
 	private List<String> distinctPrivileges;
 	
+	private int sessionTimeOut;
+	
 	public LoginSession() {
 		
+	}
+	
+	@PostConstruct
+	private void init() {
+		sessionTimeOut = WebXml.INSTANCE.getSessionTimeout() * 1000 * 60;
 	}
 
 	public void signOut() throws Exception {
 		invalidateSession();
 		Faces.redirect(Faces.getRequestContextPath() + "/login");
+	}
+	
+	public void toChangePwd() throws IOException {
+		Faces.redirect(Faces.getRequestContextPath() + "/secured/changepwd");
 	}
 	
 	public void invalidateSession() throws Exception {
@@ -105,6 +119,10 @@ public class LoginSession extends BaseBean {
 	public LoginSession distinctPrivileges(List<String> distinctPrivileges) {
 		this.distinctPrivileges = distinctPrivileges;
 		return this;
+	}
+
+	public int getSessionTimeOut() {
+		return sessionTimeOut;
 	}
 	
 }

@@ -3,6 +3,7 @@ package com.adms.cs.service;
 import java.util.List;
 
 import org.hibernate.criterion.DetachedCriteria;
+import org.springframework.data.domain.Pageable;
 
 import com.adms.entity.cs.OmniLogMotorHist;
 
@@ -23,5 +24,7 @@ public interface OmniLogMotorHistService {
 	public List<OmniLogMotorHist> findByNamedQuery(String namedQuery, Object...vals) throws Exception;
 
 	public List<OmniLogMotorHist> findByCriteria(DetachedCriteria detachedCriteria) throws Exception;
+
+	List<OmniLogMotorHist> findByCriteria(DetachedCriteria detachedCriteria, Pageable pageable) throws Exception;
 
 }

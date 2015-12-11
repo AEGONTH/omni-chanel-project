@@ -5,10 +5,11 @@
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:pe="http://primefaces.org/ui/extensions"
 	xmlns:of="http://omnifaces.org/functions"
-	template="/templates/mainTemplate.xhtml">
+	template="/templates/mainTemplate.xhtml"
+                xmlns:o="http://omnifaces.org/ui">
 	
 	<ui:define name="head">
-		<title>Omni Channel</title>
+		<title>Main View - Omni Channel</title>
 		<style>
 		.container {width:100%; float:left;}
 		.action-div {display:block; padding:2px 10px;}
@@ -22,6 +23,9 @@
 		}
 		.w90.ui-selectonemenu.ui-widget {width:82.5% !important;}
 		.w90.ui-selectonemenu.ui-widget .ui-selectonemenu-label.ui-inputfield {width:100% !important;}
+		.decresed-gap, input.ui-inputfield.decresed-gap {margin-top: -4px;}
+		.w90 input {width: 90%;}
+		.w10 {width: 10%;}
 		.overdue-txt {color: #FF0000;}
 		.custom-ft.ui-filter-column .ui-column-filter.ui-inputfield.ui-inputtext.ui-widget {display: inline-block;}
 		.ui-state-highlight, .ui-widget-content .ui-state-highlight {
@@ -31,7 +35,11 @@
 		    background-image: none;
 		    background-repeat: no-repeat;
 		}
-		
+		.tbl-action {border-spacing: 0;border-collapse: collapse;border: none; width:95%;}
+		.tbl-action .col-1 {width:85%; padding:0;}
+		.tbl-action .col-2 {width:15%; padding:0;}
+		.dueDateCol {width:15%;}
+		.citizenCol {width:15%;}
 		@media screen and (max-width: 640px) {
 			.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
 				min-width: 310px;
@@ -43,16 +51,19 @@
 	
 	<ui:define name="content">
 		<h:form id="frmWL">
-			
+			<p:growl id="globalMsg"/>
 			<div class="container">
 				<div class="action-div">
-					<p:commandButton value="Add" icon="fa fa-plus-square fa-fw" actionListener="#{omniMainView.onClickAddNew}" oncomplete="PF('dlgCustomer').show()" styleClass="blue-btn fright" update="frmDlg"/>
+					<p:commandButton value="New Case" title="For adding new case" icon="fa fa-car fa-fw" actionListener="#{omniMainView.onClickAddNew}" oncomplete="PF('dlgCustomer').show()" styleClass="blue-btn fright" update="frmDlg"/>
+					<p:commandButton value="Policy" title="For adding policy to case" icon="fa fa-book fa-fw" actionListener="#{omniMainView.onClickAddPolicy}" styleClass="green-btn fright"/>
 				</div>
 			</div>
 			
 			<p:panelGrid layout="grid" columns="1" columnClasses="ui-grid-col-12" styleClass="grid-borderless grid-bg-transparent">
 				<p:panel header="Customer's Waiting List">
-					<p:dataTable id="dtWaitingList" widgetVar="dtWaitingList"
+					<p:dataTable id="dtWaitingList" 
+						widgetVar="dtWaitingList"
+						lazy="false"
 						value="#{omniMainView.omniLogMotorHist}"
 						var="log"
 						paginator="true"
@@ -63,12 +74,17 @@
 						rowIndexVar="idx"
 						reflow="true"
 						selectionMode="single"
+						selection="#{omniMainView.selectedMotor}"
 						style="margin-top: 10px;" styleClass="">
 						
 						<p:ajax event="rowSelect" listener="#{omniMainView.onRowSelect}" oncomplete="PF('dlgCustomer').show();" update="@form, frmDlg" />
 						
 						<p:column headerText="Customer Name">
-							<h:outputText value="#{log.omniLogMotor.customer.fullName}" />
+							<h:outputText value="#{log.omniLogMotor.customer.firstName} #{log.omniLogMotor.customer.lastName}" />
+						</p:column>
+						
+						<p:column headerText="Citizen ID." styleClass="citizenCol">
+							<h:outputText value="#{log.omniLogMotor.customer.citizenId}"/>
 						</p:column>
 						
 						<p:column headerText="Mobile" styleClass="custom-ft" filterBy="#{log.omniLogMotor.customer.mobileNo}" filterMatchMode="startsWith">
@@ -76,11 +92,15 @@
 							</h:outputText>
 						</p:column>
 						
-						<p:column headerText="Status">
+						<p:column headerText="Model">
+							<h:outputText value="#{log.car.value}" />
+						</p:column>
+						
+						<p:column headerText="Status" styleClass="w10 txt-center">
 							<h:outputText value="#{log.status.value}" />
 						</p:column>
 						
-						<p:column headerText="Due Date" styleClass="txt-center">
+						<p:column headerText="Due Date" styleClass="txt-center dueDateCol">
 							<h:outputText value="#{of:formatDate(log.dueDate, 'dd-MM-yyyy HH:mm')}" styleClass="duedatetxt #{of:daysBetween(now, log.dueDate) le 0 ? 'overdue-txt' : ''}"/>
 						</p:column>
 					</p:dataTable>
@@ -89,156 +109,23 @@
 		</h:form>
 		
 		<h:form id="frmDlg">
-			<p:dialog id="dlgCustomer" widgetVar="dlgCustomer" 
-			dynamic="true" modal="true"
-			fitViewport="true" resizable="false"
-			closable="true" styleClass="dlgCustomSize">
-				<f:facet name="header">
-					<h:outputText value="Customer Info" />
-				</f:facet>
-				<p:messages id="dlgMsg" closable="true"/>
-				<p:panelGrid id="gridCustomerInfo" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
-				
-					<p:outputLabel value="Tel." style="font-weight:bold;"/>
-					<p:inputText type="tel" value="#{omniMainView.tel}" required="true" requiredMessage="Tel. is required" disabled="#{not empty omniMainView.logId}" styleClass="tel-mask decresed-gap w90">
-						<pe:keyFilter mask="pnum" preventPaste="false"/>
-						<f:ajax event="blur" listener="#{omniMainView.onBlurTel}" />
-					</p:inputText>
-					
-					<p:outputLabel value="Citizen ID" style="font-weight:bold;"/>
-					<p:inputText value="#{omniMainView.citizenId}" required="false" requiredMessage="Citizen ID is required" styleClass="decresed-gap w90"/>
-					
-					<p:outputLabel value="First Name" style="font-weight:bold;"/>
-					<p:inputText value="#{omniMainView.cFirstName}" required="true" requiredMessage="First Name is required" styleClass="decresed-gap w90"/>
-					
-					<p:outputLabel value="Last Name" style="font-weight:bold;"/>
-					<p:inputText value="#{omniMainView.cLastName}" required="true" requiredMessage="Last Name is required" styleClass="decresed-gap w90"/>
-				
-					<p:outputLabel value="Gender" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.sex}" styleClass="decresed-gap w90">
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.sexSelection}"/>
-					</p:selectOneMenu>
-					
-					<p:outputLabel value="Email" style="font-weight:bold;"/>
-					<p:inputText value="#{omniMainView.email}" styleClass="decresed-gap w90"/>
-					
-					<p:outputLabel value="Address" style="font-weight:bold;"/>
-					<p:inputText value="#{omniMainView.address1}" styleClass="decresed-gap w90"/>
-					
-					<h:outputText value=" " />
-					<p:inputText value="#{omniMainView.address2}" styleClass="decresed-gap w90"/>
-					
-					<h:outputText value=" " />
-					<p:inputText value="#{omniMainView.address3}" styleClass="decresed-gap w90"/>
-					
-					<p:outputLabel value="Post Code" style="font-weight:bold;"/>
-					<p:inputText value="#{omniMainView.postCode}" styleClass="decresed-gap w90"/>
-					
-					<p:outputLabel value="Province" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.province}" styleClass="decresed-gap w90">
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.provinceSelection}" />
-					</p:selectOneMenu>
-				</p:panelGrid>
-				
-				<hr class="faded"/>
-				
-				<p:panelGrid id="gridProduct" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
-				
-					<p:outputLabel value="Brand" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.motorBrand}" required="true" requiredMessage="Brand is required" styleClass="decresed-gap w90">
-						<p:ajax listener="#{omniMainView.brandSelectionListener}" update="stBrandModel"/>
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.motorBrandSelection}" />
-					</p:selectOneMenu>
-					
-					<p:outputLabel value="Model" style="font-weight:bold;"/>
-					<p:selectOneMenu id="stBrandModel" value="#{omniMainView.brandModel}" required="true" requiredMessage="Model is required" disabled="#{empty omniMainView.brandModelSelection}" styleClass="decresed-gap w90">
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.brandModelSelection}" />
-					</p:selectOneMenu>
-					
-					<p:outputLabel value="Car Year" style="font-weight:bold;"/>
-					<p:selectOneMenu id="stCarYear" value="#{omniMainView.carYear}" required="true" requiredMessage="Car Year is required" styleClass="decresed-gap w90">
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.carYearSelection}" />
-					</p:selectOneMenu>
-					
-					<h:outputText value=" " />
-					<h:outputText value=" " />
-					
-					<p:outputLabel value="List Source" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.listSource}" required="true" requiredMessage="List Source is required" styleClass="decresed-gap w90">
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.listSourceSelection}" />
-					</p:selectOneMenu>
-					
-					<p:outputLabel value="Insurer" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.insurerCode}" required="true" requiredMessage="Insurer is required" styleClass="decresed-gap w90">
-						<p:ajax listener="#{omniMainView.insurerSelectionListener}" update="stProduct"/>
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.insurerSelection}" />
-					</p:selectOneMenu>
-					
-					<p:outputLabel value="Product" style="font-weight:bold;"/>
-					<p:selectOneMenu id="stProduct" value="#{omniMainView.inceProductCode}" required="true" requiredMessage="Product is required" disabled="#{empty omniMainView.inceProductSelection}" styleClass="decresed-gap w90">
-						<p:ajax listener="#{omniMainView.productSelectionListener}" update="stPlan"/>
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.inceProductSelection}" />
-					</p:selectOneMenu>
-					
-					<p:outputLabel value="Plan" style="font-weight:bold;"/>
-					<p:selectOneMenu id="stPlan" value="#{omniMainView.productPlan}" required="true" requiredMessage="Plan is required" disabled="#{empty omniMainView.productPlanSelection}" styleClass="decresed-gap w90">
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.productPlanSelection}" />
-					</p:selectOneMenu>
-				
-				</p:panelGrid>
-				
-				<hr class="faded"/>
-				
-				<p:panelGrid id="gridLogging" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
-				
-					<p:outputLabel value="Channel" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.channel}" styleClass="decresed-gap w90">
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.channelSelection}" />
-					</p:selectOneMenu>
-					
-					<p:outputLabel value="Contact Reason" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.contactReason}" styleClass="decresed-gap w90">
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.contactReasonSelection}" />
-					</p:selectOneMenu>
-					
-					<p:outputLabel value="Tracking Status" style="font-weight:bold;"/>
-					<p:selectOneMenu value="#{omniMainView.trackingStatus}" required="true" requiredMessage="Tracking Status is required" styleClass="decresed-gap w90">
-						<f:selectItem itemLabel="Please Select"/>
-						<f:selectItems value="#{omniMainView.trackingStatusSelection}" />
-					</p:selectOneMenu>
-					
-					<p:outputLabel value="Contact Details" style="font-weight:bold;"/>
-					<p:inputTextarea value="#{omniMainView.contactDetails}" styleClass="w90"/>
-					
-					<p:outputLabel value="Due Date" style="font-weight:bold;"/>
-					<p:calendar value="#{omniMainView.dueDate}" required="true" requiredMessage="Due Date is required" pattern="dd/MM/yyyy HH:mm" mindate="#{of:formatDate(now,'dd/MM/yyyy')}" timeControlType="slider" showOtherMonths="true"></p:calendar>
-				</p:panelGrid>
-				
-				<f:facet name="footer">
-					<p:commandButton value="Submit" actionListener="#{omniMainView.saveCustomerInfo}" update="dlgMsg, frmWL" styleClass="green-btn"/>
-					<p:commandButton value="Cancel" type="button" process="@this" onclick="PF('dlgCustomer').hide()" styleClass=""/>
-				</f:facet>
-			</p:dialog>
+			<ui:include src="/secured/motor-dialog/dlg-case.xhtml" />
+		</h:form>
+		
+		<h:form id="frmPolicy">
+			<ui:include src="/secured/motor-dialog/dlg-policy.xhtml" />
+		</h:form>
+		
+		<h:form id="initData">
+			<p:remoteCommand name="loadInitial" actionListener="#{omniMainView.initialData}" update="frmWL, frmDlg, frmPolicy"/>
+			<p:remoteCommand name="loadWL" actionListener="#{omniMainView.refreshData}" update="frmWL"/>
 		</h:form>
 		
 		<script>
-// 			$(document).ready(function() {
-// 				$('.tel-mask').mask('999-999-9999');
-// 			});
-// 			$(document).ready(function() {
-// 					$('.duedatetxt.overdue-txt').parent().addClass('overdue-bg');
-// 			});
+			$(document).ready(function() {
+				loadInitial();
+				loadWL();
+			});
 		</script>
 	</ui:define>
 	

@@ -22,24 +22,28 @@ public class OmniLogMotor extends BaseAuditDomain {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name="CAR_CODE", referencedColumnName="CATEGORY_CODE")
-	private CategoryData car;
-	
-	@Column(name="CAR_YEAR")
-	private String carYear;
+//	@ManyToOne
+//	@JoinColumn(name="CAR_CODE", referencedColumnName="CATEGORY_CODE")
+//	private CategoryData car;
+//	
+//	@Column(name="CAR_YEAR")
+//	private String carYear;
 	
 	@ManyToOne
 	@JoinColumn(name="CUSTOMER_ID")
 	private Customer customer;
 	
-	@ManyToOne
-	@JoinColumn(name="PLAN_CODE", referencedColumnName="PLAN_CODE")
-	private ProductPlan productPlan;
+//	@ManyToOne
+//	@JoinColumn(name="PLAN_CODE", referencedColumnName="PLAN_CODE")
+//	private ProductPlan productPlan;
+//	
+//	@ManyToOne
+//	@JoinColumn(name="LIST_SOURCE_CODE", referencedColumnName="LIST_SOURCE_CODE")
+//	private ListSource listSource;
 	
 	@ManyToOne
-	@JoinColumn(name="LIST_SOURCE_CODE", referencedColumnName="LIST_SOURCE_CODE")
-	private ListSource listSource;
+	@JoinColumn(name="POLICY_ID")
+	private CustomerYesRecord policy;
 
 	public Long getId() {
 		return id;
@@ -47,22 +51,6 @@ public class OmniLogMotor extends BaseAuditDomain {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public CategoryData getCar() {
-		return car;
-	}
-
-	public void setCar(CategoryData car) {
-		this.car = car;
-	}
-
-	public String getCarYear() {
-		return carYear;
-	}
-
-	public void setCarYear(String carYear) {
-		this.carYear = carYear;
 	}
 
 	public Customer getCustomer() {
@@ -73,20 +61,12 @@ public class OmniLogMotor extends BaseAuditDomain {
 		this.customer = customer;
 	}
 
-	public ProductPlan getProductPlan() {
-		return productPlan;
+	public CustomerYesRecord getPolicy() {
+		return policy;
 	}
 
-	public void setProductPlan(ProductPlan productPlan) {
-		this.productPlan = productPlan;
-	}
-
-	public ListSource getListSource() {
-		return listSource;
-	}
-
-	public void setListSource(ListSource listSource) {
-		this.listSource = listSource;
+	public void setPolicy(CustomerYesRecord policy) {
+		this.policy = policy;
 	}
 	
 }

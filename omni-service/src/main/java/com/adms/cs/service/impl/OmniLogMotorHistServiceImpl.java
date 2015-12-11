@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +65,11 @@ public class OmniLogMotorHistServiceImpl implements OmniLogMotorHistService {
 	@Override
 	public List<OmniLogMotorHist> findByCriteria(DetachedCriteria detachedCriteria) throws Exception {
 		return omniLogMotorHistDao.findByCriteria(detachedCriteria);
+	}
+	
+	@Override
+	public List<OmniLogMotorHist> findByCriteria(DetachedCriteria detachedCriteria, Pageable pageable) throws Exception {
+		return omniLogMotorHistDao.findByCriteria(detachedCriteria, pageable);
 	}
 	
 }

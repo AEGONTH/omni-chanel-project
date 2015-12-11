@@ -10,12 +10,15 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.component.UIInput;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.omnifaces.util.Components;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
+import org.primefaces.context.RequestContext;
 
 import com.adms.common.entity.UserLogin;
 import com.adms.utils.EncryptionUtil;
@@ -32,6 +35,8 @@ public class LoginView extends BaseBean {
 
 	private final String AUTH_URL = "http://localhost:8080/authen-ws/rest/authservice";
 	private final String AUTH_PATH = "auth";
+	private final String CHG_PWD_PATH = "chgpwd";
+	private final String SALT_PWD = "$AlT*P@$$w0Rd#";
 	
 	@ManagedProperty(value="#{loginSession}")
 	private LoginSession loginSession;
@@ -54,6 +59,7 @@ public class LoginView extends BaseBean {
 				return navBean.toOmniMainPage();
 			} else {
 				Messages.addError("msgLogin", "Invalid Username or Password.");
+				RequestContext.getCurrentInstance().execute("PF('progressDialog').hide();");
 			}
 		} else {
 			if(StringUtils.isBlank(username)) ((UIInput) Components.findComponent("loginForm:username")).setValid(false);
@@ -63,23 +69,73 @@ public class LoginView extends BaseBean {
 		return null;
 	}
 	
+	public void doChangePwd() throws Exception {
+		String username = loginSession.getUsername();
+		if(!StringUtils.isBlank(username)) {
+			if(password.equals(newPassword)) {
+				//same password!
+				((UIInput) Components.findComponent("chgPwdForm:pwd")).setValid(false);
+				((UIInput) Components.findComponent("chgPwdForm:newPwd")).setValid(false);
+				Messages.addError("chgPwdMsg", "Both old and new password are same value.");
+				return;
+			}
+			
+			if(!newPassword.equals(confirmPassword)) {
+				//new password not matched!
+				((UIInput) Components.findComponent("chgPwdForm:newPwd")).setValid(false);
+				((UIInput) Components.findComponent("chgPwdForm:confPwd")).setValid(false);
+				Messages.addError("chgPwdMsg", "The new passowrd you typed, not matched.");
+				return;
+			}
+			
+			String oldPwd = EncryptionUtil.getInstance().md5(password, SALT_PWD);
+			String newPwd = EncryptionUtil.getInstance().md5(newPassword, SALT_PWD);
+			
+			UserLogin userLogin = new UserLogin(username, oldPwd).setNewPwd(newPwd);
+			Gson gson = new GsonBuilder().create();
+			try {
+				String respStr = ws(AUTH_URL, CHG_PWD_PATH, "val", gson.toJson(userLogin));
+				gson = new GsonBuilder().create();
+				userLogin = gson.fromJson(respStr, UserLogin.class);
+				
+				if(userLogin.getLoginSuccess()) {
+					Messages.addInfo("chgPwdMsg", "Your password has been changed.");
+				} else {
+					Messages.addError("chgPwdMsg", "Wrong Password.");
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+				Messages.addError("chgPwdMsg", "Something went wrong! please try agian.");
+			}
+		} else {
+			loginSession.signOut();
+		}
+	}
+	
+	private String ws(String targetUrl, String path, MultivaluedMap<String, Object> headers) {
+		Response resp =  ClientBuilder.newClient()
+			.target(targetUrl)
+			.path(path)
+			.request()
+			.headers(headers)
+			.get();
+		return resp.readEntity(String.class);
+	}
+	
+	private String ws(String targetUrl, String path, String header, Object val) {
+		MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+		headers.add(header, val);
+		return ws(targetUrl, path, headers);
+	}
+	
 	private boolean authService() {
 		boolean flag = false;
 		
 		try {
-			String salt = "$AlT*P@$$w0Rd#";
-			String encryptedPwd = EncryptionUtil.getInstance().md5(password, salt);
+			String encryptedPwd = EncryptionUtil.getInstance().md5(password, SALT_PWD);
 			UserLogin userLogin = new UserLogin(username, encryptedPwd);
 			Gson gson = new GsonBuilder().create();
-//				String encryptedObject = EncryptionUtil.getInstance().aes(gson.toJson(userLogin), aesKey) ;
-			Response resp =  ClientBuilder.newClient()
-					.target(AUTH_URL)
-					.path(AUTH_PATH)
-					.request()
-					.header("val", gson.toJson(userLogin))
-					.get();
-			
-			String respStr = resp.readEntity(String.class);
+			String respStr = ws(AUTH_URL, AUTH_PATH, "val", gson.toJson(userLogin));
 			if(respStr.contains("Not Found")) {
 				Messages.addGlobalError("Auth Service not found!! or maybe service is not running. -> " + AUTH_URL);
 			} else {
@@ -90,6 +146,12 @@ public class LoginView extends BaseBean {
 				
 				if(flag) {
 					List<String> privs = new ArrayList<>();
+					
+					if(userLogin.getRolePrivileges() == null) {
+						Messages.addGlobalError("Cannot get privileges");
+						return false;
+					}
+					
 					for(String key : userLogin.getRolePrivileges().keySet()) {
 						privs.addAll(userLogin.getRolePrivileges().get(key));
 					}

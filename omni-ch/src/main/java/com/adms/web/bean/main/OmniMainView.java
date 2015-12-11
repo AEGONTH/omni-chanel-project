@@ -18,12 +18,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.omnifaces.util.Ajax;
 import org.omnifaces.util.Faces;
+import org.omnifaces.util.Messages;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.FlowEvent;
 import org.primefaces.event.SelectEvent;
 
 import com.adms.cs.service.CategoryDataService;
 import com.adms.cs.service.CustomerService;
+import com.adms.cs.service.CustomerYesRecordService;
 import com.adms.cs.service.InceProductService;
 import com.adms.cs.service.InsurerService;
 import com.adms.cs.service.ListSourceService;
@@ -57,24 +61,34 @@ public class OmniMainView extends BaseBean {
 	
 	@ManagedProperty("#{loginSession}")
 	private LoginSession loginSession;
+	
+	public final String TEL = "TEL";
+	public final String CITIZEN = "CITIZEN";
 
 	private ParamConfigService paramConfigService = Faces.evaluateExpressionGet("#{paramConfigService}");
 	private ProvinceService provinceService = Faces.evaluateExpressionGet("#{provinceService}");
+	
+	private CustomerYesRecordService customerYesRecordService = Faces.evaluateExpressionGet("#{customerYesRecordService}");
 
 	private Map<String, CategoryData> categoryMap;
 	private Map<String, Province> provinceMap;
 	
 	private List<OmniLogMotorHist> omniLogMotorHist;
 	
+	private OmniLogMotorHist selectedMotor;
+	
 	private Long logId;
 	private Long logHistId;
 	
+	private String oldCitizenId;
 	private String citizenId;
+	private boolean citizenReadyOnly;
 	
 	private String cFirstName;
 	private String cLastName;
 	private String oldTel;
 	private String tel;
+	private boolean telReadyOnly;
 	private String email;
 	
 	private String address1;
@@ -82,14 +96,21 @@ public class OmniMainView extends BaseBean {
 	private String address3;
 	private String postCode;
 	
+	private String otherTel;
+	
 	private Customer customer;
+	
+	private String policyNo;
+	private Double sumAssured;
+	private Double premium;
+	private Date effectiveDate;
+	private Date expireDate;
 	
 	private List<SelectItem> provinceSelection;
 	private String province;
 	
 	private List<SelectItem> sexSelection;
 	private String sex;
-	
 	
 	private List<SelectItem> motorBrandSelection;
 	private String motorBrand;
@@ -127,35 +148,41 @@ public class OmniMainView extends BaseBean {
 	
 	@PostConstruct
 	private void init() {
-		try {	
-			initData();
-			initSex();
-			
-			initCategoryMap();
-			initBrand();
-			initModelByBrand(motorBrand);
-			
-			initCarYears();
-
-			initListSource();
-			
-			initInsurers();
-			initInceProducts();
-			initProductPlans();
-			
-			initChannels();
-			initContactReason();
-			initTrackingStatus();
-			
-			initProvince();
-			
-		} catch(Throwable e) {
-			e.printStackTrace();
-		}
+		
 	}
 	
-	public void refreshData() throws Throwable {
+	public void initialData() throws Throwable {
+		initSex();
+		
+		initCategoryMap();
+		initBrand();
+		initModelByBrand(motorBrand);
+		
+		initCarYears();
+
+		initListSource();
+		
+		initInsurers();
+		initInceProducts();
+		initProductPlans();
+		
+		initChannels();
+		initContactReason();
+		initTrackingStatus();
+		
+		initProvince();
+	}
+	
+	public void test() throws Exception {
+		MotorModel motorModel = Faces.evaluateExpressionGet("#{motorModel}");
+		motorModel.initialData();
+		
+		Ajax.update("frmWL:testDT");
+	}
+	
+	public void refreshData() throws Throwable{
 		initData();
+		Ajax.update("frmWL");
 	}
 	
 	public void brandSelectionListener() throws Throwable {
@@ -171,28 +198,73 @@ public class OmniMainView extends BaseBean {
 	}
 	
 	public void onClickAddNew() throws Throwable {
-		setDataToDialog(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+		customer = null;
+		telReadyOnly = false;
+		citizenReadyOnly = false;
+		RequestContext.getCurrentInstance().reset("frmDlg");
+		setDataToDialog(null, null, null, null, null, null, null, null, null, null, null, null, null, null);;
 	}
 	
-	public void onBlurTel() throws Throwable {
-		RequestContext rc = RequestContext.getCurrentInstance();
-		List<Customer> list = null;
+	public void onClickAddPolicy() throws Throwable {
 		
-		if(this.logId == null && (StringUtils.isBlank(oldTel) || oldTel.compareTo(tel) != 0)) {
-			if(!StringUtils.isBlank(this.tel)) {
-				list = getCustomerByMobile(this.tel);
-			}
+		
+		RequestContext.getCurrentInstance().execute("PF('dlgPolicy').show();");
+	}
+	
+	public void onRowSelect(SelectEvent event) throws NumberFormatException, Throwable {
+		OmniLogMotorHist logHist = this.selectedMotor;
+		logHistId = logHist.getId();
+		setDataToDialog(logHist.getOmniLogMotor().getId()
+				, logHist.getOmniLogMotor().getCustomer()
+				, logHist.getCar().getParent().getCode()
+				, logHist.getCar().getCode()
+				, new Integer(logHist.getCarYear())
+				, logHist.getListSource().getListSourceCode()
+				, logHist.getProductPlan().getProduct().getInsurer().getInsurerCode()
+				, logHist.getProductPlan().getProduct().getProductCode()
+				, logHist.getProductPlan().getPlanCode()
+				, logHist.getChannel() == null ? null : logHist.getChannel().getCode()
+				, logHist.getContactReason() == null ? null : logHist.getContactReason().getCode()
+				, logHist.getStatus() == null ? null : logHist.getStatus().getCode()
+				, logHist.getDetail()
+				, logHist.getDueDate());
+	}
+	
+	public String onFlowProcess(FlowEvent event) {
+		boolean flag = false;
+		
+		String oldStep = event.getOldStep();
+		String newStep = event.getNewStep();
+		
+		if(oldStep.equalsIgnoreCase("search")) {
+			System.out.println("Submit Search");
+		} else if(oldStep.equalsIgnoreCase("selectResult")) {
+			System.out.println("Submit select result");
+		}
+		
+        return newStep;
+    }
+
+	public void doSearchCustomerForPolicy() throws Throwable {
+		
+	}
+	
+	public void doSearchCustomer(String val) throws Throwable {
+		String temp = null;
+		if(this.logId == null) {
 			
-			if(list != null && list.size() > 0) {
-				customer = list.get(0);
-				setCustomerInfoForDialog(customer);
-				rc.update("frmDlg:gridCustomerInfo");
-			} else if(!StringUtils.isBlank(oldTel) && oldTel.compareTo(tel) != 0) {
-				customer = null;
-				setCustomerInfoForDialog(customer);
-				rc.update("frmDlg:gridCustomerInfo");
+			if(val.equalsIgnoreCase(TEL)) {
+				temp = new String(this.tel);
+				setDialogDataFromList(getCustomer(this.tel, null), val);
+				this.tel = temp;
+				this.oldTel = new String(this.tel);
+			} else if(val.equalsIgnoreCase(CITIZEN)) {
+				temp = new String(this.citizenId);
+				setDialogDataFromList(getCustomer(null, this.citizenId), val);
+				this.citizenId = temp;
+				this.oldCitizenId = new String(this.citizenId);
 			}
-			oldTel = new String(tel);
+			Ajax.update("frmDlg:gridCustomerInfo");
 		}
 	}
 	
@@ -204,14 +276,21 @@ public class OmniMainView extends BaseBean {
 		
 		OmniLogMotor omniLogMotor = null;
 		OmniLogMotorHist hist = null;
-		System.out.println("saving log id: " + logId);
+
+		if((StringUtils.isNotBlank(oldTel) && oldTel.compareTo(tel) != 0)
+				|| (StringUtils.isNotBlank(oldCitizenId) && oldCitizenId.compareTo(citizenId) != 0)) {
+			Messages.addError("dlgMsg", "Please check Mobile No. or Citizen ID agian.");
+			Ajax.update("frmWL:globalMsg");
+			return;
+		}
+		
 		if(logId == null) {
 			omniLogMotor = new OmniLogMotor();
-			omniLogMotor.setCar(categoryMap.get(this.brandModel));
-			omniLogMotor.setCarYear(this.carYear.toString());
+//			omniLogMotor.setCar(categoryMap.get(this.brandModel));
+//			omniLogMotor.setCarYear(this.carYear.toString());
 			omniLogMotor.setCustomer(getValidatedCustomer());
-			omniLogMotor.setListSource(listSourceService.find(new ListSource(listSource)).get(0));
-			omniLogMotor.setProductPlan(productPlanService.find(new ProductPlan(productPlan)).get(0));
+//			omniLogMotor.setListSource(listSourceService.find(new ListSource(listSource)).get(0));
+//			omniLogMotor.setProductPlan(productPlanService.find(new ProductPlan(productPlan)).get(0));
 			omniLogMotor = logMotorService.add(omniLogMotor, loginSession.getUsername());
 			
 			hist = new OmniLogMotorHist();
@@ -220,7 +299,11 @@ public class OmniMainView extends BaseBean {
 			hist.setDetail(StringUtils.isBlank(contactDetails) ? null : contactDetails);
 			hist.setDueDate(dueDate);
 			hist.setLogDate(new Date());
+			hist.setCar(categoryMap.get(this.brandModel));
+			hist.setCarYear(this.carYear.toString());
 			hist.setOmniLogMotor(omniLogMotor);
+			hist.setListSource(listSourceService.find(new ListSource(listSource)).get(0));
+			hist.setProductPlan(productPlanService.find(new ProductPlan(productPlan)).get(0));
 			hist.setStatus(categoryMap.get(trackingStatus));
 			omniLogMotorHistService.add(hist, loginSession.getUsername());
 		} else {
@@ -235,160 +318,49 @@ public class OmniMainView extends BaseBean {
 			omniLogMotor = hist.getOmniLogMotor();
 			omniLogMotor.setCustomer(getValidatedCustomer());
 			newHist.setOmniLogMotor(omniLogMotor);
-			
+			newHist.setCar(categoryMap.get(this.brandModel));
+			newHist.setCarYear(this.carYear.toString());
+			newHist.setOmniLogMotor(omniLogMotor);
+			newHist.setListSource(listSourceService.find(new ListSource(listSource)).get(0));
+			newHist.setProductPlan(productPlanService.find(new ProductPlan(productPlan)).get(0));
 			newHist.setStatus(categoryMap.get(trackingStatus));
 			omniLogMotorHistService.add(newHist, loginSession.getUsername());
 		}
 		initData();
-		RequestContext.getCurrentInstance().update("frmWL:dtWaitingList");
+		Ajax.update("frmWL");
 		RequestContext.getCurrentInstance().execute("PF('dlgCustomer').hide()");
 	}
-	
-	private Customer getValidatedCustomer() throws Exception {
-		boolean isChange = false;
-		boolean isNew = false;
-		if(customer != null) {
-			if(customer.getFirstName().compareTo(cFirstName) != 0) {
-				isChange = true;
-			}
-			if(customer.getLastName().compareTo(cLastName) != 0) {
-				isChange = true;
-			}
-			if(!(StringUtils.isBlank(customer.getCitizenId()) && StringUtils.isBlank(citizenId))
-					|| (StringUtils.isBlank(customer.getCitizenId()) && !StringUtils.isBlank(citizenId))
-					|| (!StringUtils.isBlank(customer.getCitizenId()) && StringUtils.isBlank(citizenId))
-					|| customer.getCitizenId().compareTo(citizenId) != 0) {
-				isChange = true;
-			}
-			if(!(customer.getGender() == null && StringUtils.isBlank(sex))
-					|| (customer.getGender() == null && !StringUtils.isBlank(sex)) 
-					|| (customer.getGender() != null && StringUtils.isBlank(sex))
-					|| customer.getGender().getParamKey().compareTo(sex) != 0) {
-				isChange = true;
-			}
-			if(!(StringUtils.isBlank(customer.getEmail()) && StringUtils.isBlank(email))
-					|| (StringUtils.isBlank(customer.getEmail()) && !StringUtils.isBlank(email))
-					|| (!StringUtils.isBlank(customer.getEmail()) && StringUtils.isBlank(email))
-					|| customer.getEmail().compareTo(email) != 0) {
-				isChange = true;
-			}
-			if(!(StringUtils.isBlank(customer.getAddress1()) && StringUtils.isBlank(address1))
-					|| (StringUtils.isBlank(customer.getAddress1()) && !StringUtils.isBlank(address1))
-					|| (!StringUtils.isBlank(customer.getAddress1()) && StringUtils.isBlank(address1))
-					|| customer.getAddress1().compareTo(address1) != 0) {
-				isChange = true;
-			}
-			if(!(StringUtils.isBlank(customer.getAddress2()) && StringUtils.isBlank(address2))
-					|| (StringUtils.isBlank(customer.getAddress2()) && !StringUtils.isBlank(address2))
-					|| (!StringUtils.isBlank(customer.getAddress2()) && StringUtils.isBlank(address2))
-					|| customer.getAddress2().compareTo(address2) != 0) {
-				isChange = true;
-			}
-			if(!(StringUtils.isBlank(customer.getAddress3()) && StringUtils.isBlank(address3))
-					|| (StringUtils.isBlank(customer.getAddress3()) && !StringUtils.isBlank(address3))
-					|| (!StringUtils.isBlank(customer.getAddress3()) && StringUtils.isBlank(address3))
-					|| customer.getAddress3().compareTo(address3) != 0) {
-				isChange = true;
-			}
-			if(!(StringUtils.isBlank(customer.getPostCode()) && StringUtils.isBlank(postCode))
-					|| (StringUtils.isBlank(customer.getPostCode()) && !StringUtils.isBlank(postCode))
-					|| (!StringUtils.isBlank(customer.getPostCode()) && StringUtils.isBlank(postCode))
-					|| customer.getPostCode().compareTo(postCode) != 0){
-				isChange = true;
-			}
-			if(!(customer.getProvince() == null && StringUtils.isBlank(province))
-					|| (customer.getProvince() == null && !StringUtils.isBlank(province)) 
-					|| (customer.getProvince() != null && StringUtils.isBlank(province))
-					|| customer.getProvince().getProvinceCode().compareTo(province) != 0) {
-				isChange = true;
+
+	private void setDialogDataFromList(List<Customer> list, String searchField) {
+		if(list != null && list.size() == 1) {
+			customer = list.get(0);
+			if(searchField.equalsIgnoreCase(TEL)) {
+				telReadyOnly = true;
+			} else if(searchField.equalsIgnoreCase(CITIZEN)) {
+				citizenReadyOnly = true;
 			}
 		} else {
-			isNew = true;
+			customer = null;
+			Messages.addInfo("globalMsg", "Not found.");
+			Ajax.update("frmDlg:globalMsg");
 		}
-		
-		if(isChange) {
-			customerService.update(customer.setVisible("N"), loginSession.getUsername());
-		}
-		
-		if(isChange || isNew) {
-			return customerService.add(
-					new Customer()
-						.setMobileNo(tel)
-						.setCitizenId(citizenId)
-						.setFirstName(cFirstName)
-						.setLastName(cLastName)
-						.setGender(paramConfigService.find(new ParamConfig().setParamKey(sex)).get(0))
-						.setEmail(email)
-						.setAddress1(address1)
-						.setAddress2(address2)
-						.setAddress3(address3)
-						.setPostCode(postCode)
-						.setProvince(provinceMap.get(province))
-						.setVisible("Y")
-					, loginSession.getUsername());
-		} else {
-			return customer;
-		}
+		setCustomerInfoForDialog(customer);
 	}
-	
-	public void onRowSelect(SelectEvent event) throws NumberFormatException, Throwable {
-		OmniLogMotorHist logHist =(OmniLogMotorHist) event.getObject();
-		logHistId = logHist.getId();
-		customer = logHist.getOmniLogMotor().getCustomer();
-		setDataToDialog(logHist.getOmniLogMotor().getId()
-				, logHist.getOmniLogMotor().getCustomer().getCitizenId()
-				, logHist.getOmniLogMotor().getCustomer().getFirstName()
-				, logHist.getOmniLogMotor().getCustomer().getLastName()
-				, logHist.getOmniLogMotor().getCustomer().getMobileNo()
-				, logHist.getOmniLogMotor().getCustomer().getEmail()
-				, logHist.getOmniLogMotor().getCustomer().getAddress1()
-				, logHist.getOmniLogMotor().getCustomer().getAddress2()
-				, logHist.getOmniLogMotor().getCustomer().getAddress3()
-				, logHist.getOmniLogMotor().getCustomer().getPostCode()
-				, logHist.getOmniLogMotor().getCustomer().getProvince() == null ? null : logHist.getOmniLogMotor().getCustomer().getProvince().getProvinceCode()
-				, logHist.getOmniLogMotor().getCustomer().getGender() == null ? null : logHist.getOmniLogMotor().getCustomer().getGender().getParamKey()
-				, logHist.getOmniLogMotor().getCar().getParent().getCode()
-				, logHist.getOmniLogMotor().getCar().getCode()
-				, new Integer(logHist.getOmniLogMotor().getCarYear())
-				, logHist.getOmniLogMotor().getListSource().getListSourceCode()
-				, logHist.getOmniLogMotor().getProductPlan().getProduct().getInsurer().getInsurerCode()
-				, logHist.getOmniLogMotor().getProductPlan().getProduct().getProductCode()
-				, logHist.getOmniLogMotor().getProductPlan().getPlanCode()
-				, logHist.getChannel() == null ? null : logHist.getChannel().getCode()
-				, logHist.getContactReason() == null ? null : logHist.getContactReason().getCode()
-				, logHist.getStatus() == null ? null : logHist.getStatus().getCode()
-				, logHist.getDetail()
-				, logHist.getDueDate());
-	}
-	
+
 	private void setDataToDialog(
-			Long logId, String citizenId, String cFirstName, String cLastName, String tel, String email
-			, String address1, String address2, String address3, String postCode, String province
-			, String sex
+			Long logId
+			, Customer customer
 			, String motorBrand, String brandModel, Integer carYear
 			, String listSourceCode
 			, String insurerCode, String inceProductCode, String productPlan
 			, String channel, String contactReason, String trackingStatus
 			, String contactDetails, Date dueDate) throws Throwable {
-		this.customer = null;
 		this.oldTel = null;
-		
+		this.oldCitizenId = null;
 		this.logId = logId;
 		
-		this.citizenId = citizenId;
-		
-		this.cFirstName = cFirstName;
-		this.cLastName = cLastName;
-		this.tel = tel;
-		this.email = email;
-		this.address1 = address1;
-		this.address2 = address2;
-		this.address3 = address3;
-		this.postCode = postCode;
-		
-//		initProvince();
-		this.province = province;
-		this.sex = sex;
+		this.customer = customer;
+		setCustomerInfoForDialog(customer);
 		
 		initModelByBrand(motorBrand);
 		this.motorBrand = motorBrand;
@@ -418,27 +390,24 @@ public class OmniMainView extends BaseBean {
 		this.dueDate = dueDate;
 	}
 	
-	private List<Customer> getCustomerByMobile(String mobileNo) throws Exception {
-		DetachedCriteria criteria = DetachedCriteria.forClass(Customer.class);
-		criteria
-			.add(Restrictions.eq("mobileNo", this.tel))
-			.add(Restrictions.eq("visible", "Y"));
-		return customerService.findByCriteria(criteria);
-	}
-
 	private void setCustomerInfoForDialog(Customer customer) {
 		if(customer != null) {
+			this.tel = customer.getMobileNo();
+			this.otherTel = customer.getOtherNo();
 			this.citizenId = customer.getCitizenId();
 			this.cFirstName = customer.getFirstName();
 			this.cLastName = customer.getLastName();
-			this.sex = customer.getGender().getParamKey();
+			this.sex = customer.getGender() == null ? null : customer.getGender().getParamKey();
 			this.email = customer.getEmail();
 			this.address1 = customer.getAddress1();
 			this.address2 = customer.getAddress2();
 			this.address3 = customer.getAddress3();
 			this.postCode = customer.getPostCode();
-			this.province = customer.getProvince().getProvinceCode();
+			this.province = customer.getProvince() == null ? null : customer.getProvince().getProvinceCode();
 		} else {
+			this.tel = null;
+			this.otherTel = null;
+			this.citizenId = null;
 			this.cFirstName = null;
 			this.cLastName = null;
 			this.sex = null;
@@ -451,17 +420,128 @@ public class OmniMainView extends BaseBean {
 		}
 	}
 
+	private Customer getValidatedCustomer() throws Exception {
+		boolean isChange = false;
+		boolean isNew = false;
+		if(customer != null) {
+			if(customer.getFirstName().toUpperCase().compareTo(cFirstName.toUpperCase()) != 0) {
+				isChange = true;
+			}
+			if(customer.getLastName().toUpperCase().compareTo(cLastName.toUpperCase()) != 0) {
+				isChange = true;
+			}
+			if(customer.getMobileNo().compareTo(tel) != 0) {
+				isChange = true;
+			}
+			if(!(StringUtils.isBlank(customer.getOtherNo()) && StringUtils.isBlank(otherTel))
+					&& ((StringUtils.isBlank(customer.getOtherNo()) && !StringUtils.isBlank(otherTel))
+							|| (!StringUtils.isBlank(customer.getOtherNo()) && StringUtils.isBlank(otherTel))
+							|| customer.getOtherNo().compareTo(otherTel) != 0)) {
+				isChange = true;
+			}
+			if(!(StringUtils.isBlank(customer.getCitizenId()) && StringUtils.isBlank(citizenId))
+					&& ((StringUtils.isBlank(customer.getCitizenId()) && !StringUtils.isBlank(citizenId))
+						|| (!StringUtils.isBlank(customer.getCitizenId()) && StringUtils.isBlank(citizenId))
+						|| customer.getCitizenId().compareTo(citizenId) != 0)) {
+				isChange = true;
+			}
+			if(!(customer.getGender() == null && StringUtils.isBlank(sex))
+					&& ((customer.getGender() == null && !StringUtils.isBlank(sex)) 
+						|| (customer.getGender() != null && StringUtils.isBlank(sex))
+						|| customer.getGender().getParamKey().compareTo(sex) != 0)) {
+				isChange = true;
+			}
+			if(!(StringUtils.isBlank(customer.getEmail()) && StringUtils.isBlank(email))
+					&& ((StringUtils.isBlank(customer.getEmail()) && !StringUtils.isBlank(email))
+						|| (!StringUtils.isBlank(customer.getEmail()) && StringUtils.isBlank(email))
+						|| customer.getEmail().compareTo(email) != 0)) {
+				isChange = true;
+			}
+			if(!(StringUtils.isBlank(customer.getAddress1()) && StringUtils.isBlank(address1))
+					&& ((StringUtils.isBlank(customer.getAddress1()) && !StringUtils.isBlank(address1))
+						|| (!StringUtils.isBlank(customer.getAddress1()) && StringUtils.isBlank(address1))
+						|| customer.getAddress1().compareTo(address1) != 0)) {
+				isChange = true;
+			}
+			if(!(StringUtils.isBlank(customer.getAddress2()) && StringUtils.isBlank(address2))
+					&& ((StringUtils.isBlank(customer.getAddress2()) && !StringUtils.isBlank(address2))
+						|| (!StringUtils.isBlank(customer.getAddress2()) && StringUtils.isBlank(address2))
+						|| customer.getAddress2().compareTo(address2) != 0)) {
+				isChange = true;
+			}
+			if(!(StringUtils.isBlank(customer.getAddress3()) && StringUtils.isBlank(address3))
+					&& ((StringUtils.isBlank(customer.getAddress3()) && !StringUtils.isBlank(address3))
+						|| (!StringUtils.isBlank(customer.getAddress3()) && StringUtils.isBlank(address3))
+						|| customer.getAddress3().compareTo(address3) != 0)) {
+				isChange = true;
+			}
+			if(!(StringUtils.isBlank(customer.getPostCode()) && StringUtils.isBlank(postCode))
+					&& ((StringUtils.isBlank(customer.getPostCode()) && !StringUtils.isBlank(postCode))
+						|| (!StringUtils.isBlank(customer.getPostCode()) && StringUtils.isBlank(postCode))
+						|| customer.getPostCode().compareTo(postCode) != 0)){
+				isChange = true;
+			}
+			if(!(customer.getProvince() == null && StringUtils.isBlank(province))
+					&& ((customer.getProvince() == null && !StringUtils.isBlank(province)) 
+						|| (customer.getProvince() != null && StringUtils.isBlank(province))
+						|| customer.getProvince().getProvinceCode().compareTo(province) != 0)) {
+				isChange = true;
+			}
+		} else {
+			isNew = true;
+		}
+		
+		if(isChange) {
+			customerService.update(customer.setVisible("N"), loginSession.getUsername());
+		}
+		
+		if(isChange || isNew) {
+			return customerService.add(
+					new Customer()
+						.setMobileNo(tel)
+						.setCitizenId(citizenId)
+						.setFirstName(cFirstName.toUpperCase().trim())
+						.setLastName(cLastName.toUpperCase().trim())
+						.setGender(paramConfigService.find(new ParamConfig().setParamKey(sex)).get(0))
+						.setEmail(email)
+						.setAddress1(address1)
+						.setAddress2(address2)
+						.setAddress3(address3)
+						.setPostCode(postCode)
+						.setProvince(provinceMap.get(province))
+						.setVisible("Y")
+					, loginSession.getUsername());
+		} else {
+			return customer;
+		}
+	}
+
+	private List<Customer> getCustomer(String mobileNo, String citizenId) throws Exception {
+		DetachedCriteria criteria = DetachedCriteria.forClass(Customer.class);
+		if(StringUtils.isNotBlank(mobileNo)) criteria.add(Restrictions.eq("mobileNo", mobileNo));
+		if(StringUtils.isNotBlank(citizenId)) criteria.add(Restrictions.eq("citizenId", citizenId));
+		criteria.add(Restrictions.eq("visible", "Y"));
+		return customerService.findByCriteria(criteria);
+	}
+
 	private void initData() throws Throwable {
 		try {
-			omniLogMotorHist = new ArrayList<>();
-			DetachedCriteria criteria = DetachedCriteria.forClass(OmniLogMotorHist.class);
-			criteria.add(Restrictions.sqlRestriction("this_.ID in (select MAX(d.ID) from OMNI_LOG_MOTOR_HIST d GROUP BY d.LOG_MOTOR_ID)"));
-			criteria.add(Restrictions.not(Restrictions.in("status.code", new String[]{TrackingStatus.CANCELLED.getValue(), TrackingStatus.CLOSED.getValue()})));
-			criteria.addOrder(Order.asc("dueDate"));
-			omniLogMotorHist = omniLogMotorHistService.findByCriteria(criteria);
+			omniLogMotorHist = queryOmniLogMotorHist(TrackingStatus.OPEN.getValue(), TrackingStatus.IN_PROGRESS.getValue());
+//			MotorModel motorModel = Faces.evaluateExpressionGet("#{motorModel}");
+//			motorModel.initialData();
 		} catch(Exception e) {
 			throw e;
 		}
+	}
+	
+	private List<OmniLogMotorHist> queryOmniLogMotorHist(String... status) throws Exception {
+		DetachedCriteria criteria = DetachedCriteria.forClass(OmniLogMotorHist.class);
+		criteria.add(Restrictions.sqlRestriction("this_.ID in (select MAX(d.ID) from OMNI_LOG_MOTOR_HIST d GROUP BY d.LOG_MOTOR_ID)"));
+		if(status != null) {
+			criteria.add(Restrictions.in("status.code", status));
+		}
+		criteria.addOrder(Order.asc("dueDate"));
+		return omniLogMotorHistService.findByCriteria(criteria);
 	}
 	
 	private void initCategoryMap() throws Throwable {
@@ -528,33 +608,37 @@ public class OmniMainView extends BaseBean {
 	private void initInceProducts() throws Throwable {
 		inceProductCode = null;
 		inceProductSelection = new ArrayList<>();
-		InceProductService inceProductService = Faces.evaluateExpressionGet("#{inceProductService}");
-		inceProductSelection = inceProductService.findAll().stream().filter(p -> p.getInsurer().getInsurerCode().equals(insurerCode)).map(m -> new SelectItem(m.getProductCode(), m.getProductName())).collect(Collectors.toList());
+		if(StringUtils.isNotBlank(insurerCode)) {
+			InceProductService inceProductService = Faces.evaluateExpressionGet("#{inceProductService}");
+			inceProductSelection = inceProductService.findAll().stream().filter(p -> p.getInsurer().getInsurerCode().equals(insurerCode)).map(m -> new SelectItem(m.getProductCode(), m.getProductName())).collect(Collectors.toList());
+		}
 	}
 	
 	private void initProductPlans() throws Throwable {
 		productPlan = null;
 		productPlanSelection = new ArrayList<>();
-		ProductPlanService productPlanService = Faces.evaluateExpressionGet("#{productPlanService}");
-		productPlanSelection = productPlanService.findAll().stream().filter(p -> p.getProduct().getProductCode().equals(inceProductCode)).map(m -> new SelectItem(m.getPlanCode(), m.getPlanName())).collect(Collectors.toList());
+		if(StringUtils.isNotBlank(inceProductCode)) {
+			ProductPlanService productPlanService = Faces.evaluateExpressionGet("#{productPlanService}");
+			productPlanSelection = productPlanService.findAll().stream().filter(p -> p.getProduct().getProductCode().equals(inceProductCode)).map(m -> new SelectItem(m.getPlanCode(), m.getPlanName())).collect(Collectors.toList());
+		}
 	}
 	
 	private void initChannels() throws Throwable {
 		channel = null;
 		channelSelection = getCategoryDataByParent("OMNI_CHANNEL")
-				.stream().map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
+				.stream().sorted((c1, c2) -> c1.getValue().compareTo(c2.getValue())).map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
 	}
 	
 	private void initContactReason() throws Throwable {
 		contactReason = null;
 		contactReasonSelection = getCategoryDataByParent("OMNI_CONTACT_REASON")
-				.stream().map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
+				.stream().sorted((c1, c2) -> c1.getValue().compareTo(c2.getValue())).map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
 	}
 	
 	private void initTrackingStatus() throws Throwable {
 		trackingStatus = null;
 		trackingStatusSelection = getCategoryDataByParent("OMNI_TRACKING_STATUS")
-				.stream().map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
+				.stream().sorted((c1, c2) -> c1.getLevel().compareTo(c2.getLevel())).map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
 	}
 	
 	private void initProvince() throws Throwable {
@@ -907,6 +991,22 @@ public class OmniMainView extends BaseBean {
 		this.citizenId = citizenId;
 	}
 
+	public String getOtherTel() {
+		return otherTel;
+	}
+
+	public void setOtherTel(String otherTel) {
+		this.otherTel = otherTel;
+	}
+
+	public Double getPremium() {
+		return premium;
+	}
+
+	public void setPremium(Double premium) {
+		this.premium = premium;
+	}
+
 	private enum TrackingStatus {
 		OPEN("OMNI_TKS_OPEN")
 		, IN_PROGRESS("OMNI_TKS_IN_PROGRESS")
@@ -923,4 +1023,69 @@ public class OmniMainView extends BaseBean {
 			return value;
 		}
 	}
+
+	public String getPolicyNo() {
+		return policyNo;
+	}
+
+	public void setPolicyNo(String policyNo) {
+		this.policyNo = policyNo;
+	}
+
+	public Double getSumAssured() {
+		return sumAssured;
+	}
+
+	public void setSumAssured(Double sumAssured) {
+		this.sumAssured = sumAssured;
+	}
+
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
+	}
+
+	public Date getExpireDate() {
+		return expireDate;
+	}
+
+	public void setExpireDate(Date expireDate) {
+		this.expireDate = expireDate;
+	}
+
+	public String getOldCitizenId() {
+		return oldCitizenId;
+	}
+
+	public void setOldCitizenId(String oldCitizenId) {
+		this.oldCitizenId = oldCitizenId;
+	}
+
+	public boolean isTelReadyOnly() {
+		return telReadyOnly;
+	}
+
+	public void setTelReadyOnly(boolean telReadyOnly) {
+		this.telReadyOnly = telReadyOnly;
+	}
+
+	public boolean isCitizenReadyOnly() {
+		return citizenReadyOnly;
+	}
+
+	public void setCitizenReadyOnly(boolean citizenReadyOnly) {
+		this.citizenReadyOnly = citizenReadyOnly;
+	}
+
+	public OmniLogMotorHist getSelectedMotor() {
+		return selectedMotor;
+	}
+
+	public void setSelectedMotor(OmniLogMotorHist selectedMotor) {
+		this.selectedMotor = selectedMotor;
+	}
+	
 }

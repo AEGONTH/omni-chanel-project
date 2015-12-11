@@ -1,0 +1,51 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+	
+	<p:dialog id="dlgPolicy" widgetVar="dlgPolicy" 
+		dynamic="true" 
+		modal="true"
+		fitViewport="true" 
+		resizable="false"
+		closable="true" 
+		styleClass="dlgCustomSize">
+		
+		<f:facet name="header">
+			<p:outputLabel value="Policy Info"/>
+		</f:facet>
+			
+			<p:wizard flowListener="#{omniMainView.onFlowProcess}" showStepStatus="false">
+				<p:tab id="search" title="Personal">
+					<p:messages closable="true"/>
+					<p:panelGrid id="gridSearch" layout="grid" columns="2" 
+						columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8 txt-left" 
+						styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" 
+						style="min-width:300px;">
+						
+						<p:outputLabel value="Tel." style="font-weight:bold;"/>
+						<p:inputText id="tel" type="tel" value="#{omniMainView.tel}" 
+							required="true" requiredMessage="Tel. is required" 
+							readonly="#{not empty omniMainView.logId or omniMainView.telReadyOnly}" 
+							styleClass="tel-mask w90">
+								<pe:keyFilter mask="pnum" preventPaste="false"/>
+							</p:inputText>
+							
+						<p:outputLabel value="Citizen ID" style="font-weight:bold;"/>
+						<p:inputText id="citizenId" type="tel" maxlength="13" required="false" requiredMessage="Citizen ID is required" styleClass="w90"></p:inputText>
+						
+						<p:outputLabel value=" "/>
+						<p:commandButton value="Search" icon="fa fa-search fa-fw" process="@this, tel, citizenId" />
+					</p:panelGrid>
+				</p:tab>
+				
+				<p:tab id="selectResult">
+					<p:outputLabel value="Bello!"/>
+				</p:tab>
+			</p:wizard>
+	
+	</p:dialog>
+	
+</ui:composition>

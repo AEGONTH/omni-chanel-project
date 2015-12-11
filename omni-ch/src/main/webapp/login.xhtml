@@ -6,7 +6,7 @@
 	template="/templates/blankTemplate.xhtml">
 
 	<ui:define name="head">
-		<title>Sign In</title>
+		<title>Sign In - Omni Channel</title>
 		<style>
 		.wrapper {max-width:900px; margin:0 auto; display:block;padding: 0 5px;}
 		.panel-login {margin-top: 50px; max-width: 400px; background-color: #F7F7F7;
@@ -41,25 +41,25 @@
 						<span class="input-group-icon">
 							<i class="fa fa-user fa-fw"/>
 						</span>
-						<p:inputText id="username" placeholder="Username" value="#{loginView.username}" styleClass="input-w"/>
+						<p:inputText id="username" placeholder="Username" value="#{loginView.username}" styleClass="input-w" style="height:27px;"/>
 					</div>
 					
 					<div class="input-group margin-center">
 						<span class="input-group-icon">
 							<i class="fa fa-key fa-fw"/>
 						</span>
-						<p:password id="pwd" placeholder="Password" value="#{loginView.password}" styleClass="input-w"/>	
+						<p:password id="pwd" placeholder="Password" value="#{loginView.password}" styleClass="input-w" style="height:27px;"/>	
 					</div>
 					
 					<div class="margin-center txt-center margin-top-normal">
-						<p:commandButton value="Sign In" action="#{loginView.doLogin}" onstart="PF('progressDialog').show()" oncomplete="PF('progressDialog').hide()" update="@form" styleClass="w100 green-btn btn-login margin-center"/>
+						<p:commandButton value="Sign In" action="#{loginView.doLogin}" onstart="PF('progressDialog').show()" update="@form" styleClass="w100 green-btn btn-login margin-center"/>
 					</div>
 				</p:panel>
 				
-				<p:dialog widgetVar="progressDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" style="max-width:500px;">
+				<p:dialog id="progressDialog" widgetVar="progressDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" style="max-width:500px;">
 					<h:panelGrid columns="2">
 						<i class="fa fa-cog fa-spin fa-4x" style="margin-right: 12px; vertical-align: middle;"></i>
-						<h:outputText value="Please wait..." style="white-space: nowrap;"/>
+						<h:outputText value="Please wait..." style="font-size: 1.4em;white-space: nowrap;"/>
 					</h:panelGrid>
 				</p:dialog>
 			</h:form>
