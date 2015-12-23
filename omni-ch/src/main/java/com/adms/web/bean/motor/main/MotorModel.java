@@ -1,4 +1,4 @@
-package com.adms.web.bean.main;
+package com.adms.web.bean.motor.main;
 
 import java.util.List;
 
@@ -15,9 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import com.adms.cs.service.OmniLogMotorHistService;
 import com.adms.entity.cs.OmniLogMotorHist;
 import com.adms.web.base.bean.AbstractSearchBean;
+import com.adms.web.base.model.LazyModel;
 
-import om.adms.web.base.model.LazyModel;
-
+@Deprecated
 @ManagedBean
 @SessionScoped
 public class MotorModel extends AbstractSearchBean<OmniLogMotorHist> {

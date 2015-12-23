@@ -1,4 +1,4 @@
-package om.adms.web.base.model;
+package com.adms.web.base.model;
 
 import java.util.List;
 import java.util.Map;

@@ -6,7 +6,7 @@ import com.sun.jna.Native;
 public class TestProject {
 
 	public interface TeleCrypt2 extends Library {
-		public String EncryptField(String val);
+
 	}
 
 	public interface Kernel32 extends Library {
@@ -16,13 +16,19 @@ public class TestProject {
 
 	public static void main(String[] args) {
 		try {
-			String a = "a";
-			String b = "a";
-			
-			System.out.println(a == b);
-			System.out.println(a.compareTo(b));
+			System.out.println("Start");
+			Kernel32 lib = (Kernel32) Native.loadLibrary("kernel32", Kernel32.class);
+			lib.Beep(698, 500);
+			lib.Sleep(500);
+			lib.Beep(698, 500);
+			lib.Beep(698, 500);
+			lib.Sleep(500);
+			lib.Beep(698, 500);
+			lib.Beep(698, 500);
+			System.out.println("Done");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 	}
 }

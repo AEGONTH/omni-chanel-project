@@ -10,7 +10,7 @@
 	</welcome-file-list>
 
 	<session-config>
-		<session-timeout>30</session-timeout>
+		<session-timeout>5</session-timeout>
 	</session-config>
 
 	<error-page>
@@ -58,6 +58,11 @@
 		<param-value>/*.xhtml</param-value>
 	</context-param>
 
+	<context-param>
+		<param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
 	<servlet>
 		<servlet-name>Faces Servlet</servlet-name>
 		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
@@ -79,16 +84,25 @@
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.xhtml</url-pattern>
 	</servlet-mapping>
-	
+
 	<!-- ASync Push -->
 	<servlet>
 		<servlet-name>Push Servlet</servlet-name>
 		<servlet-class>org.primefaces.push.PushServlet</servlet-class>
+		<init-param>
+			<param-name>org.atmosphere.useNative</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.atmosphere.cpr.sessionSupport</param-name>
+			<param-value>true</param-value>
+		</init-param>
 		<load-on-startup>1</load-on-startup>
+		<async-supported>true</async-supported>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Push Servlet</servlet-name>
-		<url-pattern>/secured/push/*</url-pattern>
+		<url-pattern>/primepush/*</url-pattern>
 	</servlet-mapping>
 
 	<listener>
@@ -133,7 +147,7 @@
 		<filter-name>PrimeFaces FileUpload Filter</filter-name>
 		<servlet-name>Faces Servlet</servlet-name>
 	</filter-mapping>
-	
+
 	<!-- Authentication Filter -->
 	<filter>
 		<filter-name>AuthenFilter</filter-name>
@@ -144,7 +158,7 @@
 		<filter-name>AuthenFilter</filter-name>
 		<url-pattern>/secured/*</url-pattern>
 	</filter-mapping>
-	
+
 	<filter>
 		<filter-name>DefaultUserPagesFilter</filter-name>
 		<filter-class>com.adms.web.filter.DefaultUserPagesFilter</filter-class>
@@ -153,6 +167,16 @@
 	<filter-mapping>
 		<filter-name>DefaultUserPagesFilter</filter-name>
 		<url-pattern>/secured/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>AuthFilter</filter-name>
+		<filter-class>com.adms.web.filter.AuthFilter</filter-class>
+		<async-supported>true</async-supported>
+	</filter>
+	<filter-mapping>
+		<filter-name>AuthFilter</filter-name>
+		<url-pattern>/test/*</url-pattern>
 	</filter-mapping>
 
 	<mime-mapping>

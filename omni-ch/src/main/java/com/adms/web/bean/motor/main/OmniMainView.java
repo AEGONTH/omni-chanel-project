@@ -1,5 +1,6 @@
-package com.adms.web.bean.main;
+package com.adms.web.bean.motor.main;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,12 +19,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.omnifaces.util.Ajax;
 import org.omnifaces.util.Faces;
 import org.omnifaces.util.Messages;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FlowEvent;
 import org.primefaces.event.SelectEvent;
+import org.primefaces.push.EventBus;
+import org.primefaces.push.EventBusFactory;
 
 import com.adms.cs.service.CategoryDataService;
 import com.adms.cs.service.CustomerService;
@@ -38,6 +41,7 @@ import com.adms.cs.service.ProductPlanService;
 import com.adms.cs.service.ProvinceService;
 import com.adms.entity.cs.CategoryData;
 import com.adms.entity.cs.Customer;
+import com.adms.entity.cs.CustomerYesRecord;
 import com.adms.entity.cs.ListSource;
 import com.adms.entity.cs.OmniLogMotor;
 import com.adms.entity.cs.OmniLogMotorHist;
@@ -68,6 +72,8 @@ public class OmniMainView extends BaseBean {
 	private ParamConfigService paramConfigService = Faces.evaluateExpressionGet("#{paramConfigService}");
 	private ProvinceService provinceService = Faces.evaluateExpressionGet("#{provinceService}");
 	
+	private OmniLogMotorService omniLogMotorService = Faces.evaluateExpressionGet("#{omniLogMotorService}");
+	
 	private CustomerYesRecordService customerYesRecordService = Faces.evaluateExpressionGet("#{customerYesRecordService}");
 
 	private Map<String, CategoryData> categoryMap;
@@ -76,6 +82,8 @@ public class OmniMainView extends BaseBean {
 	private List<OmniLogMotorHist> omniLogMotorHist;
 	
 	private OmniLogMotorHist selectedMotor;
+	
+	private final String globalMsgId = "globalMsg";
 	
 	private Long logId;
 	private Long logHistId;
@@ -146,6 +154,12 @@ public class OmniMainView extends BaseBean {
 	
 	private Date dueDate;
 	
+	//POLICY MODEL
+	private String searchTel;
+	private String searchCitizen;
+	private OmniPolicyModel policyModel;
+	private String currentFlow;
+	
 	@PostConstruct
 	private void init() {
 		
@@ -171,13 +185,6 @@ public class OmniMainView extends BaseBean {
 		initTrackingStatus();
 		
 		initProvince();
-	}
-	
-	public void test() throws Exception {
-		MotorModel motorModel = Faces.evaluateExpressionGet("#{motorModel}");
-		motorModel.initialData();
-		
-		Ajax.update("frmWL:testDT");
 	}
 	
 	public void refreshData() throws Throwable{
@@ -206,9 +213,12 @@ public class OmniMainView extends BaseBean {
 	}
 	
 	public void onClickAddPolicy() throws Throwable {
-		
-		
-		RequestContext.getCurrentInstance().execute("PF('dlgPolicy').show();");
+		RequestContext rc = RequestContext.getCurrentInstance();
+		this.searchCitizen = null;
+		this.searchTel = null;
+		policyModel = new OmniPolicyModel();
+		setCurrentFlow("search");
+		rc.reset("frmPolicy");
 	}
 	
 	public void onRowSelect(SelectEvent event) throws NumberFormatException, Throwable {
@@ -228,39 +238,103 @@ public class OmniMainView extends BaseBean {
 				, logHist.getStatus() == null ? null : logHist.getStatus().getCode()
 				, logHist.getDetail()
 				, logHist.getDueDate());
+		
+		if(logHist.getStatus() == null) {
+			initTrackingStatus();
+		} else {
+			initTrackingStatus(logHist.getStatus().getLevel());
+		}
 	}
 	
-	public String onFlowProcess(FlowEvent event) {
+	public void doFlowProcess(String var) throws Throwable {
+		//Button: Next Back Save
+		//Process Flow: search -> result -> policyEntry -> save
 		boolean flag = false;
+		final String msgId = "searchCustomerMsg";
 		
-		String oldStep = event.getOldStep();
-		String newStep = event.getNewStep();
-		
-		if(oldStep.equalsIgnoreCase("search")) {
-			System.out.println("Submit Search");
-		} else if(oldStep.equalsIgnoreCase("selectResult")) {
-			System.out.println("Submit select result");
+		if(var.equalsIgnoreCase("next")) {
+			if(currentFlow.equalsIgnoreCase("search")) {
+				// Validate
+				if(StringUtils.isBlank(this.searchTel) && StringUtils.isBlank(this.searchCitizen)) {
+					Messages.addError(msgId, "Please fills some data.");
+				} else {
+					List<Customer> customers = findVisibleCustomer(searchTel, searchCitizen);
+					if(customers != null && customers.size() == 1) {
+						policyModel.setCustomer(customers.get(0));
+						List<OmniLogMotorHist> histList = findLogMotorForPolicy(policyModel.getCustomer().getId());
+						if(histList != null && histList.size() > 0) {
+							policyModel.setLogMotors(histList);
+							policyModel.setSelectedLogMotor(null);
+							flag = true;
+						} else {
+							policyModel.setLogMotors(null);
+							Messages.addWarn(msgId, "Not found any record for this customer");
+						}
+					} else {
+						Messages.addWarn(msgId, "Not found or found more than 1 customer.");
+						policyModel.setCustomer(null);
+						policyModel.setLogMotors(null);
+					}
+				}
+				currentFlow = flag ? "result" : currentFlow;
+			} else if(currentFlow.equalsIgnoreCase("result")) {
+				//Validate
+				if(policyModel.getSelectedLogMotor() == null) {
+					Messages.addError(msgId, "Please select data.");
+				} else {
+					policyModel.setPolicyNo(null);
+					policyModel.setPremium(null);
+					policyModel.setEffectiveDate(null);
+					policyModel.setExpireDate(null);
+					flag = true;
+				}
+				
+				currentFlow = flag ? "policyEntry" : currentFlow;
+			} else {
+				//ERR
+			}
+			
+			Ajax.update("frmPolicy:panelFlow");
+			Ajax.update("frmPolicy:policyMsg");
+		} else if(var.equalsIgnoreCase("back")) {
+			currentFlow = currentFlow.equalsIgnoreCase("result") ? "search" 
+					: currentFlow.equalsIgnoreCase("policyEntry") ? "result" : "";
+		} else if(var.equals("save")) {
+			//Validate
+			if(StringUtils.isNotBlank(policyModel.getPolicyNo())
+					&& policyModel.getPremium() != null
+					&& policyModel.getEffectiveDate() != null
+					&& policyModel.getExpireDate() != null) {
+				flag = true;
+			} else {
+				Messages.addError(msgId, "Please fill all fields.");
+				Ajax.update("frmPolicy:policyMsg");
+			}
+			
+			if(flag) {
+				if(savePolicy()) {
+					RequestContext.getCurrentInstance().execute("PF('dlgPolicy').hide()");
+					Messages.addInfo(globalMsgId, "Save Suceesfully");
+					Ajax.update(globalMsgId);
+				} else {
+					Messages.addError(msgId, "Something went wrong!! Please contact your system admin.");
+					Ajax.update("frmPolicy:policyMsg");
+				}
+			}
 		}
-		
-        return newStep;
     }
-
-	public void doSearchCustomerForPolicy() throws Throwable {
-		
-	}
 	
 	public void doSearchCustomer(String val) throws Throwable {
 		String temp = null;
 		if(this.logId == null) {
-			
 			if(val.equalsIgnoreCase(TEL)) {
 				temp = new String(this.tel);
-				setDialogDataFromList(getCustomer(this.tel, null), val);
+				setDialogDataFromList(findVisibleCustomer(this.tel, null), val);
 				this.tel = temp;
 				this.oldTel = new String(this.tel);
 			} else if(val.equalsIgnoreCase(CITIZEN)) {
 				temp = new String(this.citizenId);
-				setDialogDataFromList(getCustomer(null, this.citizenId), val);
+				setDialogDataFromList(findVisibleCustomer(null, this.citizenId), val);
 				this.citizenId = temp;
 				this.oldCitizenId = new String(this.citizenId);
 			}
@@ -327,8 +401,41 @@ public class OmniMainView extends BaseBean {
 			omniLogMotorHistService.add(newHist, loginSession.getUsername());
 		}
 		initData();
-		Ajax.update("frmWL");
+		EventBus eventBus = EventBusFactory.getDefault().eventBus();
+        eventBus.publish("/refreshDTCustomerWL", "Successful");
+//		Ajax.update("frmWL");
 		RequestContext.getCurrentInstance().execute("PF('dlgCustomer').hide()");
+	}
+
+	private boolean savePolicy() {
+		CustomerYesRecord policy = new CustomerYesRecord();
+		OmniLogMotor logMotor = null;
+		
+		try {
+			policy.setPolicyNo(policyModel.getPolicyNo());
+			BigDecimal premium = new BigDecimal(policyModel.getPremium()).setScale(10, BigDecimal.ROUND_HALF_UP);
+			policy.setPremium(premium);
+			policy.setEffectiveDate(policyModel.getEffectiveDate());
+			policy.setExpireDate(policyModel.getExpireDate());
+			policy.setImportDate(new Date());
+			policy.setCustomer(policyModel.getCustomer());
+			policy.setInsuredCitizenId(policyModel.getCustomer().getCitizenId());
+			policy = customerYesRecordService.add(policy, loginSession.getUsername());
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		try {
+			logMotor = policyModel.getSelectedLogMotor().getOmniLogMotor();
+			logMotor.setPolicy(policy);
+			logMotor = omniLogMotorService.update(logMotor, loginSession.getUsername());
+			
+			return true;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	private void setDialogDataFromList(List<Customer> list, String searchField) {
@@ -341,7 +448,7 @@ public class OmniMainView extends BaseBean {
 			}
 		} else {
 			customer = null;
-			Messages.addInfo("globalMsg", "Not found.");
+			Messages.addInfo(globalMsgId, "Not found.");
 			Ajax.update("frmDlg:globalMsg");
 		}
 		setCustomerInfoForDialog(customer);
@@ -503,11 +610,11 @@ public class OmniMainView extends BaseBean {
 						.setFirstName(cFirstName.toUpperCase().trim())
 						.setLastName(cLastName.toUpperCase().trim())
 						.setGender(paramConfigService.find(new ParamConfig().setParamKey(sex)).get(0))
-						.setEmail(email)
-						.setAddress1(address1)
-						.setAddress2(address2)
-						.setAddress3(address3)
-						.setPostCode(postCode)
+						.setEmail(StringUtils.isBlank(email) ? null : email)
+						.setAddress1(StringUtils.isBlank(address1) ? null : address1)
+						.setAddress2(StringUtils.isBlank(address2) ? null : address2)
+						.setAddress3(StringUtils.isBlank(address3) ? null : address3)
+						.setPostCode(StringUtils.isBlank(postCode) ? null : postCode)
 						.setProvince(provinceMap.get(province))
 						.setVisible("Y")
 					, loginSession.getUsername());
@@ -516,25 +623,34 @@ public class OmniMainView extends BaseBean {
 		}
 	}
 
-	private List<Customer> getCustomer(String mobileNo, String citizenId) throws Exception {
+	private List<Customer> findVisibleCustomer(String mobileNo, String citizenId) throws Exception {
 		DetachedCriteria criteria = DetachedCriteria.forClass(Customer.class);
 		if(StringUtils.isNotBlank(mobileNo)) criteria.add(Restrictions.eq("mobileNo", mobileNo));
 		if(StringUtils.isNotBlank(citizenId)) criteria.add(Restrictions.eq("citizenId", citizenId));
 		criteria.add(Restrictions.eq("visible", "Y"));
 		return customerService.findByCriteria(criteria);
 	}
+	
+	private List<OmniLogMotorHist> findLogMotorForPolicy(Long customerId) throws Exception {
+		System.out.println("findLogMotorForPolicy: " + customerId);
+		DetachedCriteria criteria = DetachedCriteria.forClass(OmniLogMotorHist.class);
+		criteria.createCriteria("omniLogMotor", JoinType.INNER_JOIN)
+			.createCriteria("customer", JoinType.INNER_JOIN)
+			.add(Restrictions.eq("id", customerId));
+		criteria.add(Restrictions.sqlRestriction("this_.ID in (select MAX(d.ID) from OMNI_LOG_MOTOR_HIST d GROUP BY d.LOG_MOTOR_ID)"));
+		criteria.addOrder(Order.asc("id"));
+		return omniLogMotorHistService.findByCriteria(criteria);
+	}
 
 	private void initData() throws Throwable {
 		try {
-			omniLogMotorHist = queryOmniLogMotorHist(TrackingStatus.OPEN.getValue(), TrackingStatus.IN_PROGRESS.getValue());
-//			MotorModel motorModel = Faces.evaluateExpressionGet("#{motorModel}");
-//			motorModel.initialData();
+			omniLogMotorHist = findOmniLogMotorHist(TrackingStatus.OPEN.getValue(), TrackingStatus.IN_PROGRESS.getValue());
 		} catch(Exception e) {
 			throw e;
 		}
 	}
 	
-	private List<OmniLogMotorHist> queryOmniLogMotorHist(String... status) throws Exception {
+	private List<OmniLogMotorHist> findOmniLogMotorHist(String... status) throws Exception {
 		DetachedCriteria criteria = DetachedCriteria.forClass(OmniLogMotorHist.class);
 		criteria.add(Restrictions.sqlRestriction("this_.ID in (select MAX(d.ID) from OMNI_LOG_MOTOR_HIST d GROUP BY d.LOG_MOTOR_ID)"));
 		if(status != null) {
@@ -636,9 +752,17 @@ public class OmniMainView extends BaseBean {
 	}
 	
 	private void initTrackingStatus() throws Throwable {
+		initTrackingStatus(new Integer(-1));
+	}
+	
+	private void initTrackingStatus(Integer currentLevel) throws Throwable {
 		trackingStatus = null;
 		trackingStatusSelection = getCategoryDataByParent("OMNI_TRACKING_STATUS")
-				.stream().sorted((c1, c2) -> c1.getLevel().compareTo(c2.getLevel())).map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
+				.stream()
+				.filter(p -> p.getLevel().compareTo(currentLevel) >= 0)
+				.sorted((c1, c2) -> c1.getLevel().compareTo(c2.getLevel()))
+				.map(m -> new SelectItem(m.getCode(), m.getValue()))
+				.collect(Collectors.toList());
 	}
 	
 	private void initProvince() throws Throwable {
@@ -1086,6 +1210,38 @@ public class OmniMainView extends BaseBean {
 
 	public void setSelectedMotor(OmniLogMotorHist selectedMotor) {
 		this.selectedMotor = selectedMotor;
+	}
+
+	public OmniPolicyModel getPolicyModel() {
+		return policyModel;
+	}
+
+	public void setPolicyModel(OmniPolicyModel policyModel) {
+		this.policyModel = policyModel;
+	}
+
+	public String getSearchTel() {
+		return searchTel;
+	}
+
+	public void setSearchTel(String searchTel) {
+		this.searchTel = searchTel;
+	}
+
+	public String getSearchCitizen() {
+		return searchCitizen;
+	}
+
+	public void setSearchCitizen(String searchCitizen) {
+		this.searchCitizen = searchCitizen;
+	}
+
+	public String getCurrentFlow() {
+		return currentFlow;
+	}
+
+	public void setCurrentFlow(String currentFlow) {
+		this.currentFlow = currentFlow;
 	}
 	
 }

@@ -44,8 +44,11 @@ public class CustomerYesRecord extends BaseAuditDomain {
 	private String policyNo;
 	
 	@ManyToOne
-	@JoinColumn(name="INSURED_CITIZEN_ID", referencedColumnName="CITIZEN_ID")
+	@JoinColumn(name="CUSTOMER_ID")
 	private Customer customer;
+	
+	@Column(name="INSURED_CITIZEN_ID")
+	private String insuredCitizenId;
 	
 	@Column(name="INSURED_OCCUPATION")
 	private String insuredOccupation;
@@ -580,6 +583,14 @@ public class CustomerYesRecord extends BaseAuditDomain {
 
 	public void setPolicyNo(String policyNo) {
 		this.policyNo = policyNo;
+	}
+
+	public String getInsuredCitizenId() {
+		return insuredCitizenId;
+	}
+
+	public void setInsuredCitizenId(String insuredCitizenId) {
+		this.insuredCitizenId = insuredCitizenId;
 	}
 	
 }

@@ -21,6 +21,11 @@ public abstract class AbstractFilter implements Filter {
 		resp.sendRedirect(reqt.getContextPath() + "/login");
 	}
 	
+//	protected void doSSO(ServletRequest request, ServletResponse response, HttpServletRequest req) throws ServletException, IOException {
+//		HttpServletRequest reqt = (HttpServletRequest) request;
+//		HttpServletResponse resp = (HttpServletResponse) response;
+//	}
+	
 	protected void accessDenied(ServletRequest request, ServletResponse response, HttpServletRequest req) throws ServletException, IOException {
         HttpServletRequest reqt = (HttpServletRequest) request;
 		HttpServletResponse resp = (HttpServletResponse) response;
