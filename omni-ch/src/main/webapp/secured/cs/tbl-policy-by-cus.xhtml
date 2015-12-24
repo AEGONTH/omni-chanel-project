@@ -1,0 +1,78 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<style>
+	.ui-button-icon-only .ui-icon {left: 30%;}
+	</style>
+	
+	<h:panelGroup id="panelPolByCus">
+		<p:panel id="pnlpbc" styleClass="custom-panel" style="padding:0;margin-top:5px;" rendered="#{customerEnquiryView.model.customer != null}">
+			<hr class="carved" style="margin:1em 0px"/>
+			
+			<p:dataTable id="dataTablePolByCus" lazy="true" 
+				value="#{customerEnquiryView.model.customerYRs2}"
+				var="pol"
+				paginator="true"
+				rows="#{customerEnquiryView.defaultRowPerPage}"
+				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+				paginatorPosition="bottom" 
+				paginatorAlwaysVisible="false"
+				emptyMessage="No Record Found"
+				rowIndexVar="idx"
+				reflow="true" 
+				rendered="#{customerEnquiryView.model.customer != null}"
+				styleClass="custom-table bottom-shadow tbl-flat">
+				<f:facet name="header">
+					<h:outputText value="Customer's Policy"/>
+				</f:facet>
+				
+				<p:column headerText="Campaign" styleClass="">
+					<h:outputText value="#{pol.campaignName}" />
+				</p:column>
+				
+				<p:column headerText="Ref No" styleClass="">
+					<h:outputText value="#{pol.refNo}"/>
+				</p:column>
+				
+				<p:column headerText="Sale Date" styleClass="txt-center">
+					<h:outputText value="#{of:formatDate(pol.objectDate, 'dd-MM-yyyy')}" />
+				</p:column>
+				
+				<p:column headerText="Premium" styleClass=" txt-right">
+					<h:outputText value="#{pol.premium}" >
+						<f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
+					</h:outputText>
+				</p:column>
+				
+				<p:column styleClass="txt-center col-icon-btn-width">
+					<p:commandButton icon="fa fa-list-alt fa-lg" 
+						actionListener="#{customerEnquiryView.doVisibleLogHistory(pol.customerYesRecord)}"
+						process="@this"
+						update="@form"
+						oncomplete="PF('hidShowLogHist').getJQ().click()"
+						styleClass="">
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+		</p:panel>
+		
+		<div class="hidden">
+			<p:commandButton id="hidShowLogHist" type="button" widgetVar="hidShowLogHist">
+				<p:effect event="click" type="slide" speed="200" for="dataTablePolByCus">
+					<f:param name="mode" value="'hide'" />
+					<f:param name="direction" value="'up'"/>
+				</p:effect>
+				<p:effect event="click" type="slide" speed="200" delay="210" for="panelLogHistWrapper">
+					<f:param name="mode" value="'show'" />
+					<f:param name="direction" value="'up'"/>
+				</p:effect>
+			</p:commandButton>
+		</div>
+	</h:panelGroup>
+
+</ui:composition>

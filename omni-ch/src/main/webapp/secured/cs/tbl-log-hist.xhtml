@@ -1,0 +1,222 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+	<style>
+		.dialog-case {max-width:50em;}
+		.dialog-case .ui-dialog-content.ui-widget-content {max-height: 70vh; overflow-y:auto;}
+		.ui-custom-fluid .ui-selectonemenu, .ui-custom-fluid .ui-inputfield:not(label) {margin-bottom:0.75em;}
+		.label-content-head-dialog {color:#3B3D3F;font-weight:bold;}
+		.big-topic {
+			font-size: 1.5em;
+		    font-weight: bold;
+		    color: #3B3D3F;
+		    display: block;
+		    padding: 10px 0px;
+		    overflow: hidden;
+		}
+		.all-small-font *{font-size:13.5px !important;}
+	</style>
+	
+	<h:panelGroup id="panelLogHist">
+		<p:panel id="panelLogHistWrapper" styleClass="custom-panel hidden" style="padding:0;">
+			<p:commandButton value="Add Case" icon="fa fa-plus fa-fw" 
+				process="@this" 
+				actionListener="#{customerEnquiryView.doInitLog(null)}" 
+				update="frmMain:addCaseDlg" 
+				oncomplete="PF('addCaseDlg').show()" 
+				styleClass="btn-action btn-no-shadow green-btn"/>
+			<p:commandButton value="Cancel" icon="fa fa-times fa-fw" 
+				process="@this" 
+				actionListener="#{customerEnquiryView.clearAddCaseLog}" 
+				oncomplete="PF('hidHideLogHist').getJQ().click()" 
+				styleClass="btn-action btn-no-shadow"/>
+			
+			<p:commandButton id="hidHideLogHist" type="button" widgetVar="hidHideLogHist" styleClass="hidden">
+				<p:effect event="click" type="slide" speed="200" for="panelLogHistWrapper">
+					<f:param name="mode" value="'hide'" />
+					<f:param name="direction" value="'up'"/>
+				</p:effect>
+				<p:effect event="click" type="slide" speed="200" delay="210" for="dataTablePolByCus">
+					<f:param name="mode" value="'show'" />
+					<f:param name="direction" value="'up'"/>
+				</p:effect>
+			</p:commandButton>
+			
+			<p:panel id="panelLogHistTbl" styleClass="custom-panel all-small-font" style="padding:0;">
+				<p:dataTable id="dataTableLogHist" widgetVar="dataTableLogHist" lazy="true" 
+					value="#{customerEnquiryView.model.policyCallLogs}"
+					var="log"
+					paginator="true"
+					rows="#{customerEnquiryView.defaultRowPerPage}"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					paginatorPosition="bottom" emptyMessage="No Record Found"
+					rowIndexVar="idx"
+					reflow="false"
+					selectionMode="single"
+					selection="#{customerEnquiryView.selectedCallLog}"
+					rowKey="#{log.id}"
+					styleClass="custom-tbl"
+					style="margin-top:0.2em;">
+					<f:facet name="header">
+						<h:outputText value="Log History for "/>
+						<h:outputText value="#{customerEnquiryView.model.policy.sales.xReference}" />
+					</f:facet>
+					<p:ajax event="rowSelect" listener="#{customerEnquiryView.onRowSelectLog}" update="frmMain:addCaseDlg" oncomplete="PF('addCaseDlg').show()" />
+					
+					<p:column headerText="#{msg['table.2.1.1']}">
+						<h:outputText value="#{log.callDate}" >
+							<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="#{customerEnquiryView.timeZone}"/>
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Source">
+						<h:outputText value="#{log.source.value}" />
+					</p:column>
+					
+					<p:column headerText="Channel" priority="6">
+						<h:outputText value="#{log.channel.value}" />
+					</p:column>
+					
+					<p:column headerText="Log Detail">
+						<h:outputText value="#{log.callLogDetail.logValue.value}" />
+					</p:column>
+					
+					<p:column headerText="Status">
+						<h:outputText value="#{log.logCurrentStatus.value}" />
+					</p:column>
+					
+					<p:column headerText="Result">
+						<h:outputText value="#{log.logResult.value}" />
+					</p:column>
+					
+					<p:column headerText="Remark" priority="5">
+						<h:outputText value="#{log.remark}" />
+					</p:column>
+					
+				</p:dataTable>
+			</p:panel>
+		</p:panel>
+		
+		<p:dialog id="addCaseDlg" widgetVar="addCaseDlg" 
+			dynamic="true" modal="true" 
+			focus="logSourceName" fitViewport="true"
+			resizable="false" maximizable="false"
+			closable="false" closeOnEscape="false"
+			styleClass="dialog-case">
+			
+			<f:facet name="header">
+				<h:outputText value="Log Date, " />
+				<h:outputText value="#{customerEnquiryView.model.logDate}" >
+					<f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="#{customerEnquiryView.timeZone}"/>
+				</h:outputText>
+			</f:facet>
+			
+			<p:messages id="msgAddCase" globalOnly="false" closable="true"/>
+			
+			<p:panel id="logCaseWrapper" styleClass="custom-panel" style="padding:0;">
+				<p:focus for="@next"/>
+				<p:panelGrid id="panelLogDetail" columns="2" columnClasses="ui-grid-col-6, ui-grid-col-6" layout="grid" styleClass="grid-borderless w100 dialog-case">
+					<p:panel styleClass="custom-panel w100 ui-custom-fluid" style="padding:0;">
+						<p:outputLabel value="Source" for="@next" styleClass="label-content-head-dialog"/>
+						<p:selectOneMenu id="logSourceName" value="#{customerEnquiryView.model.selectedSource}" disabled="#{customerEnquiryView.updateLog}" styleClass="" style="">
+							<f:selectItems value="#{customerEnquiryView.model.sourceSelection}"/>
+						</p:selectOneMenu>
+						
+						<p:outputLabel value="Channel" for="@next" styleClass="label-content-head-dialog"/>
+						<p:selectOneMenu id="channel" value="#{customerEnquiryView.model.selectedChannel}" disabled="#{customerEnquiryView.updateLog}" styleClass="" style="">
+							<f:selectItems value="#{customerEnquiryView.model.channelSelection}"/>
+						</p:selectOneMenu>
+					</p:panel>
+					
+					<p:panel styleClass="custom-panel w100 ui-custom-fluid" style="padding:0;">
+						<p:outputLabel value="Call Nature" for="@next" styleClass="label-content-head-dialog"/>
+						<p:selectOneMenu id="callNature" value="#{customerEnquiryView.model.selectedCallNature}" disabled="#{customerEnquiryView.updateLog}" styleClass="" style="">
+							<p:ajax listener="#{customerEnquiryView.subCategoryListener}" update="callSubcategory"/>
+							<f:selectItems value="#{customerEnquiryView.model.natureSelection}"/>
+						</p:selectOneMenu>
+						
+						<p:outputLabel value="Category" for="@next" styleClass="label-content-head-dialog"/>
+						<p:selectOneMenu id="callCategory" value="#{customerEnquiryView.model.selectedCategory}" disabled="#{customerEnquiryView.updateLog}" styleClass="" style="">
+							<p:ajax listener="#{customerEnquiryView.subCategoryListener}" update="callSubcategory"/>
+							<f:selectItems value="#{customerEnquiryView.model.categorySelection}"/>
+						</p:selectOneMenu>
+						
+						<p:outputLabel value="Sub-category" for="@next" styleClass="label-content-head-dialog"/>
+						<p:selectOneMenu id="callSubcategory" value="#{customerEnquiryView.model.selectedSubCategory}" disabled="#{empty customerEnquiryView.model.subCategorySelection or customerEnquiryView.updateLog}" styleClass="" style="">
+							<f:selectItems value="#{customerEnquiryView.model.subCategorySelection}"/>
+						</p:selectOneMenu>
+					</p:panel>
+				</p:panelGrid>
+				
+				<p:panelGrid id="panelLogDetail2" columns="1" layout="grid" styleClass="grid-borderless w100 dialog-case">
+					<p:panel styleClass="custom-panel w100 ui-custom-fluid" style="padding:0;">
+						<p:outputLabel value="Detail" styleClass="label-content-head-dialog"/>
+						<p:inputTextarea value="#{customerEnquiryView.model.logDetail}" disabled="#{customerEnquiryView.updateLog}" styleClass="w100 " style="min-height:5em;"/>
+					</p:panel>
+				</p:panelGrid>
+				
+				<hr class="carved" style="margin-top:0;margin-bottom:0.5em;"/>
+				
+				<p:panelGrid id="panelLogInvestigate" columns="2" columnClasses="ui-grid-col-6, ui-grid-col-6" layout="grid" styleClass="grid-borderless w100 dialog-case">
+					<p:panel styleClass="custom-panel w100 ui-custom-fluid" style="padding:0;">
+						<p:outputLabel value="Current Status" for="@next" styleClass="label-content-head-dialog"/>
+						<p:selectOneMenu id="currentStatus" value="#{customerEnquiryView.model.selectedComplaintStatus}" styleClass="" style="">
+							<f:selectItems value="#{customerEnquiryView.model.complaintStatusSelection}"/>
+						</p:selectOneMenu>
+						
+						<p:outputLabel value="Result" for="@next" styleClass="label-content-head-dialog"/>
+						<p:selectOneMenu id="comPlaintResult" value="#{customerEnquiryView.model.selectedComplaintResult}" styleClass="" style="">
+							<f:selectItems value="#{customerEnquiryView.model.complaintResultSelection}"/>
+						</p:selectOneMenu>
+					</p:panel>
+					
+					<p:panel styleClass="custom-panel w100 ui-custom-fluid" style="padding:0;">
+						<p:outputLabel value="Result Detail" styleClass="label-content-head-dialog"/>
+						<p:inputTextarea value="#{customerEnquiryView.model.resultDetail}"  styleClass="w100"/>
+					</p:panel>
+				</p:panelGrid>
+				
+				<p:panelGrid id="panelLogInvestigate2" columns="2" columnClasses="ui-grid-col-6, ui-grid-col-6" layout="grid" styleClass="grid-borderless w100 dialog-case">
+					<p:panel styleClass="custom-panel w100 ui-custom-fluid" style="padding:0;">
+						<p:outputLabel value="Corrective Action" styleClass="label-content-head-dialog"/>
+						<p:inputTextarea value="#{customerEnquiryView.model.correctiveAction}"  styleClass="w100"/>
+					</p:panel>
+					<p:panel styleClass="custom-panel w100 ui-custom-fluid" style="padding:0;">
+						<p:outputLabel value="Suggest Detail" styleClass="label-content-head-dialog"/>
+						<p:inputTextarea value="#{customerEnquiryView.model.suggestDetail}"  styleClass="w100"/>
+					</p:panel>
+				</p:panelGrid>
+				
+				<p:panelGrid id="panelLogRemark" columns="1" layout="grid" styleClass="grid-borderless w100 dialog-case">
+						<p:outputLabel value="Remark" styleClass="label-content-head-dialog"/>
+						<p:inputTextarea value="#{customerEnquiryView.model.logRemark}"  styleClass="w100"/>
+				</p:panelGrid>
+			</p:panel>
+			
+			<f:facet name="footer">
+				<h:panelGrid columns="2" style="width:100%;" columnClasses="ui-grid-col-6 txt-right, ui-grid-col-6 txt-left">
+					<p:commandButton value="Save" icon="fa fa-floppy-o fa-fw" 
+						process="@this, frmMain:logCaseWrapper" 
+						actionListener="#{customerEnquiryView.doAddCallLog()}" 
+						update="frmMain:msgAddCase" 
+						styleClass="btn-green btn-no-shadow w100" 
+						style="max-width:22em;height:2.5em;"/>
+					
+					<p:commandButton value="Cancel" icon="fa fa-times fa-fw" 
+						process="@this" 
+						update="frmMain:logCaseWrapper" 
+						oncomplete="PF('addCaseDlg').hide();" 
+						styleClass="btn-default btn-no-shadow w100" 
+						style="max-width:22em;height:2.5em;">
+					</p:commandButton>
+				</h:panelGrid>
+			</f:facet>
+		
+		</p:dialog>
+	</h:panelGroup>
+
+</ui:composition>

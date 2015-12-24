@@ -13,8 +13,15 @@ public class NavigatorBean implements Serializable {
 	
 	private final String redirect = "?faces-redirect=true";
 	
+	private final String toUnderConstruction = "/errors/under-construction";
+	
 	private final String toLogin = "/login";
+	
 	private final String toOmniMain = "/secured/omni-main";
+	private final String toOmniMotor = "/secured/omni-motor";
+	private final String toOmniTravel = "/secured/omni-travel";
+	
+	private final String toCsEnquiry = "/secured/cs/customer-enquiry";
 	
 	public String toLoginPage() {
 		return toLogin + redirect;
@@ -22,5 +29,17 @@ public class NavigatorBean implements Serializable {
 	
 	public String toOmniMainPage() {
 		return toOmniMain + redirect;
+	}
+	
+	public String toOmniMotorPage() {
+		return toOmniMotor + redirect;
+	}
+	
+	public String toOmniTravelPage() {
+		return toUnderConstruction + redirect;
+	}
+	
+	public String toCsCustomerEnquiry() {
+		return toCsEnquiry + redirect;
 	}
 }

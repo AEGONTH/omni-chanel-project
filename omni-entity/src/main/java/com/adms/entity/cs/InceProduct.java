@@ -26,6 +26,9 @@ public class InceProduct extends BaseDomain {
 	@JoinColumn(name="INSURER_CODE", referencedColumnName="INSURER_CODE")
 	private Insurer insurer;
 	
+	@Column(name="PRODUCT_TYPE")
+	private String productType;
+	
 	@Column(name="PRODUCT_CODE")
 	private String productCode;
 	
@@ -62,6 +65,14 @@ public class InceProduct extends BaseDomain {
 
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+
+	public String getProductType() {
+		return productType;
+	}
+
+	public void setProductType(String productType) {
+		this.productType = productType;
 	}
 	
 }

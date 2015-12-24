@@ -1,0 +1,148 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:o="http://omnifaces.org/ui"
+	template="/templates/mainTemplate.xhtml">
+	
+	<ui:define name="head">
+		<title>Omni Channel - Motor</title>
+		<style>
+		.container {width:100%; float:left;}
+		.action-div {display:block; padding:2px 10px;}
+		.action-div .ui-button {display:inline-block;zoom:1.1;}
+		.fright {float:right;}
+		.lright {float:left;}
+		.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
+			max-height: 75vh;
+			min-width: 600px;
+			overflow-y: auto;
+		}
+		.w90.ui-selectonemenu.ui-widget {width:82.5% !important;}
+		.w90.ui-selectonemenu.ui-widget .ui-selectonemenu-label.ui-inputfield {width:100% !important;}
+		.decresed-gap, input.ui-inputfield.decresed-gap {margin-top: -4px;}
+		.w90 input {width: 90%;}
+		.w10 {width: 10%;}
+		.overdue-txt {color: #FF0000;}
+		.custom-ft.ui-filter-column .ui-column-filter.ui-inputfield.ui-inputtext.ui-widget {display: inline-block;}
+		.ui-state-highlight, .ui-widget-content .ui-state-highlight {
+		    color: #333333;
+		    text-decoration: none;
+		    background-color: #CCCCCC;
+		    background-image: none;
+		    background-repeat: no-repeat;
+		}
+		.tbl-action {border-spacing: 0;border-collapse: collapse;border: none; width:95%;}
+		.tbl-action .col-1 {width:85%; padding:0;}
+		.tbl-action .col-2 {width:15%; padding:0;}
+		.dueDateCol {width:15%;}
+		.citizenCol {width:15%;}
+		@media screen and (max-width: 640px) {
+			.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
+				min-width: 310px;
+			}
+		}
+		</style>
+		<f:loadBundle var="omniMsg" basename="com.adms.msg.omni.omniMsg"/>
+	</ui:define>
+	
+	<ui:define name="content">
+		<h:form id="frmWL">
+			<p:growl id="globalMsg"/>
+			<div class="container">
+				<div class="action-div">
+					<p:commandButton value="New Case" title="For adding new case" icon="fa fa-car fa-fw" actionListener="#{omniMotorView.onClickAddNew}" oncomplete="PF('dlgCustomer').show()" styleClass="blue-btn fright" update="frmDlg"/>
+					<p:commandButton value="Policy" title="For adding policy to case" icon="fa fa-book fa-fw" 
+					actionListener="#{omniMotorView.onClickAddPolicy}" 
+					oncomplete="PF('dlgPolicy').show()" 
+					update="frmPolicy" 
+					styleClass="green-btn fright">
+					<p:resetInput target="frmPolicy" />
+					</p:commandButton>
+				</div>
+			</div>
+			
+			<p:panelGrid layout="grid" columns="1" columnClasses="ui-grid-col-12" styleClass="grid-borderless grid-bg-transparent">
+				<p:panel>
+					<f:facet name="header">
+						<i class="fa fa-car fa-fw"></i>
+						<p:outputLabel value="Motor Tracking List" style="margin-left: 5px;"/>
+					</f:facet>
+					<p:dataTable id="dtWaitingList" 
+						widgetVar="dtWaitingList"
+						lazy="false"
+						value="#{omniMotorSync.logMotorList}"
+						var="log"
+						paginator="true"
+						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+						paginatorPosition="bottom" emptyMessage="No Records"
+						rows="#{omniMotorView.defaultRowPerPage}"
+						rowKey="#{log.id}"
+						rowIndexVar="idx"
+						reflow="true"
+						selectionMode="single"
+						selection="#{omniMotorView.selectedMotor}"
+						style="margin-top: 10px;" styleClass="">
+						
+						<p:ajax event="rowSelect" listener="#{omniMotorView.onRowSelect}" oncomplete="PF('dlgCustomer').show();" update="@form, frmDlg" />
+						
+						<p:column headerText="Customer Name">
+							<h:outputText value="#{log.omniChLog.customer.firstName} #{log.omniChLog.customer.lastName}" />
+						</p:column>
+						
+						<p:column headerText="Citizen ID." styleClass="citizenCol">
+							<h:outputText value="#{log.omniChLog.customer.citizenId}"/>
+						</p:column>
+						
+						<p:column headerText="Mobile" styleClass="custom-ft" filterBy="#{log.omniChLog.customer.mobileNo}" filterMatchMode="startsWith">
+							<h:outputText value="#{log.omniChLog.customer.mobileNo}" >
+							</h:outputText>
+						</p:column>
+						
+						<p:column headerText="Model">
+							<h:outputText value="#{log.car.value}" />
+						</p:column>
+						
+						<p:column headerText="Status" styleClass="w10 txt-center">
+							<h:outputText value="#{log.status.value}" />
+						</p:column>
+						
+						<p:column headerText="Due Date" styleClass="txt-center dueDateCol">
+							<h:outputText value="#{of:formatDate(log.dueDate, 'dd-MM-yyyy HH:mm')}" styleClass="duedatetxt #{of:daysBetween(now, log.dueDate) le 0 ? 'overdue-txt' : ''}"/>
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+			</p:panelGrid>
+			
+			<p:remoteCommand name="updateFrmTest" actionListener="#{omniMainSync.refreshData}" update="dtWaitingList"/>
+		</h:form>
+		
+		<h:form id="frmDlg">
+			<ui:include src="/secured/motor-dialog/dlg-case.xhtml" />
+		</h:form>
+		
+		<h:form id="frmPolicy">
+			<ui:include src="/secured/motor-dialog/dlg-policy.xhtml" />
+		</h:form>
+		
+		<h:form id="initData">
+			<p:remoteCommand name="loadInitial" actionListener="#{omniMotorView.initialData}" update="frmWL, frmDlg, frmPolicy"/>
+		</h:form>
+		
+		<p:socket onMessage="handleMessage" channel="/refreshDTCustomerWL" />
+		<script>
+			$(document).ready(function() {
+				loadInitial();
+// 				updateFrmTest();
+			});
+			
+			function handleMessage(data) {
+				updateFrmTest();
+	        }
+		</script>
+	</ui:define>
+	
+</ui:composition>

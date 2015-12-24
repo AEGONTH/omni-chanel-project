@@ -1,0 +1,56 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:o="http://omnifaces.org/ui"
+	template="/templates/mainTemplate.xhtml">
+	
+	<ui:define name="head">
+		<title>Omni Channel - Travel</title>
+		<style>
+		.container {width:100%; float:left;}
+		.action-div {display:block; padding:2px 10px;}
+		.action-div .ui-button {display:inline-block;zoom:1.1;}
+		.fright {float:right;}
+		.lright {float:left;}
+		.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
+			max-height: 75vh;
+			min-width: 600px;
+			overflow-y: auto;
+		}
+		.w90.ui-selectonemenu.ui-widget {width:82.5% !important;}
+		.w90.ui-selectonemenu.ui-widget .ui-selectonemenu-label.ui-inputfield {width:100% !important;}
+		.decresed-gap, input.ui-inputfield.decresed-gap {margin-top: -4px;}
+		.w90 input {width: 90%;}
+		.w10 {width: 10%;}
+		.overdue-txt {color: #FF0000;}
+		.custom-ft.ui-filter-column .ui-column-filter.ui-inputfield.ui-inputtext.ui-widget {display: inline-block;}
+		.ui-state-highlight, .ui-widget-content .ui-state-highlight {
+		    color: #333333;
+		    text-decoration: none;
+		    background-color: #CCCCCC;
+		    background-image: none;
+		    background-repeat: no-repeat;
+		}
+		.tbl-action {border-spacing: 0;border-collapse: collapse;border: none; width:95%;}
+		.tbl-action .col-1 {width:85%; padding:0;}
+		.tbl-action .col-2 {width:15%; padding:0;}
+		.dueDateCol {width:15%;}
+		.citizenCol {width:15%;}
+		@media screen and (max-width: 640px) {
+			.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
+				min-width: 310px;
+			}
+		}
+		</style>
+		<f:loadBundle var="omniMsg" basename="com.adms.msg.omni.omniMsg"/>
+	</ui:define>
+	
+	<ui:define name="content">
+		<ui:include src="/under-construction.xhtml" />
+	</ui:define>
+	
+</ui:composition>

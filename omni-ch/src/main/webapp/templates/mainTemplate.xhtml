@@ -46,10 +46,7 @@
 					
 					<ui:remove><!-- Top menu --></ui:remove>
 					<p:menubar toggleEvent="click" styleClass="top-menu">
-						<p:submenu label="#{loginSession.username}" icon="fa fa-user fa-fw fa-lg" >
-							<p:menuitem value="Change Password" icon="fa fa-key fa-fw" actionListener="#{loginSession.toChangePwd}" process="@this"/>
-							<p:menuitem value="Signout" icon="fa fa-sign-out fa-fw" actionListener="#{loginSession.signOut}" process="@this"/>
-						</p:submenu>
+						<ui:include src="/menu/topbar-menu.xhtml" />
 					</p:menubar>
 					
 					<ui:remove><!-- Small Top Menu --></ui:remove>
@@ -57,16 +54,11 @@
 						<span class="icon-toggle fa fa-ellipsis-h fa-lg"/>
 					</p:commandLink>
 					<p:menu overlay="true" trigger="togglemenu-s" toggleable="true" my="right top" at="left top" styleClass="menu-s">
-						<p:submenu label="#{loginSession.username}" icon="fa fa-user fa-fw fa-lg" expanded="false">
-							<p:menuitem value="Change Password" icon="fa fa-key fa-fw" actionListener="#{loginSession.toChangePwd}" process="@this"/>
-							<p:menuitem value="Signout" icon="fa fa-sign-out fa-fw" actionListener="#{loginSession.signOut}" process="@this"/>
-						</p:submenu>
+						<ui:include src="/menu/topbar-menu.xhtml" />
 					</p:menu>
 				</div>
 				<ui:remove><!-- Menu --></ui:remove>
-				<p:menu styleClass="menu-panel animate-02">
-					<p:menuitem value="Home (Motor)" icon="fa fa-home fa-fw fa-lg" action="#{navigatorBean.toOmniMainPage}" process="@this"></p:menuitem>
-				</p:menu>
+				<ui:include src="/menu/function-menu.xhtml" />
 				
 				<p:remoteCommand name="rcHome" action="#{navigatorBean.toOmniMainPage}"/>
 			</h:form>
@@ -74,6 +66,7 @@
 			<div class="content-wrapper">
 				<ui:insert name="content" />
 			</div>
+			
 			<p:dialog widgetVar="progressDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" style="max-width:500px;">
 				<h:panelGrid columns="2">
 					<i class="fa fa-cog fa-spin fa-4x" style="margin-right: 12px; vertical-align: middle;"></i>

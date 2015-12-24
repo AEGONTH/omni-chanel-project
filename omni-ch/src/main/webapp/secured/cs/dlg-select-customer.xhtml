@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+
+	<p:dataTable id="dtSelectCus" 
+		value="#{customerEnquiryView.model.customerFounds}"
+		var="customer"
+		selectionMode="single"
+		selection="#{customerEnquiryView.model.customer}"
+		rowKey="#{customer.id}"
+		reflow="true"
+		paginator="true"
+		rows="5"
+		paginatorAlwaysVisible="false"
+		paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+		paginatorPosition="bottom" emptyMessage="No Record Found"
+		styleClass="tbl-flat"
+		style="max-width:50em;">
+		
+		<p:ajax event="rowSelect" listener="#{customerEnquiryView.onSelectCustomer}" update="@form" />
+		
+		<p:column headerText="Citizen ID" styleClass="txt-center">
+			<h:outputText value="#{customer.citizenId}" />
+		</p:column>
+		
+		<p:column headerText="First Name">
+			<h:outputText value="#{customer.firstName}" styleClass="capitalized"/>
+		</p:column>
+		
+		<p:column headerText="Last Name">
+			<h:outputText value="#{customer.lastName}" styleClass="capitalized"/>
+		</p:column>
+		
+		<p:column headerText="DOB" styleClass="txt-center">
+			<h:outputText value="#{customer.dob}" >
+				<f:convertDateTime pattern="dd/MM/yyyy"/>
+			</h:outputText>
+		</p:column>
+	</p:dataTable>
+
+</ui:composition>

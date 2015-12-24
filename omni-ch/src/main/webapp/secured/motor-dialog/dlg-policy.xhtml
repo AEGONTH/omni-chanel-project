@@ -23,39 +23,39 @@
 		<f:facet name="header">
 			<p:outputLabel value="Policy Info" style="font-weight:bold;"/>
 		</f:facet>
-		<p:messages id="policyMsg" closable="true" style="max-width:300px;"/>
+		<p:messages id="policyMsg" closable="true" style="max-width:100%;"/>
 		
 		<h:panelGroup id="panelFlow">
-			<h:panelGroup id="panelSearch" rendered="#{omniMainView.currentFlow eq 'search' ? true : false}">
+			<h:panelGroup id="panelSearch" rendered="#{omniMotorView.currentFlow eq 'search' ? true : false}">
 				<p:panelGrid id="gridSearch" layout="grid" columns="2" 
 					columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8 txt-left" 
 					styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" 
 					style="min-width:300px;">
 					
 					<p:outputLabel value="Tel." style="font-weight:bold;"/>
-					<p:inputText id="tel" type="tel" value="#{omniMainView.searchTel}" styleClass="tel-mask w90">
+					<p:inputText id="tel" type="tel" value="#{omniMotorView.searchTel}" styleClass="tel-mask w90">
 						<pe:keyFilter mask="pnum" preventPaste="false"/>
 					</p:inputText>
 						
 					<p:outputLabel value="Citizen ID" style="font-weight:bold;"/>
-					<p:inputText id="citizenId" type="tel" value="#{omniMainView.searchCitizen}" maxlength="13" styleClass="w90"></p:inputText>
+					<p:inputText id="citizenId" type="tel" value="#{omniMotorView.searchCitizen}" maxlength="13" styleClass="w90"></p:inputText>
 				</p:panelGrid>
 			</h:panelGroup>
 			
-			<h:panelGroup id="result" rendered="#{omniMainView.currentFlow eq 'result' ? true : false}">
-				<p:outputLabel value="Customer: #{omniMainView.policyModel.customer.firstName} #{omniMainView.policyModel.customer.lastName}"/>
+			<h:panelGroup id="result" rendered="#{omniMotorView.currentFlow eq 'result' ? true : false}">
+				<p:outputLabel value="Customer: #{omniMotorView.policyModel.customer.firstName} #{omniMotorView.policyModel.customer.lastName}"/>
 				<p:dataTable id="dtResult" 
-					value="#{omniMainView.policyModel.logMotors}"
+					value="#{omniMotorView.policyModel.logMotors}"
 					var="log"
 					paginator="true"
 					paginatorAlwaysVisible="false"
 					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
 					paginatorPosition="bottom" emptyMessage="No Records"
-					selection="#{omniMainView.policyModel.selectedLogMotor}"
-					rows="#{omniMainView.defaultRowPerPage}"
+					selection="#{omniMotorView.policyModel.selectedOmniMotorHist}"
+					rows="#{omniMotorView.defaultRowPerPage}"
 					rowKey="#{log.id}"
 					rowIndexVar="idx"
-					rowStyleClass="#{log.status.code eq 'OMNI_TKS_CLOSED' and empty log.omniLogMotor.policy ? '' : 'radio-disable'}"
+					rowStyleClass="#{log.status.code eq 'OMNI_TKS_CLOSED' and empty log.omniChLog.policy ? '' : 'radio-disable'}"
 					reflow="true"
 					style="margin-top:5px;">
 					
@@ -70,7 +70,7 @@
 					</p:column>
 					
 					<p:column headerText="Policy">
-						<p:outputLabel value="#{not empty log.omniLogMotor.policy ? log.omniLogMotor.policy.policyNo : 'N/A'}"/>
+						<p:outputLabel value="#{not empty log.omniChLog.policy ? log.omniChLog.policy.policyNo : 'N/A'}"/>
 					</p:column>
 					
 					<p:column headerText="Product">
@@ -88,26 +88,26 @@
 				</p:dataTable>
 			</h:panelGroup>
 			
-			<h:panelGroup id="policyEntry" rendered="#{omniMainView.currentFlow eq 'policyEntry' ? true : false}">
+			<h:panelGroup id="policyEntry" rendered="#{omniMotorView.currentFlow eq 'policyEntry' ? true : false}">
 				<p:panelGrid id="gridPolicyEntry" layout="grid" columns="2" 
 					columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8 txt-left" 
 					styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" 
 					style="min-width:300px;">
 					
 					<p:outputLabel value="Policy No" style="font-weight:bold;"/>
-					<p:inputText value="#{omniMainView.policyModel.policyNo}" styleClass="decresed-gap w90"/>
+					<p:inputText value="#{omniMotorView.policyModel.policyNo}" styleClass="decresed-gap w90"/>
 					
 					<p:outputLabel value="Premium" style="font-weight:bold;"/>
-					<pe:inputNumber value="#{omniMainView.policyModel.premium}" maxValue="99999999999999.9999" styleClass="decresed-gap w90"/>
+					<pe:inputNumber value="#{omniMotorView.policyModel.premium}" maxValue="99999999999999.9999" styleClass="decresed-gap w90"/>
 					
 					<p:outputLabel value="Effective Date" style="font-weight:bold;"/>
-					<p:calendar id="effectiveDate" value="#{omniMainView.policyModel.effectiveDate}" 
+					<p:calendar id="effectiveDate" value="#{omniMotorView.policyModel.effectiveDate}" 
 						pattern="dd/MM/yyyy" 
 						navigator="true"
 						showOtherMonths="true"/>
 					
 					<p:outputLabel value="Expiry Date" style="font-weight:bold;"/>
-					<p:calendar id="expireDate" value="#{omniMainView.policyModel.expireDate}" 
+					<p:calendar id="expireDate" value="#{omniMotorView.policyModel.expireDate}" 
 						pattern="dd/MM/yyyy" 
 						mindate="#{of:formatDate(now,'dd/MM/yyyy')}" 
 						navigator="true"
@@ -119,9 +119,9 @@
 		
 		<f:facet name="footer">
 			<h:panelGroup id="btn-action">
-				<p:commandButton value="Next" actionListener="#{omniMainView.doFlowProcess('next')}" update="btn-action" rendered="#{omniMainView.currentFlow ne 'policyEntry' ? true : false}" styleClass="fright" style="margin-bottom: 8px;"/>
-				<p:commandButton value="Save" actionListener="#{omniMainView.doFlowProcess('save')}" update="btn-action" rendered="#{omniMainView.currentFlow eq 'policyEntry' ? true : false}" styleClass="fright green-btn" style="margin-bottom: 8px;"/>
-				<p:commandButton value="Back" actionListener="#{omniMainView.doFlowProcess('back')}" update="btn-action, panelFlow" rendered="#{omniMainView.currentFlow ne 'search' ? true : false}" styleClass="fleft"/>
+				<p:commandButton value="Next" actionListener="#{omniMotorView.doFlowProcess('next')}" update="btn-action" rendered="#{omniMotorView.currentFlow ne 'policyEntry' ? true : false}" styleClass="fright" style="margin-bottom: 8px;"/>
+				<p:commandButton value="Save" actionListener="#{omniMotorView.doFlowProcess('save')}" update="btn-action" rendered="#{omniMotorView.currentFlow eq 'policyEntry' ? true : false}" styleClass="fright green-btn" style="margin-bottom: 8px;"/>
+				<p:commandButton value="Back" actionListener="#{omniMotorView.doFlowProcess('back')}" update="btn-action, panelFlow" rendered="#{omniMotorView.currentFlow ne 'search' ? true : false}" styleClass="fleft"/>
 			</h:panelGroup>
 		</f:facet>
 	</p:dialog>

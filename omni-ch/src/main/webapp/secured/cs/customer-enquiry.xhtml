@@ -1,0 +1,177 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	template="/templates/mainTemplate.xhtml">
+
+	<ui:define name="head">
+		<f:loadBundle var="msg" basename="com.adms.msg.cs.csMsg"/>
+		<title>#{msg['txt.header']}</title>
+		
+		<style>
+			.header {font-size: 2em !important; font-weight:bold;}
+			.width-full {width:100%;}
+			.col-icon-btn-width {width:45px;}
+			.input-width {width:95%;}
+			.dropdown-menu-width-inherit > label {width:95% !important;}
+			
+			.grid-label-col {width:30%;max-width:14em;float:none;}
+			.grid-input-col {width:70%;float:none;}
+			.btn-action {width:210px;height:32px;}
+			.dlg-content {min-width:20em; margin-bottom:10px; border:none;}
+			.dlg-wrapper-footer {width:auto;text-align:left;}
+			.dlg-content td {float:none;}
+			div.custom-panel {border:none;background:none;}
+			div.custom-panel .ui-panel-titlebar {
+				border:none;
+				background:none;
+				padding:0;
+				margin-bottom:5px;
+			}
+			div.custom-panel .ui-panel-content {padding:0;}
+		
+			.ui-icon .ui-c .fa .fa-lg{margin-top:-10px !important;}
+			.ui-custom-fluid div {width:100%;}
+			.ui-custom-fluid .ui-selectonemenu {width:90% !important;}
+			.ui-custom-fluid .ui-selectonemenu .ui-selectonemenu-label {width:100% !important;}
+		</style>
+	</ui:define>
+	
+	<ui:define name="headerCenterContent">
+		<div style="width:auto;margin:0 auto;">
+			<p:outputLabel value="#{msg['txt.header']}" styleClass="header txt-label-shadow" />
+		</div>
+	</ui:define>
+	
+	<ui:define name="content">
+		<style>
+			@media screen and ( max-width :35em ) {
+				.grid-row-gap div.ui-grid-row .ui-panelgrid-cell.grid-label-col.ui-grid-col-6 {margin-top:0;}
+				.dialog-case .ui-dialog-content.ui-widget-content {max-height:20em;}
+			}	
+		</style>
+		
+		<h:form id="frmMain">
+			<ui:param name="searchParam" value="#{customerEnquiryView.model.searchDlg}" />
+			<ui:param name="addCaseParam" value="#{customerEnquiryView.model.addCaseDlg}" />
+			<ui:param name="cus" value="#{customerEnquiryView.model.customer}" />
+			<p:growl id="msgGrowl" globalOnly="false"/>
+			
+			<p:panel id="dataPanel" styleClass="bottom-shadow" style="margin-bottom:0.5em;">
+				<f:facet name="header">
+					<h:outputText value="#{msg['table.1.header']}" styleClass=""/>
+				</f:facet>
+				
+				<p:panelGrid id="mainGrid" columns="2" layout="grid" styleClass="grid-borderless">
+					<p:panelGrid columns="2" layout="grid" columnClasses="grid-label-col, grid-input-col" styleClass="grid-borderless grid-row-gap">
+						<p:outputLabel value="Citizen ID" styleClass=""/>
+						<p:inputText id="insuredCitizenId" value="#{cus.citizenId}" styleClass="width-full" readonly="true"/>
+						
+						<p:outputLabel value="Full Name" styleClass=""/>
+						<p:inputText id="insuredFullName" value="#{cus.fullName}" styleClass="width-full" readonly="true"/>
+						
+						<p:outputLabel value="Gender" styleClass=""/>
+						<p:inputText id="insuredGender" value="#{cus.gender.paramKey}" styleClass="width-full" readonly="true"/>
+					</p:panelGrid>
+					
+					<p:panelGrid columns="2" layout="grid" columnClasses="grid-label-col, grid-input-col" styleClass="grid-borderless grid-row-gap">
+						<p:outputLabel value="Date of Birth" styleClass=""/>
+						<p:inputText id="inusredDOB" value="#{cus.dob}" styleClass="width-full" readonly="true">
+							<f:convertDateTime pattern="dd/MM/yyyy" timeZone=""/>
+						</p:inputText>
+						
+						<p:outputLabel value="Marital Status" styleClass="capitalized"/>
+						<p:inputText id="insuredMarital" value="#{utilize.lowerCase(cus.marital)}" styleClass="width-full capitalized" readonly="true"/>
+					</p:panelGrid>
+				</p:panelGrid>
+				
+				<hr class="faded"/>
+				<h:panelGroup id="actionPanel">
+					<p:commandButton id="searchBtn" value="#{msg['btn.start.search']}" process="@this"
+						icon="fa fa-search fa-fw"
+						oncomplete="PF('searchDlg').show();"
+						styleClass="btn-action btn-no-shadow blue-btn">
+						<ui:remove><p:ajax event="dialogReturn" update="dataPanel, actionPanel"/></ui:remove>
+					</p:commandButton>
+					
+					<p:commandButton id="clearAll" value="Clear" 
+						icon="fa fa-undo" actionListener="#{customerEnquiryView.clearModel()}"
+						process="@this" update="@form" styleClass="btn-action btn-no-shadow yellow-btn" >
+					</p:commandButton>
+				</h:panelGroup>
+			</p:panel>
+		
+			<ui:include src="tbl-policy-by-cus.xhtml" />
+			<ui:include src="tbl-log-hist.xhtml" />
+			
+			<ui:remove>
+			<!-- ## Dialog Section ## -->
+			</ui:remove>
+			<p:dialog id="searchDlg" widgetVar="searchDlg" 
+				dynamic="true" modal="true" 
+				focus="shCitizenId" fitViewport="true"
+				resizable="false" maximizable="false" 
+				closable="false" closeOnEscape="false">
+				
+				<p:defaultCommand target="btnSearchSubmit" />
+				<pe:keyFilter for="shCitizenId" mask="num"/>
+				
+				<f:facet name="header">
+					<h:outputText value="#{msg['modal.search.header.text']}" />
+				</f:facet>
+				
+				<p:panel id="searchPanel" styleClass="custom-panel" style="padding:0;">
+					<p:focus id="focusSearchDlg" context="@next"/>
+					<h:panelGrid columns="1" styleClass="dlg-content">
+						<p:outputLabel value="Insured Citizen ID" for="shCitizenId" />
+						<p:inputText id="shCitizenId" type="tel" value="#{customerEnquiryView.shCitizenId}" maxlength="13" styleClass="input-width" style="margin-bottom:0.3em;"/>
+						
+						<p:outputLabel value="Insured First Name" for="shInsuredFname"/>
+						<p:inputText id="shInsuredFname" value="#{customerEnquiryView.shFirstName}" styleClass="input-width" style="margin-bottom:0.3em;"/>
+						
+						<p:outputLabel value="Insured Last Name" for="shInsuredLname"/>
+						<p:inputText id="shInsuredLname" value="#{customerEnquiryView.shLastName}" styleClass="input-width" style="margin-bottom:0.3em;"/>
+						
+						<p:outputLabel value="Insured DOB" for="shInsuredDOB" styleClass="date-picker-normal"/>
+						<p:calendar id="shInsuredDOB" value="#{customerEnquiryView.shDOB}" 
+							timeZone="#{customerEnquiryView.timeZone}" 
+							navigator="true" maxdate="#{now}" 
+							pattern="dd/MM/yyyy" mask="true" 
+							styleClass=""/>
+						
+					</h:panelGrid>
+				</p:panel>
+				
+				<f:facet name="footer">
+					<div class="dlg-wrapper-footer">
+						<h:panelGrid columns="2" style="width:100%;" columnClasses="ui-grid-col-6, ui-grid-col-6">
+							<p:commandButton id="btnSearchSubmit" value="Submit" actionListener="#{customerEnquiryView.doSearch()}" 
+							process="@this, frmMain:searchPanel" 
+							onstart="PF('progressDialog').show()"
+							oncomplete="PF('progressDialog').hide()"
+							styleClass="btn-green btn-no-shadow w100"/>
+							
+							<p:commandButton value="Cancel" process="@this" oncomplete="PF('searchDlg').hide()" update="frmMain:searchPanel" styleClass="btn-default btn-no-shadow w100">
+								<p:resetInput target="frmMain:searchPanel" />
+							</p:commandButton>
+						</h:panelGrid>
+					</div>
+				</f:facet>
+			</p:dialog>
+			
+			<p:dialog id="selectCustomerDlg" widgetVar="selectCustomerDlg" 
+				dynamic="true" modal="true"
+				fitViewport="true" resizable="false" closable="true">
+				<f:facet name="header">
+					<h:outputText value="Customer Results"/>
+				</f:facet>
+				<ui:include src="dlg-select-customer.xhtml" />
+			</p:dialog>
+			
+		</h:form>
+		
+	</ui:define>
+
+</ui:composition>
