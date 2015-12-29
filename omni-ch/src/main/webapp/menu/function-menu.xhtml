@@ -8,7 +8,9 @@
 	</style>
 	
 	<p:menu styleClass="menu-panel animate-02">
-		<p:menuitem value="Home" icon="fa fa-home fa-fw fa-lg" action="#{navigatorBean.toOmniMainPage}" process="@this" styleClass="menu-icon-space"/>
+		<ui:remove>
+			<p:menuitem value="Home" icon="fa fa-home fa-fw fa-lg" action="#{navigatorBean.toOmniMainPage}" process="@this" styleClass="menu-icon-space"/>
+		</ui:remove>
 		<p:menuitem value="Motor" icon="fa fa-car fa-fw fa-lg" action="#{navigatorBean.toOmniMotorPage}" process="@this" styleClass="menu-icon-space"/>
 		<p:menuitem value="Travel" icon="fa fa-plane fa-fw fa-lg" action="#{navigatorBean.toOmniTravelPage}" process="@this" styleClass="menu-icon-space"/>
 		<p:menuitem value="Customer Enquiry" icon="fa fa-envelope fa-fw fa-lg" action="#{navigatorBean.toCsCustomerEnquiry}" process="@this" styleClass="menu-icon-space"/>

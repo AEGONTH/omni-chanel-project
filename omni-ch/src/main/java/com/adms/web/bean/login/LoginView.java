@@ -33,7 +33,7 @@ public class LoginView extends BaseBean {
 
 	private static final long serialVersionUID = -7276944451892430995L;
 
-	private final String AUTH_URL = "http://localhost:8080/authen-ws/rest/authservice";
+	private final String AUTH_URL = "http://10.66.0.16:8080/authen-ws/rest/authservice";
 	private final String AUTH_PATH = "auth";
 	private final String CHG_PWD_PATH = "chgpwd";
 	private final String SALT_PWD = "$AlT*P@$$w0Rd#";

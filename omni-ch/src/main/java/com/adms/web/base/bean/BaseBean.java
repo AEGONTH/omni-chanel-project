@@ -24,7 +24,7 @@ public class BaseBean implements Serializable {
 	
 	private String currentVersrion;
 
-	protected final String DEFAULT_SYSTEM_LOG_NAME = "CS System";
+	protected final String DEFAULT_SYSTEM_LOG_NAME = "Omni Channel System";
 
 	public BaseBean() {
 		try {

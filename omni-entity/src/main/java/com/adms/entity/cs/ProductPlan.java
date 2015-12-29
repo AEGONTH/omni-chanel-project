@@ -42,6 +42,9 @@ public class ProductPlan extends BaseDomain {
 	
 	@Column(name="EXCESS_AMT")
 	private BigDecimal excessAmt;
+	
+	@Column(name="VISIBLE")
+	private String visible;
 
 	public ProductPlan() {
 		
@@ -105,6 +108,14 @@ public class ProductPlan extends BaseDomain {
 
 	public void setExcessAmt(BigDecimal excessAmt) {
 		this.excessAmt = excessAmt;
+	}
+
+	public String getVisible() {
+		return visible;
+	}
+
+	public void setVisible(String visible) {
+		this.visible = visible;
 	}
 	
 }

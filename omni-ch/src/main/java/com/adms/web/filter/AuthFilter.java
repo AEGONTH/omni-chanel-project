@@ -19,6 +19,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
+import org.omnifaces.util.Faces;
 
 import com.adms.common.entity.UserLogin;
 import com.adms.web.bean.login.LoginSession;
@@ -29,7 +30,7 @@ public class AuthFilter extends AbstractFilter {
 	private final String AUTH_PATH = "auth";
 	private final String SSO_PATH = "simpleSSO";
 	private final String CHG_PWD_PATH = "chgpwd";
-	private final String SALT_PWD = "$AlT*P@$$w0Rd#";
+//	private final String SALT_PWD = "$AlT*P@$$w0Rd#";
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -43,22 +44,24 @@ public class AuthFilter extends AbstractFilter {
 //		HttpSession session = req.getSession(false);
 		String reqURI = req.getRequestURI();
 		
-		MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
-		headers.add("requestedType", "filter");
-		headers.add("requestedURL", reqURI);
+//		MultivaluedMap<String, Object> headers = new MultivaluedHashMap<>();
+//		headers.add("requestedType", "authen");
+//		headers.add("requestedURL", reqURI);
+//		
+//		Response resp = authWS(headers);
+//		
+//		if(resp.getStatus() == Status.OK.getStatusCode()) {
+//			System.out.println("Status OK!");
+//			chain.doFilter(request, response);
+//		} if(resp.getStatus() == Status.UNAUTHORIZED.getStatusCode()) {
+//			System.out.println("Unauthorized!");
+//			res.sendRedirect(req.getContextPath() + "/errors/access-denied");
+//		} else {
+//			System.out.println("Bad Requested!!");
+//			res.sendRedirect(req.getContextPath() + "/errors/500");
+//		}
 		
-		Response resp = authWS(headers);
-		
-		if(resp.getStatus() == Status.OK.getStatusCode()) {
-			System.out.println("Status OK!");
-			chain.doFilter(request, response);
-		} if(resp.getStatus() == Status.UNAUTHORIZED.getStatusCode()) {
-			System.out.println("Unauthorized!");
-			res.sendRedirect(req.getContextPath() + "/errors/access-denied");
-		} else {
-			System.out.println("Bad Requested!!");
-			res.sendRedirect(req.getContextPath() + "/errors/500");
-		}
+		chain.doFilter(request, response);
 	}
 	
 	private Response authWS(MultivaluedMap<String, Object> headers) {

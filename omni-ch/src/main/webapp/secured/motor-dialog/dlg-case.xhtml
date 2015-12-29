@@ -18,16 +18,16 @@
 			<p:outputLabel value="Tel." for="tel" style="font-weight:bold;"/>
 			<h:panelGrid columns="2" columnClasses="col-1, col-2" styleClass="decresed-gap tbl-action">
 				<p:inputText id="tel" type="tel" value="#{omniMotorView.tel}" 
-				required="true" requiredMessage="Tel. is required" 
-				readonly="#{not empty omniMotorView.logId or omniMotorView.telReadyOnly}" 
-				styleClass="tel-mask w90">
+					required="true" requiredMessage="Tel. is required" 
+					readonly="#{not empty omniMotorView.logId or omniMotorView.telReadyOnly}" 
+					styleClass="tel-mask w90">
 					<pe:keyFilter mask="pnum" preventPaste="false"/>
 				</p:inputText>
 				<p:commandButton icon="fa fa-search" actionListener="#{omniMotorView.doSearchCustomer('TEL')}" process="@this, tel" disabled="#{not empty omniMotorView.logId or omniMotorView.telReadyOnly or omniMotorView.citizenReadyOnly}" styleClass="decresed-gap"/>
 			</h:panelGrid>
 			
 			<p:outputLabel value="Other." style="font-weight:bold;"/>
-			<p:inputText type="tel" styleClass="tel-mask decresed-gap decresed-gap w90">
+			<p:inputText type="tel" value="#{omniMotorView.otherTel}" styleClass="tel-mask decresed-gap decresed-gap w90">
 				<pe:keyFilter mask="pnum" preventPaste="false"/>
 			</p:inputText>
 			

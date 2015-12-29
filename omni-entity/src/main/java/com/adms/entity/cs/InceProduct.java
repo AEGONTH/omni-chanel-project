@@ -34,6 +34,9 @@ public class InceProduct extends BaseDomain {
 	
 	@Column(name="PRODUCT_NAME")
 	private String productName;
+	
+	@Column(name="VISIBLE")
+	private String visible;
 
 	public Long getId() {
 		return id;
@@ -73,6 +76,14 @@ public class InceProduct extends BaseDomain {
 
 	public void setProductType(String productType) {
 		this.productType = productType;
+	}
+
+	public String getVisible() {
+		return visible;
+	}
+
+	public void setVisible(String visible) {
+		this.visible = visible;
 	}
 	
 }

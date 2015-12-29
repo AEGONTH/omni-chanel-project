@@ -1,4 +1,4 @@
-package com.adms.web.bean.motor;
+package com.adms.web.bean.omni.motor;
 
 import org.primefaces.push.annotation.OnMessage;
 import org.primefaces.push.annotation.PushEndpoint;

@@ -26,6 +26,9 @@ public class ListSource extends BaseDomain {
 	@Column(name="LIST_SOURCE_VALUE")
 	private String listSourceValue;
 
+	@Column(name="VISIBLE")
+	private String visible;
+	
 	public ListSource() {
 		
 	}
@@ -56,6 +59,14 @@ public class ListSource extends BaseDomain {
 
 	public void setListSourceValue(String listSourceValue) {
 		this.listSourceValue = listSourceValue;
+	}
+
+	public String getVisible() {
+		return visible;
+	}
+
+	public void setVisible(String visible) {
+		this.visible = visible;
 	}
 	
 }

@@ -37,6 +37,9 @@ public class CategoryData extends BaseDomain {
 	
 	@Column(name="CATEGORY_DESC")
 	private String desc;
+	
+	@Column(name="VISIBLE")
+	private String visible;
 
 //	@OneToMany(mappedBy="parentCategory", fetch=FetchType.EAGER)
 //	private List<CategoryData> subCategory;
@@ -93,6 +96,14 @@ public class CategoryData extends BaseDomain {
 	public CategoryData setDesc(String categoryDesc) {
 		this.desc = categoryDesc;
 		return this;
+	}
+
+	public String getVisible() {
+		return visible;
+	}
+
+	public void setVisible(String visible) {
+		this.visible = visible;
 	}
 
 //	public List<CategoryData> getSubCategory() {

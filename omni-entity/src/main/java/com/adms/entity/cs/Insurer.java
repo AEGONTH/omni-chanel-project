@@ -25,6 +25,9 @@ public class Insurer extends BaseDomain {
 	
 	@Column(name="INSURER_NAME")
 	private String insurerName;
+	
+	@Column(name="VISIBLE")
+	private String visible;
 
 	public Long getId() {
 		return id;
@@ -48,6 +51,14 @@ public class Insurer extends BaseDomain {
 
 	public void setInsurerName(String insurerName) {
 		this.insurerName = insurerName;
+	}
+
+	public String getVisible() {
+		return visible;
+	}
+
+	public void setVisible(String visible) {
+		this.visible = visible;
 	}
 	
 }

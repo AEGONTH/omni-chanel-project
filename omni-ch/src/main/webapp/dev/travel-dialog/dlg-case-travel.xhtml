@@ -1,0 +1,208 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:of="http://omnifaces.org/functions"
+	xmlns:o="http://omnifaces.org/ui">
+	
+	<p:dialog id="dlgCustomer" widgetVar="dlgCustomer" 
+	dynamic="true" modal="true"
+	fitViewport="true" resizable="false"
+	closable="true" styleClass="dlgCustomSize">
+		<f:facet name="header">
+			<h:outputText value="Case Info" />
+		</f:facet>
+		<p:messages id="dlgMsg" closable="true"/>
+		<p:panelGrid id="gridCustomerInfo" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
+			
+			<p:outputLabel value="Tel." for="tel" style="font-weight:bold;"/>
+			<h:panelGrid columns="2" columnClasses="col-1, col-2" styleClass="decresed-gap tbl-action">
+				<p:inputText id="tel" type="tel" value="#{omniTravelView.tel}" 
+					required="true" requiredMessage="Tel. is required" 
+					readonly="#{not empty omniTravelView.customerInfo.omniChannelLogId or omniTravelView.telReadyOnly}" 
+					styleClass="tel-mask w90">
+					<pe:keyFilter mask="pnum" preventPaste="false"/>
+				</p:inputText>
+				<p:commandButton icon="fa fa-search" actionListener="#{omniTravelView.doSearchCustomer('TEL')}" process="@this, tel" disabled="#{not empty omniTravelView.customerInfo.omniChannelLogId or omniTravelView.telReadyOnly or omniTravelView.citizenReadyOnly}" styleClass="decresed-gap"/>
+			</h:panelGrid>
+			
+			<p:outputLabel value="Other." style="font-weight:bold;"/>
+			<p:inputText type="tel" value="#{omniTravelView.customerInfo.otherTel}" styleClass="tel-mask decresed-gap decresed-gap w90">
+				<pe:keyFilter mask="pnum" preventPaste="false"/>
+			</p:inputText>
+			
+			<p:outputLabel value="Citizen ID" for="citizenId" style="font-weight:bold;"/>
+			<h:panelGrid columns="2" columnClasses="col-1, col-2" styleClass="decresed-gap tbl-action">
+				<p:inputText id="citizenId" type="tel" value="#{omniTravelView.citizenId}" maxlength="13" required="true" requiredMessage="Citizen ID is required" readonly="#{not empty omniTravelView.customerInfo.omniChannelLogId or omniTravelView.citizenReadyOnly}" styleClass="w90"></p:inputText>
+				<p:commandButton icon="fa fa-search" actionListener="#{omniTravelView.doSearchCustomer('CITIZEN')}" process="@this, citizenId" disabled="#{not empty omniTravelView.customerInfo.omniChannelLogId or omniTravelView.telReadyOnly or omniTravelView.citizenReadyOnly}" styleClass="decresed-gap"/>
+			</h:panelGrid>
+			
+			<p:outputLabel value="Passport No." for="passportId" style="font-weight:bold;"/>
+			<p:inputText id="passportId" value="#{omniTravelView.customerInfo.passportId}" required="true" requiredMessage="Passport No. is required." styleClass="decresed-gap w90"/>
+			
+			<p:outputLabel value="First Name" for="cFirstName" style="font-weight:bold;"/>
+			<p:inputText id="cFirstName" value="#{omniTravelView.customerInfo.firstName}" required="true" requiredMessage="First Name is required" styleClass="decresed-gap w90"/>
+			
+			<p:outputLabel value="Last Name" for="cLastName" style="font-weight:bold;"/>
+			<p:inputText id="cLastName" value="#{omniTravelView.customerInfo.lastName}" required="true" requiredMessage="Last Name is required" styleClass="decresed-gap w90"/>
+		
+			<p:outputLabel value="Gender" style="font-weight:bold;"/>
+			<p:selectOneMenu value="#{omniTravelView.customerInfo.gender}" styleClass="decresed-gap w90">
+				<f:selectItem itemLabel="Please Select"/>
+				<f:selectItems value="#{omniTravelView.genderSelection}"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Date of Birth" for="dateOfBirth" style="font-weight:bold;"/>
+			<p:calendar id="dateOfBirth" value="#{omniTravelView.customerInfo.dateOfBirth}" 
+				mask="true" pattern="dd-MM-yyyy" 
+				yearRange="c-75:c-15" maxdate="#{now}" 
+				navigator="true"
+				required="true" requiredMessage="Date of Birth is required."
+				styleClass="decresed-gap w90"/>
+			
+			<p:outputLabel value="Email" style="font-weight:bold;"/>
+			<p:inputText value="#{omniTravelView.customerInfo.email}" styleClass="decresed-gap w90"/>
+			
+			<p:outputLabel value="Address" style="font-weight:bold;"/>
+			<p:inputText value="#{omniTravelView.customerInfo.address1}" styleClass="decresed-gap w90"/>
+			
+			<h:outputText value=" " />
+			<p:inputText value="#{omniTravelView.customerInfo.address2}" styleClass="decresed-gap w90"/>
+			
+			<h:outputText value=" " />
+			<p:inputText value="#{omniTravelView.customerInfo.address3}" styleClass="decresed-gap w90"/>
+			
+			<p:outputLabel value="Post Code" style="font-weight:bold;"/>
+			<p:inputText value="#{omniTravelView.customerInfo.postCode}" styleClass="decresed-gap w90"/>
+			
+			<p:outputLabel value="Province" style="font-weight:bold;"/>
+			<p:selectOneMenu value="#{omniTravelView.customerInfo.province}" styleClass="decresed-gap w90">
+				<f:selectItem itemLabel="Please Select"/>
+				<f:selectItems value="#{omniTravelView.provinceSelection}" />
+			</p:selectOneMenu>
+		</p:panelGrid>
+		
+		<hr class="faded"/>
+		
+		<p:panelGrid id="gridProduct" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
+		
+			<p:outputLabel value="Destination Country" for="destCountry" style="font-weight:bold;"/>
+			<p:selectOneMenu id="destCountry" value="#{omniTravelView.customerInfo.destinationCountry}" 
+				required="true" requiredMessage="Destination Country is required." 
+				styleClass="decresed-gap w90">
+				<f:selectItem itemLabel="Please Select"/>
+				<f:selectItems value="#{omniTravelView.destinationCountrySelection}"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Departure Date" for="departDate" style="font-weight:bold;"/>
+			<p:calendar id="departDate" value="#{omniTravelView.currDepartDate}" 
+				mask="true" pattern="dd-MM-yyyy HH:mm" 
+				mindate="#{now}"
+				timeControlType="slider" showOtherMonths="true"
+				required="true" requiredMessage="Departure Date is required."
+				styleClass="decresed-gap">
+				<p:ajax event="dateSelect" listener="#{omniTravelView.departureDateListener}" process="@this, arrivalDate" update="arrivalDate, travelDration" />
+			</p:calendar>
+			
+			<p:outputLabel value="Arrival Date" for="arrivalDate" style="font-weight:bold;"/>
+			<p:calendar id="arrivalDate" value="#{omniTravelView.currArrivalDate}" 
+				mask="true" pattern="dd-MM-yyyy HH:mm" 
+				mindate="#{omniTravelView.currDepartDate eq null ? now : omniTravelView.currDepartDate}"
+				timeControlType="slider" showOtherMonths="true"
+				required="true" requiredMessage="Arrival Date is required."
+				styleClass="decresed-gap">
+				<p:ajax event="dateSelect" update="travelDration" />
+			</p:calendar>
+
+			<p:outputLabel value="Duration" style="font-weight:bold;"/>
+			<p:outputLabel id="travelDration" value="#{omniTravelView.currDepartDate eq null or omniTravelView.currArrivalDate eq null ? 0 : of:daysBetween(omniTravelView.currDepartDate, omniTravelView.currArrivalDate) + 1} day(s)" readonly="true"/>
+			
+			<p:outputLabel value="Departure Flight No." style="font-weight:bold;"/>
+			<p:inputText value="#{omniTravelView.customerInfo.departFlightNo}" styleClass="decresed-gap w90"/>
+			
+			<p:outputLabel value="Arrival Flight No." style="font-weight:bold;"/>
+			<p:inputText value="#{omniTravelView.customerInfo.arrivalFlightNo}" styleClass="decresed-gap w90"/>
+			
+			<p:outputLabel value="Purpose" style="font-weight:bold;"/>
+			<p:selectOneMenu id="stPurpose" value="#{omniTravelView.purposeCode}" styleClass="decresed-gap w90">
+				<f:selectItem itemLabel="Please Select"/>
+				<f:selectItems value="#{omniTravelView.travelPurposeSelection}" />
+			</p:selectOneMenu>
+			
+			<h:outputText value=" " />
+			<h:outputText value=" " />
+			
+			<p:outputLabel value="List Source" for="stListSource" style="font-weight:bold;"/>
+			<p:selectOneMenu id="stListSource" value="#{omniTravelView.customerInfo.listSourceCode}" required="true" requiredMessage="List Source is required" styleClass="decresed-gap w90">
+				<f:selectItem itemLabel="Please Select"/>
+				<f:selectItems value="#{omniTravelView.listSourceSelection}" />
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Insurer" for="stInsurer" style="font-weight:bold;"/>
+			<p:selectOneMenu id="stInsurer" value="#{omniTravelView.insurerCode}" required="true" requiredMessage="Insurer is required" styleClass="decresed-gap w90">
+				<p:ajax listener="#{omniTravelView.insurerSelectionListener}" update="stProduct, stPlan"/>
+				<f:selectItem itemLabel="Please Select" itemDisabled="true"/>
+				<f:selectItems value="#{omniTravelView.insurerSelection}" />
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Product" for="stProduct" style="font-weight:bold;"/>
+			<p:selectOneMenu id="stProduct" value="#{omniTravelView.inceProductCode}" required="true" requiredMessage="Product is required" disabled="#{empty omniTravelView.inceProductSelection}" styleClass="decresed-gap w90">
+				<p:ajax listener="#{omniTravelView.productSelectionListener}" update="stPlan"/>
+				<f:selectItem itemLabel="Please Select"/>
+				<f:selectItems value="#{omniTravelView.inceProductSelection}" />
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Plan" for="stPlan" style="font-weight:bold;"/>
+			<p:selectOneMenu id="stPlan" value="#{omniTravelView.customerInfo.productPlan}" required="true" requiredMessage="Plan is required" disabled="#{empty omniTravelView.productPlanSelection}" styleClass="decresed-gap w90">
+				<f:selectItem itemLabel="Please Select"/>
+				<f:selectItems value="#{omniTravelView.productPlanSelection}" />
+			</p:selectOneMenu>
+		
+		</p:panelGrid>
+		
+		<hr class="faded"/>
+		
+		<p:panelGrid id="gridLogging" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
+		
+			<p:outputLabel value="Channel" for="stChannel" style="font-weight:bold;"/>
+			<p:selectOneMenu id="stChannel" value="#{omniTravelView.customerInfo.channel}" required="true" requiredMessage="Channel is required" styleClass="decresed-gap w90">
+				<f:selectItem itemLabel="Please Select"/>
+				<f:selectItems value="#{omniTravelView.channelSelection}" />
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Contact Reason" for="stContactReason" style="font-weight:bold;"/>
+			<p:selectOneMenu id="stContactReason" value="#{omniTravelView.contactReasonCode}" styleClass="decresed-gap w90">
+				<p:ajax listener="#{omniTravelView.contactReasonSelectionListener}" update="ctrsOthersTxt, ctrsOthersVal"/>
+				<f:selectItem itemLabel="Please Select"/>
+				<f:selectItems value="#{omniTravelView.contactReasonSelection}" />
+			</p:selectOneMenu>
+			
+			<h:panelGroup id="ctrsOthersTxt">
+				<p:outputLabel value=" " rendered="#{omniTravelView.customerInfo.contactReason eq 'OMNI_CTRS_OTHER'}"/>
+			</h:panelGroup>
+			<h:panelGroup id="ctrsOthersVal">
+				<p:inputText value="#{omniTravelView.customerInfo.contactReasonOther}" rendered="#{omniTravelView.customerInfo.contactReason eq 'OMNI_CTRS_OTHER'}" styleClass="w90"/>
+			</h:panelGroup>
+			
+			<p:outputLabel value="Tracking Status" for="stTrackingStat" style="font-weight:bold;"/>
+			<p:selectOneMenu id="stTrackingStat" value="#{omniTravelView.customerInfo.trackingStatus}" required="true" requiredMessage="Tracking Status is required" styleClass="decresed-gap w90">
+				<f:selectItem itemLabel="Please Select"/>
+				<f:selectItems value="#{omniTravelView.trackingStatusSelection}"/>
+			</p:selectOneMenu>
+			
+			<p:outputLabel value="Contact Details" style="font-weight:bold;"/>
+			<p:inputTextarea value="#{omniTravelView.customerInfo.contactDetails}" styleClass="w90"/>
+			
+			<p:outputLabel value="Due Date" for="dueDate" style="font-weight:bold;"/>
+			<p:calendar id="dueDate" value="#{omniTravelView.customerInfo.dueDate}" required="true" requiredMessage="Due Date is required" pattern="dd-MM-yyyy HH:mm" mindate="#{of:formatDate(now,'dd-MM-yyyy')}" timeControlType="slider" showOtherMonths="true"></p:calendar>
+		</p:panelGrid>
+		
+		<f:facet name="footer">
+			<p:commandButton value="Save" actionListener="#{omniTravelView.saveCustomerInfo}" update="dlgMsg, gridCustomerInfo, gridProduct, gridLogging" styleClass="green-btn"/>
+			<p:commandButton value="Cancel" type="button" process="@this" onclick="PF('dlgCustomer').hide()" styleClass=""/>
+		</f:facet>
+	</p:dialog>
+	
+</ui:composition>

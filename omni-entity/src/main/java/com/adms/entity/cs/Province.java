@@ -35,6 +35,9 @@ public class Province extends BaseDomain {
 	@Column(name="PROVINCE_NAME_EN")
 	private String provinceNameEn;
 
+	@Column(name="VISIBLE")
+	private String visible;
+	
 	public Long getId() {
 		return id;
 	}
@@ -73,6 +76,14 @@ public class Province extends BaseDomain {
 
 	public void setProvinceNameEn(String provinceNameEn) {
 		this.provinceNameEn = provinceNameEn;
+	}
+
+	public String getVisible() {
+		return visible;
+	}
+
+	public void setVisible(String visible) {
+		this.visible = visible;
 	}
 	
 }

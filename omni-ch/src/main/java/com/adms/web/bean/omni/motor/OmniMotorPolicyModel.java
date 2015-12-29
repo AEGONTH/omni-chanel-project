@@ -1,4 +1,4 @@
-package com.adms.web.bean.motor;
+package com.adms.web.bean.omni.motor;
 
 import java.util.Date;
 import java.util.List;

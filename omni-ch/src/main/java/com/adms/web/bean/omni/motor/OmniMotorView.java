@@ -1,11 +1,10 @@
-package com.adms.web.bean.motor;
+package com.adms.web.bean.omni.motor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -28,29 +27,19 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.push.EventBus;
 import org.primefaces.push.EventBusFactory;
 
-import com.adms.cs.service.CategoryDataService;
 import com.adms.cs.service.CustomerService;
 import com.adms.cs.service.CustomerYesRecordService;
-import com.adms.cs.service.InceProductService;
-import com.adms.cs.service.InsurerService;
 import com.adms.cs.service.ListSourceService;
-import com.adms.cs.service.OmniMotorHistService;
 import com.adms.cs.service.OmniChLogService;
-import com.adms.cs.service.ParamConfigService;
-import com.adms.cs.service.ProductPlanService;
-import com.adms.cs.service.ProvinceService;
-import com.adms.entity.cs.CategoryData;
+import com.adms.cs.service.OmniMotorHistService;
 import com.adms.entity.cs.Customer;
 import com.adms.entity.cs.CustomerYesRecord;
-import com.adms.entity.cs.InceProduct;
 import com.adms.entity.cs.ListSource;
 import com.adms.entity.cs.OmniChLog;
 import com.adms.entity.cs.OmniMotorHist;
-import com.adms.entity.cs.ParamConfig;
-import com.adms.entity.cs.ProductPlan;
-import com.adms.entity.cs.Province;
 import com.adms.web.base.bean.BaseBean;
 import com.adms.web.bean.login.LoginSession;
+import com.adms.web.bean.omni.OmniChannelSync;
 
 @ManagedBean
 @ViewScoped
@@ -59,20 +48,17 @@ public class OmniMotorView extends BaseBean {
 	private static final long serialVersionUID = -1006785263944871332L;
 
 	private final OmniMotorHistService omniMotorHistService = Faces.evaluateExpressionGet("#{omniMotorHistService}");
-	private final ParamConfigService paramConfigService = Faces.evaluateExpressionGet("#{paramConfigService}");
-	private final ProvinceService provinceService = Faces.evaluateExpressionGet("#{provinceService}");
 	private final OmniChLogService omniLogMotorService = Faces.evaluateExpressionGet("#{omniLogMotorService}");
 	private final CustomerYesRecordService customerYesRecordService = Faces.evaluateExpressionGet("#{customerYesRecordService}");
 	private final CustomerService customerService = Faces.evaluateExpressionGet("#{customerService}");
+
+	private OmniChannelSync omniChannelSync = Faces.evaluateExpressionGet("#{omniChannelSync}");
 	
 	@ManagedProperty("#{loginSession}")
 	private LoginSession loginSession;
 	
 	public final String TEL = "TEL";
 	public final String CITIZEN = "CITIZEN";
-
-	private Map<String, CategoryData> categoryMap;
-	private Map<String, Province> provinceMap;
 	
 	private List<OmniMotorHist> omniMotorHistList;
 	
@@ -126,18 +112,15 @@ public class OmniMotorView extends BaseBean {
 	
 	private List<SelectItem> listSourceSelection;
 	private String listSource;
-	private Map<String, ListSource> listSourceMap;
 	
 	private List<SelectItem> insurerSelection;
 	private String insurerCode;
 	
 	private List<SelectItem> inceProductSelection;
 	private String inceProductCode;
-	private Map<String, InceProduct> inceProductMap;
 	
 	private List<SelectItem> productPlanSelection;
 	private String productPlan;
-	private Map<String, ProductPlan> productPlanMap;
 	
 	private List<SelectItem> channelSelection;
 	private String channel;
@@ -161,33 +144,21 @@ public class OmniMotorView extends BaseBean {
 	
 	@PostConstruct
 	private void init() {
-		
+		System.out.println("URI: " + Faces.getRequestURI());
+		System.out.println("URL: " + Faces.getRequestURL());
+		System.out.println("SessionId: " + Faces.getSessionId());
 	}
 	
 	public void initialData() throws Throwable {
 		initSex();
 		
-		initCategoryMap();
 		initBrand();
 		initModelByBrand(motorBrand);
 		
 		initCarYears();
-
-		ListSourceService listSourceService = Faces.evaluateExpressionGet("#{listSourceService}");
-		listSourceMap = listSourceService.findAll()
-			.stream().collect(Collectors.toMap(ListSource::getListSourceCode, m -> m));
 		initListSource();
-		
 		initInsurers();
-
-		InceProductService inceProductService = Faces.evaluateExpressionGet("#{inceProductService}");
-		inceProductMap = inceProductService.findAll()
-			.stream().collect(Collectors.toMap(InceProduct::getProductCode, c -> c));
 		initInceProducts();
-		
-		ProductPlanService productPlanService = Faces.evaluateExpressionGet("#{productPlanService}");
-		productPlanMap = productPlanService.findAll()
-			.stream().collect(Collectors.toMap(ProductPlan::getPlanCode, c -> c));
 		initProductPlans();
 		
 		initChannels();
@@ -195,11 +166,6 @@ public class OmniMotorView extends BaseBean {
 		initTrackingStatus();
 		
 		initProvince();
-	}
-	
-	public void refreshData() throws Throwable{
-		initData();
-		Ajax.update("frmWL");
 	}
 	
 	public void brandSelectionListener() throws Throwable {
@@ -377,25 +343,25 @@ public class OmniMotorView extends BaseBean {
 			omniLogMotor = logMotorService.add(omniLogMotor, loginSession.getUsername());
 			
 			hist = new OmniMotorHist();
-			hist.setChannel(categoryMap.get(channel))
-				.setContactReason(categoryMap.get(contactReason))
+			hist.setChannel(omniChannelSync.getCategoryMap().get(channel))
+				.setContactReason(omniChannelSync.getCategoryMap().get(contactReason))
 				.setContactReasonDetail(StringUtils.isBlank(contactReasonOther) ? null : contactReasonOther)
 				.setDetail(StringUtils.isBlank(contactDetails) ? null : contactDetails)
 				.setDueDate(dueDate)
 				.setLogDate(new Date())
-				.setCar(categoryMap.get(this.brandModel))
+				.setCar(omniChannelSync.getCategoryMap().get(this.brandModel))
 				.setCarYear(this.carYear.toString())
 				.setOmniChLog(omniLogMotor)
 				.setListSource(listSourceService.find(new ListSource(listSource)).get(0))
-				.setProductPlan(productPlanMap.get(productPlan))
-				.setStatus(categoryMap.get(trackingStatus))
+				.setProductPlan(omniChannelSync.getProductPlanMap().get(productPlan))
+				.setStatus(omniChannelSync.getCategoryMap().get(trackingStatus))
 				.setLatest("Y");
 			omniLogMotorHistService.add(hist, loginSession.getUsername());
 		} else {
 			hist = omniLogMotorHistService.find(logHistId);
 			OmniMotorHist newHist = new OmniMotorHist();
-			newHist.setChannel(categoryMap.get(channel))
-				.setContactReason(categoryMap.get(contactReason))
+			newHist.setChannel(omniChannelSync.getCategoryMap().get(channel))
+				.setContactReason(omniChannelSync.getCategoryMap().get(contactReason))
 				.setContactReasonDetail(StringUtils.isBlank(contactReasonOther) ? null : contactReasonOther)
 				.setDetail(StringUtils.isBlank(contactDetails) ? null : contactDetails)
 				.setDueDate(dueDate)
@@ -403,21 +369,19 @@ public class OmniMotorView extends BaseBean {
 			omniLogMotor = hist.getOmniChLog();
 			omniLogMotor.setCustomer(getValidatedCustomer());
 			newHist.setOmniChLog(omniLogMotor)
-				.setCar(categoryMap.get(this.brandModel))
+				.setCar(omniChannelSync.getCategoryMap().get(this.brandModel))
 				.setCarYear(this.carYear.toString())
 				.setListSource(listSourceService.find(new ListSource(listSource)).get(0))
-				.setProductPlan(productPlanMap.get(productPlan))
-				.setStatus(categoryMap.get(trackingStatus))
+				.setProductPlan(omniChannelSync.getProductPlanMap().get(productPlan))
+				.setStatus(omniChannelSync.getCategoryMap().get(trackingStatus))
 				.setLatest("Y");
 			
 			hist.setLatest("N");
 			omniLogMotorHistService.update(hist, loginSession.getUsername());
 			omniLogMotorHistService.add(newHist, loginSession.getUsername());
 		}
-		initData();
 		EventBus eventBus = EventBusFactory.getDefault().eventBus();
         eventBus.publish("/refreshDTCustomerWL", "Successful");
-//		Ajax.update("frmWL");
 		RequestContext.getCurrentInstance().execute("PF('dlgCustomer').hide()");
 	}
 
@@ -498,15 +462,9 @@ public class OmniMotorView extends BaseBean {
 		initProductPlans();
 		this.productPlan = productPlan;
 		
-//		initChannels();
 		this.channel = channel;
-		
-//		initContactReason();
 		this.contactReason = contactReason;
-		
-//		initTrackingStatus();
 		this.trackingStatus = trackingStatus;
-		
 		this.contactDetails = contactDetails;
 		this.dueDate = dueDate;
 	}
@@ -623,13 +581,14 @@ public class OmniMotorView extends BaseBean {
 						.setCitizenId(citizenId)
 						.setFirstName(cFirstName.toUpperCase().trim())
 						.setLastName(cLastName.toUpperCase().trim())
-						.setGender(paramConfigService.find(new ParamConfig().setParamKey(sex)).get(0))
+						.setGender(omniChannelSync.getParamConfigMap().get(sex))
+//						.setGender(paramConfigService.find(new ParamConfig().setParamKey(sex)).get(0))
 						.setEmail(StringUtils.isBlank(email) ? null : email)
 						.setAddress1(StringUtils.isBlank(address1) ? null : address1)
 						.setAddress2(StringUtils.isBlank(address2) ? null : address2)
 						.setAddress3(StringUtils.isBlank(address3) ? null : address3)
 						.setPostCode(StringUtils.isBlank(postCode) ? null : postCode)
-						.setProvince(provinceMap.get(province))
+						.setProvince(omniChannelSync.getProvinceMap().get(province))
 						.setVisible("Y")
 					, loginSession.getUsername());
 		} else {
@@ -646,72 +605,47 @@ public class OmniMotorView extends BaseBean {
 	}
 	
 	private List<OmniMotorHist> findLogMotorForPolicy(Long customerId) throws Exception {
-		System.out.println("findLogMotorForPolicy: " + customerId);
 		DetachedCriteria criteria = DetachedCriteria.forClass(OmniMotorHist.class);
 		criteria.createCriteria("omniLogMotor", JoinType.INNER_JOIN)
 			.createCriteria("customer", JoinType.INNER_JOIN)
 			.add(Restrictions.eq("id", customerId));
-		criteria.add(Restrictions.sqlRestriction("this_.ID in (select MAX(d.ID) from OMNI_LOG_MOTOR_HIST d GROUP BY d.LOG_MOTOR_ID)"));
+		criteria.add(Restrictions.eq("latest", "Y"));
 		criteria.addOrder(Order.asc("id"));
 		return omniMotorHistService.findByCriteria(criteria);
 	}
 
-	private List<OmniMotorHist> findOmniLogMotorHist(String... status) throws Exception {
-		DetachedCriteria criteria = DetachedCriteria.forClass(OmniMotorHist.class);
-		criteria.add(Restrictions.eq("latest", "Y"));
-//		criteria.add(Restrictions.sqlRestriction("this_.ID in (select MAX(d.ID) from OMNI_LOG_MOTOR_HIST d GROUP BY d.LOG_MOTOR_ID)"));
-		if(status != null) {
-			criteria.add(Restrictions.in("status.code", status));
-		}
-		criteria.addOrder(Order.asc("dueDate"));
-		return omniMotorHistService.findByCriteria(criteria);
-	}
-	
-	private void initData() throws Throwable {
-		try {
-			omniMotorHistList = findOmniLogMotorHist(TrackingStatus.OPEN.getValue(), TrackingStatus.IN_PROGRESS.getValue());
-		} catch(Exception e) {
-			throw e;
-		}
-	}
-
-	private void initCategoryMap() throws Throwable {
-		CategoryDataService categoryDataService = Faces.evaluateExpressionGet("#{categoryDataService}");
-		
-		DetachedCriteria criteria = DetachedCriteria.forClass(CategoryData.class);
-		criteria.add(Restrictions.isNotNull("parent.code"));
-		
-		categoryMap = categoryDataService.findByCriteria(criteria)
-				.stream()
-				.collect(Collectors.toMap(CategoryData::getCode, (p) -> p));
-	}
-
 	private void initSex() throws Throwable {
-		DetachedCriteria criteria = DetachedCriteria.forClass(ParamConfig.class);
-		criteria.add(Restrictions.eq("paramGroup", "SEX"));
-		List<ParamConfig> list = paramConfigService.findByCriteria(criteria);
-		
 		ResourceBundle globalMsg = Faces.evaluateExpressionGet("#{globalMsg}");
-		sexSelection = new ArrayList<>();
-		for(ParamConfig c : list) {
-			sexSelection.add(new SelectItem(c.getParamKey(), globalMsg.getString(c.getParamValue())));
-		}
+		sexSelection = omniChannelSync.getParamConfigMap()
+				.entrySet()
+				.stream()
+				.sorted((c1, c2) -> c1.getValue().getId().compareTo(c2.getValue().getId()))
+				.filter(p -> p.getValue().getParamGroup().equals("SEX"))
+				.map(m -> new SelectItem(m.getValue().getParamKey(), globalMsg.getString(m.getValue().getParamValue())))
+				.collect(Collectors.toList());
 	}
 	
 	private void initBrand() throws Throwable {
 		String parent = "OMNI_MOTOR_CAT";
-		motorBrandSelection = getCategoryDataByParent(parent)
+		motorBrandSelection = omniChannelSync.getCategoryMap()
+				.entrySet()
 				.stream()
-				.sorted((c1, c2) -> c1.getCode().compareTo(c2.getCode()))
-				.map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
+				.filter(p -> (p.getValue().getParent() != null && p.getValue().getParent().getCode().equals(parent)))
+				.sorted((c1, c2) -> c1.getValue().getCode().compareTo(c2.getValue().getCode()))
+				.map(m -> new SelectItem(m.getValue().getCode(), m.getValue().getValue()))
+				.collect(Collectors.toList());
 	}
 	
 	private void initModelByBrand(String brandCode) throws Throwable {
 		brandModel = null;
-		brandModelSelection = getCategoryDataByParent(brandCode)
+		
+		brandModelSelection = omniChannelSync.getCategoryMap()
+				.entrySet()
 				.stream()
-				.sorted((c1, c2) -> c1.getCode().compareTo(c2.getCode()))
-				.map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
+				.filter(p -> (p.getValue().getParent() != null && p.getValue().getParent().getCode().equals(brandCode)))
+				.sorted((c1 ,c2) -> c1.getValue().getCode().compareTo(c2.getValue().getCode()))
+				.map(m -> new SelectItem(m.getValue().getCode(), m.getValue().getValue()))
+				.collect(Collectors.toList());
 	}
 	
 	private void initCarYears() throws Throwable {
@@ -732,29 +666,24 @@ public class OmniMotorView extends BaseBean {
 		insurerCode = null;
 		insurerSelection = new ArrayList<>();
 		
-		InsurerService insurerService = Faces.evaluateExpressionGet("#{insurerService}");
-		insurerSelection = insurerService.findAll().stream().map(m -> new SelectItem(m.getInsurerCode(), m.getInsurerName())).collect(Collectors.toList());
+		insurerSelection = omniChannelSync.getInsurerMap()
+				.entrySet()
+				.stream()
+				.sorted((c1, c2) -> c1.getValue().getInsurerName().compareTo(c2.getValue().getInsurerName()))
+				.map(m -> new SelectItem(m.getValue().getInsurerCode(), m.getValue().getInsurerName()))
+				.collect(Collectors.toList());
 	}
 	
 	private void initInceProducts() throws Throwable {
 		inceProductCode = null;
 		inceProductSelection = new ArrayList<>();
 		if(StringUtils.isNotBlank(insurerCode)) {
-			inceProductSelection = inceProductMap.entrySet()
+			inceProductSelection = omniChannelSync.getInceProductMap().entrySet()
 				.stream()
 				.sorted((c1, c2) -> c1.getValue().getId().compareTo(c2.getValue().getId()))
 				.filter(p -> (p.getValue().getInsurer().getInsurerCode().equals(insurerCode) && p.getValue().getProductType().equals("MOTOR")))
 				.map(m -> new SelectItem(m.getKey(), m.getValue().getProductName()))
 				.collect(Collectors.toList());
-
-//			InceProductService inceProductService = Faces.evaluateExpressionGet("#{inceProductService}");
-//			List<InceProduct> list = inceProductService.findAll();
-//			inceProductSelection = list
-//				.stream()
-//				.filter(p -> (p.getInsurer().getInsurerCode().equals(insurerCode) && p.getProductType().equals("MOTOR")))
-//				.map(m -> new SelectItem(m.getProductCode(), m.getProductName()))
-//				.collect(Collectors.toList());
-			
 		}
 	}
 	
@@ -762,34 +691,36 @@ public class OmniMotorView extends BaseBean {
 		productPlan = null;
 		productPlanSelection = new ArrayList<>();
 		if(StringUtils.isNotBlank(inceProductCode)) {
-			productPlanSelection = productPlanMap.entrySet()
+			productPlanSelection = omniChannelSync.getProductPlanMap().entrySet()
 					.stream()
 					.sorted((c1, c2) -> c1.getValue().getId().compareTo(c2.getValue().getId()))
 					.filter(p -> p.getValue().getProduct().getProductCode().equals(inceProductCode))
 					.map(m -> new SelectItem(m.getKey(), m.getValue().getPlanName()))
 					.collect(Collectors.toList());
-			
-//			ProductPlanService productPlanService = Faces.evaluateExpressionGet("#{productPlanService}");
-//			productPlanSelection = productPlanService.findAll()
-//					.stream()
-//					.filter(p -> p.getProduct().getProductCode().equals(inceProductCode))
-//					.map(m -> new SelectItem(m.getPlanCode(), m.getPlanName()))
-//					.collect(Collectors.toList());
 		}
 	}
 	
 	private void initChannels() throws Throwable {
 		channel = null;
-		channelSelection = getCategoryDataByParent("OMNI_CHANNEL")
-				.stream().sorted((c1, c2) -> c1.getValue().compareTo(c2.getValue())).map(m -> new SelectItem(m.getCode(), m.getValue())).collect(Collectors.toList());
+		
+		channelSelection = omniChannelSync.getCategoryMap()
+				.entrySet()
+				.stream()
+				.filter(p -> (p.getValue().getParent() != null && p.getValue().getParent().getCode().equals("OMNI_CHANNEL")))
+				.sorted((c1, c2) -> c1.getValue().getId().compareTo(c2.getValue().getId()))
+				.map(m -> new SelectItem(m.getValue().getCode(), m.getValue().getValue()))
+				.collect(Collectors.toList());
 	}
 	
 	private void initContactReason() throws Throwable {
 		contactReason = null;
-		contactReasonSelection = getCategoryDataByParent("OMNI_CONTACT_REASON")
+		
+		contactReasonSelection = omniChannelSync.getCategoryMap()
+				.entrySet()
 				.stream()
-				.sorted((c1, c2) -> c1.getId().compareTo(c2.getId()))
-				.map(m -> new SelectItem(m.getCode(), m.getValue()))
+				.filter(p -> (p.getValue().getParent() != null && p.getValue().getParent().getCode().equals("OMNI_CONTACT_REASON")))
+				.sorted((c1, c2) -> c1.getValue().getId().compareTo(c2.getValue().getId()))
+				.map(m -> new SelectItem(m.getValue().getCode(), m.getValue().getValue()))
 				.collect(Collectors.toList());
 	}
 	
@@ -798,40 +729,32 @@ public class OmniMotorView extends BaseBean {
 	}
 	
 	private void initTrackingStatus(Integer currentLevel) throws Throwable {
-		trackingStatusSelection = getCategoryDataByParent("OMNI_TRACKING_STATUS")
+		trackingStatusSelection = omniChannelSync.getCategoryMap()
+				.entrySet()
 				.stream()
-				.filter(p -> p.getLevel().compareTo(currentLevel) >= 0)
-				.sorted((c1, c2) -> c1.getLevel().compareTo(c2.getLevel()))
-				.map(m -> new SelectItem(m.getCode(), m.getValue()))
+				.filter(p -> (p.getValue().getParent() != null && p.getValue().getParent().getCode().equals("OMNI_TRACKING_STATUS")))
+				.sorted((c1, c2) -> c1.getValue().getId().compareTo(c2.getValue().getId()))
+				.map(m -> new SelectItem(m.getValue().getCode(), m.getValue().getValue()))
 				.collect(Collectors.toList());
 	}
 	
 	private void initProvince() throws Throwable {
 		province = null;
 		provinceSelection = new ArrayList<>();
-		List<Province> l = provinceService.findAll();
-		provinceSelection = l.stream().map(m -> new SelectItem(m.getProvinceCode(), m.getProvinceNameTh())).collect(Collectors.toList());
-		provinceMap = l.stream().collect(Collectors.toMap(Province::getProvinceCode, (p) -> p));
+		provinceSelection = omniChannelSync.getProvinceMap()
+				.entrySet()
+				.stream()
+				.sorted((c1, c2) -> c1.getValue().getProvinceNameTh().compareTo(c2.getValue().getProvinceNameTh()))
+				.map(m -> new SelectItem(m.getValue().getProvinceCode(), m.getValue().getProvinceNameTh()))
+				.collect(Collectors.toList());
 	}
 	
 	private void initListSource() throws Throwable {
-		listSourceSelection = listSourceMap.entrySet()
+		listSourceSelection = omniChannelSync.getListSourceMap().entrySet()
 			.stream()
 			.sorted((c1, c2) -> c1.getValue().getId().compareTo(c2.getValue().getId()))
 			.map(m -> new SelectItem(m.getKey(), m.getValue().getListSourceValue()))
 			.collect(Collectors.toList());
-	}
-	
-	private List<CategoryData> getCategoryDataByParent(String parentCode) {
-		if(!StringUtils.isBlank(parentCode)) {
-			return categoryMap
-				.entrySet()
-				.stream()
-				.filter(p -> p.getValue().getParent().getCode().equals(parentCode))
-				.map(m -> m.getValue())
-				.collect(Collectors.toList());
-		}
-		return new ArrayList<>();
 	}
 	
 	public List<OmniMotorHist> getOmniMotorHistList() {
@@ -1164,23 +1087,6 @@ public class OmniMotorView extends BaseBean {
 
 	public void setPremium(Double premium) {
 		this.premium = premium;
-	}
-
-	private enum TrackingStatus {
-		OPEN("OMNI_TKS_OPEN")
-		, IN_PROGRESS("OMNI_TKS_IN_PROGRESS")
-		, CLOSED("OMNI_TKS_CLOSED")
-		, CANCELLED("OMNI_TKS_CANCELLED");
-		
-		private String value;
-		
-		private TrackingStatus(String val) {
-			value = val;
-		}
-		
-		public String getValue() {
-			return value;
-		}
 	}
 
 	public String getPolicyNo() {

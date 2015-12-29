@@ -16,19 +16,37 @@ public class TestProject {
 
 	public static void main(String[] args) {
 		try {
+			int freq = 698;
+			int shortDuration = 200;
+			int longDuration = 500;
+			int breakDuation = 200;
+			
 			System.out.println("Start");
 			Kernel32 lib = (Kernel32) Native.loadLibrary("kernel32", Kernel32.class);
-			lib.Beep(698, 500);
-			lib.Sleep(500);
-			lib.Beep(698, 500);
-			lib.Beep(698, 500);
-			lib.Sleep(500);
-			lib.Beep(698, 500);
-			lib.Beep(698, 500);
+			lib.Beep(freq, shortDuration);
+			lib.Beep(freq, longDuration);
+			lib.Sleep(breakDuation);
+			
+//			lib.Beep(freq, longDuration);
+//			lib.Beep(freq, longDuration);
+//			lib.Sleep(breakDuation);
+//			lib.Beep(freq, longDuration);
+//			lib.Beep(freq, longDuration);
+//			lib.Beep(freq, longDuration);
+//			lib.Sleep(breakDuation);
+//			lib.Beep(freq, longDuration);
+//			lib.Sleep(breakDuation);
+//			lib.Beep(freq, shortDuration);
+//			lib.Beep(freq, shortDuration);
+//			lib.Beep(freq, shortDuration);
+//			lib.Beep(freq, shortDuration);
 			System.out.println("Done");
+			
+			String txt = "Ivory Coast (C\u00F4te d\'Ivoire)";
+			System.out.println(txt);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 }
