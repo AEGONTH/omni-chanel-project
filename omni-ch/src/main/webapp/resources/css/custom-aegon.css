@@ -231,7 +231,13 @@ hr.carved {
     background-color: #E8E8E8;
 }
 
-.blue-btn.ui-button, .green-btn.ui-button, .red-btn.ui-button, .yellow-btn.ui-button {color: #FFF;}
+.blue-btn.ui-button
+, .green-btn.ui-button
+, .red-btn.ui-button
+, .yellow-btn.ui-button
+, .pink-btn.ui-button {
+	color: #FFF;
+}
 
 .blue-btn.ui-button {background-color: #0277BD;}
 .blue-btn.ui-state-hover {background-color: #0591E4;}
@@ -248,6 +254,10 @@ hr.carved {
 .yellow-btn.ui-button {background-color: #AFB42B;}
 .yellow-btn.ui-state-hover {background-color: #C7CE23;}
 .yellow-btn.ui-state-focus {background-color: #C7CE23;}
+
+.pink-btn.ui-button {background-color: #EF3F61}
+.pink-btn.ui-state-hover {background-color: #F3768F;}
+.pink-btn.ui-state-focus {background-color: #F3768F;}
 
 /* ##Override Icon## */
 /* Calendar Button */

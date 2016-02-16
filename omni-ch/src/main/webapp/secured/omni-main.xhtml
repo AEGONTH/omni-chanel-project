@@ -42,6 +42,14 @@
 					rendered="#{loginSession.privEnquiry or loginSession.privSysAdmin}"
 					styleClass="big-btn yellow-btn" 
 					style="margin-bottom: 5px; margin-left: 1em; margin-right: 1em; display:inline-block"/>
+					
+				<p:commandButton value="Refresh" 
+					actionListener="#{omniChannelSync.initAll}" 
+					rendered="#{loginSession.privCsSuper or loginSession.privSysAdmin}"
+					onstart="PF('progressDialog').show()" 
+					oncomplete="PF('progressDialog').hide()"
+					styleClass="big-btn pink-btn" 
+					style="margin-bottom: 5px; margin-left: 1em; margin-right: 1em; display:inline-block"/>
 			</div>
 		</h:form>
 	</ui:define>

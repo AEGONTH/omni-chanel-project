@@ -62,6 +62,12 @@ public class LoginSession extends BaseBean {
 				&& distinctPrivileges.contains("OMNI_CH_CS_ENQUIRY");
 	}
 	
+	public boolean isPrivCsSuper() throws Throwable {
+		return distinctPrivileges != null
+				&& !distinctPrivileges.isEmpty()
+				&& distinctPrivileges.contains("OMNI_CHANNEL_REFRESH");
+	}
+	
 	public boolean isPrivSysAdmin() throws Throwable {
 		return distinctPrivileges != null
 				&& !distinctPrivileges.isEmpty()

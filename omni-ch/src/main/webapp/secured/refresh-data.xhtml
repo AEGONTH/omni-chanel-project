@@ -14,7 +14,9 @@
 	
 	<ui:define name="content">
 		<h:form id="frmRefreshData">
-			<p:commandButton value="Refresh" actionListener="#{omniChannelSync.initAll}" onstart="PF('progressDialog').show()" oncomplete="PF('progressDialog').hide()"/>
+			<ui:remove>
+				<p:commandButton value="Refresh" actionListener="#{omniChannelSync.initAll}" onstart="PF('progressDialog').show()" oncomplete="PF('progressDialog').hide()"/>
+			</ui:remove>
 		</h:form>
 	</ui:define>
 	
