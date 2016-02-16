@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.faces.model.SelectItem;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.adms.entity.cs.CallLog;
 import com.adms.entity.cs.Customer;
 import com.adms.entity.cs.CustomerYesRecord;
@@ -13,12 +15,14 @@ import com.adms.entity.cs.CustomerYesRecord;
 public class CustomerEnquiryModel implements Serializable {
 
 	private static final long serialVersionUID = -1137407173421271827L;
+	public final String OTHER_CAMPAIGN_NAME = "OMNI Channel or Non Customer Data";
 	
 	private final String searchDlg = "SEARCH_DLG";
 	private final String addCaseDlg = "ADD_CASE_DLG";
 	
 	private String dlgHeaderVal;
 	private Customer customer;
+	private String customerAllTels;
 	private List<Customer> customerFounds;
 	private List<CustomerYesRecord> customerYRs;
 	private List<CustomerPolicyBean> customerYRs2;
@@ -51,6 +55,8 @@ public class CustomerEnquiryModel implements Serializable {
 	private String correctiveAction;
 	private String suggestDetail;
 	private String logRemark;
+	
+	private boolean nonCustomer;
 	
 	public CustomerEnquiryModel() {
 		dlgHeaderVal = "";
@@ -310,6 +316,34 @@ public class CustomerEnquiryModel implements Serializable {
 
 	public void setCustomerYRs2(List<CustomerPolicyBean> customerYRs2) {
 		this.customerYRs2 = customerYRs2;
+	}
+
+	public String getCustomerAllTels() {
+		if(customer != null) {
+			customerAllTels = concating(customer.getHomeNo(), customer.getMobileNo(), customer.getOfficeNo(), customer.getOtherNo());
+		}
+		return customerAllTels;
+	}
+	
+	private String concating(String...vals) {
+		String concat = "";
+		if(vals != null) {
+			for(String val : vals) {
+				if(StringUtils.isNotBlank(val)) {
+					concat += (val + ", ");
+				}
+			}
+			concat = concat.substring(0, concat.lastIndexOf(","));
+		}
+		return concat;
+	}
+
+	public boolean isNonCustomer() {
+		return nonCustomer;
+	}
+
+	public void setNonCustomer(boolean nonCustomer) {
+		this.nonCustomer = nonCustomer;
 	}
 
 }

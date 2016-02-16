@@ -40,6 +40,7 @@
 		.tbl-action .col-2 {width:15%; padding:0;}
 		.dueDateCol {width:15%;}
 		.citizenCol {width:15%;}
+		.date-w-short {width:10%;}
 		@media screen and (max-width: 640px) {
 			.dlgCustomSize.ui-dialog .ui-dialog-content.ui-widget-content {
 				min-width: 310px;
@@ -60,7 +61,7 @@
 						styleClass="blue-btn fright" 
 						update="frmDlg"/>
 					<p:commandButton value="Policy" title="For adding policy to case" icon="fa fa-book fa-fw" 
-						actionListener="#{omniMotorView.onClickAddPolicy}" 
+						actionListener="#{omniTravelView.onClickAddPolicy}"
 						oncomplete="PF('dlgPolicy').show()" 
 						update="frmPolicy" 
 						styleClass="green-btn fright">
@@ -83,22 +84,26 @@
 						paginator="true"
 						paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
 						paginatorPosition="bottom" emptyMessage="No Records"
-						rows="#{omniMotorView.defaultRowPerPage}"
+						rows="#{omniTravelView.defaultRowPerPage}"
 						rowKey="#{log.id}"
 						rowIndexVar="idx"
 						reflow="true"
 						selectionMode="single"
-						selection="#{omniMotorView.selectedMotor}"
+						selection="#{omniTravelView.selectedTravelHist}"
 						style="margin-top: 10px;" styleClass="">
 						
-						<p:ajax event="rowSelect" listener="#{omniMotorView.onRowSelect}" oncomplete="PF('dlgCustomer').show();" update="@form, frmDlg" />
+						<p:ajax event="rowSelect" listener="#{omniTravelView.onRowDataSelect}" oncomplete="PF('dlgCustomer').show();" update="@form, frmDlg" />
 						
-						<p:column headerText="Customer Name">
+						<p:column headerText="Customer Name" styleClass="citizenCol">
 							<h:outputText value="#{log.omniChLog.customer.firstName} #{log.omniChLog.customer.lastName}" />
 						</p:column>
 						
 						<p:column headerText="Citizen ID." styleClass="citizenCol">
 							<h:outputText value="#{log.omniChLog.customer.citizenId}"/>
+						</p:column>
+						
+						<p:column headerText="Passport No." styleClass="">
+							<h:outputText value="#{log.omniChLog.customer.passportId}" />
 						</p:column>
 						
 						<p:column headerText="Mobile" styleClass="custom-ft" filterBy="#{log.omniChLog.customer.mobileNo}" filterMatchMode="startsWith">
@@ -110,10 +115,16 @@
 							<h:outputText value="#{log.country.countryNameEn}" />
 						</p:column>
 						
-						<p:column headerText="Period">
-							<h:outputText value="#{of:formatDate(log.departureDateTime, 'dd-MM-yyyy HH:mm')} - #{of:formatDate(log.arrivalDateTime, 'dd-MM-yyyy HH:mm')}"/>
+						<p:column headerText="Departure" styleClass="txt-center date-w-short">
+							<h:outputText value="#{of:formatDate(log.departureDateTime, 'dd-MM-yyyy')}"/>
 							<br/>
-							<h:outputText value="#{of:daysBetween(log.departureDateTime, log.arrivalDateTime)}"/>
+							<h:outputText value="#{of:formatDate(log.departureDateTime, 'HH:mm')}" />
+						</p:column>
+						
+						<p:column headerText="Arrival" styleClass="txt-center date-w-short">
+							<h:outputText value="#{of:formatDate(log.arrivalDateTime, 'dd-MM-yyyy')}" />
+							<br/>
+							<h:outputText value="#{of:formatDate(log.arrivalDateTime, 'HH:mm')}" />
 						</p:column>
 						
 						<p:column headerText="Status" styleClass="w10 txt-center">
@@ -127,7 +138,7 @@
 				</p:panel>
 			</p:panelGrid>
 			
-			<p:remoteCommand name="updateFrmTest" actionListener="#{omniMainSync.refreshData}" update="dtWaitingList"/>
+			<p:remoteCommand name="refreshData" actionListener="#{omniChannelSync.initOmniTravelData}" update="dtWaitingList"/>
 		</h:form>
 		
 		<h:form id="frmDlg">
@@ -139,17 +150,17 @@
 		</h:form>
 		
 		<h:form id="initData">
-			<p:remoteCommand name="loadInitial" actionListener="#{omniMotorView.initialData}" update="frmWL, frmDlg, frmPolicy"/>
+			
 		</h:form>
 		
-		<p:socket onMessage="handleMessage" channel="/refreshDTCustomerWL" />
+		<p:socket onMessage="handleDataRefresh" channel="/refreshDTCustomerTravel" />
 		<script>
 			$(document).ready(function() {
-				loadInitial();
+				
 			});
 			
-			function handleMessage(data) {
-				updateFrmTest();
+			function handleDataRefresh(data) {
+				refreshData();
 	        }
 		</script>
 	</ui:define>

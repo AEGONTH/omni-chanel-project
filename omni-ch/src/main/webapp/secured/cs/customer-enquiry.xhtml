@@ -4,6 +4,7 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:of="http://omnifaces.org/functions"
 	template="/templates/mainTemplate.xhtml">
 
 	<ui:define name="head">
@@ -17,8 +18,8 @@
 			.input-width {width:95%;}
 			.dropdown-menu-width-inherit > label {width:95% !important;}
 			
-			.grid-label-col {width:30%;max-width:14em;float:none;}
-			.grid-input-col {width:70%;float:none;}
+			.grid-label-col {width:35%;max-width:14em;float:none;}
+			.grid-input-col {width:65%;float:none;}
 			.btn-action {width:210px;height:32px;}
 			.dlg-content {min-width:20em; margin-bottom:10px; border:none;}
 			.dlg-wrapper-footer {width:auto;text-align:left;}
@@ -36,6 +37,7 @@
 			.ui-custom-fluid div {width:100%;}
 			.ui-custom-fluid .ui-selectonemenu {width:90% !important;}
 			.ui-custom-fluid .ui-selectonemenu .ui-selectonemenu-label {width:100% !important;}
+			hr.btn-separator.ui-separator {color:#0079C2; width:1px; height:15px; display: inline; margin-left: 1em; margin-right: 1em;}
 		</style>
 	</ui:define>
 	
@@ -66,39 +68,58 @@
 				
 				<p:panelGrid id="mainGrid" columns="2" layout="grid" styleClass="grid-borderless">
 					<p:panelGrid columns="2" layout="grid" columnClasses="grid-label-col, grid-input-col" styleClass="grid-borderless grid-row-gap">
-						<p:outputLabel value="Citizen ID" styleClass=""/>
+						<p:outputLabel value="#{msg['table.1.1.1']}" styleClass=""/>
 						<p:inputText id="insuredCitizenId" value="#{cus.citizenId}" styleClass="width-full" readonly="true"/>
 						
-						<p:outputLabel value="Full Name" styleClass=""/>
+						<h:outputText value="#{msg['table.1.1.2']}" styleClass=""/>
 						<p:inputText id="insuredFullName" value="#{cus.fullName}" styleClass="width-full" readonly="true"/>
 						
-						<p:outputLabel value="Gender" styleClass=""/>
+						<h:outputText value="#{msg['table.1.1.3']}" styleClass=""/>
 						<p:inputText id="insuredGender" value="#{cus.gender.paramKey}" styleClass="width-full" readonly="true"/>
 					</p:panelGrid>
 					
 					<p:panelGrid columns="2" layout="grid" columnClasses="grid-label-col, grid-input-col" styleClass="grid-borderless grid-row-gap">
-						<p:outputLabel value="Date of Birth" styleClass=""/>
+						
+						<h:outputText value="#{msg['table.1.2.1']}" styleClass=""/>
+						<p:inputText id="insuredTel" value="#{customerEnquiryView.model.customerAllTels}" styleClass="width-full" readonly="true">
+						</p:inputText>
+					
+						<h:outputText value="#{msg['table.1.2.2']}" styleClass=""/>
 						<p:inputText id="inusredDOB" value="#{cus.dob}" styleClass="width-full" readonly="true">
 							<f:convertDateTime pattern="dd/MM/yyyy" timeZone=""/>
 						</p:inputText>
 						
-						<p:outputLabel value="Marital Status" styleClass="capitalized"/>
+						<h:outputText value="#{msg['table.1.2.3']}" styleClass="capitalized"/>
 						<p:inputText id="insuredMarital" value="#{utilize.lowerCase(cus.marital)}" styleClass="width-full capitalized" readonly="true"/>
 					</p:panelGrid>
 				</p:panelGrid>
 				
 				<hr class="faded"/>
+				
 				<h:panelGroup id="actionPanel">
 					<p:commandButton id="searchBtn" value="#{msg['btn.start.search']}" process="@this"
 						icon="fa fa-search fa-fw"
+						actionListener="#{customerEnquiryView.clearSh}"
 						oncomplete="PF('searchDlg').show();"
-						styleClass="btn-action btn-no-shadow blue-btn">
+						styleClass="btn-action green-btn">
 						<ui:remove><p:ajax event="dialogReturn" update="dataPanel, actionPanel"/></ui:remove>
 					</p:commandButton>
 					
-					<p:commandButton id="clearAll" value="Clear" 
+					<p:commandButton id="clearAll" value="#{msg['btn.clear']}" 
 						icon="fa fa-undo" actionListener="#{customerEnquiryView.clearModel()}"
-						process="@this" update="@form" styleClass="btn-action btn-no-shadow yellow-btn" >
+						process="@this" update="@form" styleClass="btn-action" >
+					</p:commandButton>
+					
+					<p:separator styleClass="btn-separator" rendered="#{customerEnquiryView.model.nonCustomer}" />
+					
+					<p:commandButton id="addNonCustomer" value="#{msg['btn.not.customer.add.log']}" 
+						icon="fa fa-plus-circle" actionListener="#{customerEnquiryView.doAddDummyDataForNonCustomer}"
+						process="@this"
+						oncomplete="PF('hidShowLogHist').getJQ().click()"
+						update="@form"
+						rendered="#{customerEnquiryView.model.nonCustomer}"
+						title="#{msg['btn.title.for.non.customer']}"
+						styleClass="btn-action blue-btn" >
 					</p:commandButton>
 				</h:panelGroup>
 			</p:panel>
@@ -125,19 +146,23 @@
 				<p:panel id="searchPanel" styleClass="custom-panel" style="padding:0;">
 					<p:focus id="focusSearchDlg" context="@next"/>
 					<h:panelGrid columns="1" styleClass="dlg-content">
-						<p:outputLabel value="Insured Citizen ID" for="shCitizenId" />
+						<p:outputLabel value="#{msg['modal.search.in.1.1']}" for="shCitizenId" />
 						<p:inputText id="shCitizenId" type="tel" value="#{customerEnquiryView.shCitizenId}" maxlength="13" styleClass="input-width" style="margin-bottom:0.3em;"/>
 						
-						<p:outputLabel value="Insured First Name" for="shInsuredFname"/>
+						<p:outputLabel value="#{msg['modal.search.in.1.2']}" for="shTel" />
+						<p:inputText id="shTel" type="tel" value="#{customerEnquiryView.shTel}" styleClass="input-width" style="margin-bottom:0.3em;"/>
+						
+						<p:outputLabel value="#{msg['modal.search.in.1.3']}" for="shInsuredFname"/>
 						<p:inputText id="shInsuredFname" value="#{customerEnquiryView.shFirstName}" styleClass="input-width" style="margin-bottom:0.3em;"/>
 						
-						<p:outputLabel value="Insured Last Name" for="shInsuredLname"/>
+						<p:outputLabel value="#{msg['modal.search.in.1.4']}" for="shInsuredLname"/>
 						<p:inputText id="shInsuredLname" value="#{customerEnquiryView.shLastName}" styleClass="input-width" style="margin-bottom:0.3em;"/>
 						
-						<p:outputLabel value="Insured DOB" for="shInsuredDOB" styleClass="date-picker-normal"/>
+						<p:outputLabel value="#{msg['modal.search.in.1.5']}" for="shInsuredDOB" styleClass="date-picker-normal"/>
 						<p:calendar id="shInsuredDOB" value="#{customerEnquiryView.shDOB}" 
 							timeZone="#{customerEnquiryView.timeZone}" 
 							navigator="true" maxdate="#{now}" 
+							yearRange="c-100:c"
 							pattern="dd/MM/yyyy" mask="true" 
 							styleClass=""/>
 						
@@ -146,15 +171,28 @@
 				
 				<f:facet name="footer">
 					<div class="dlg-wrapper-footer">
+						<h:panelGrid id="panelBtnAdd" columns="1" style="width:100%;">
+							<p:commandButton id="btnAddNew" 
+								value="#{msg['modal.search.btn.add']}" 
+								actionListener="#{customerEnquiryView.doAddNewCustomer}"
+								process="@this, searchPanel"
+								rendered="#{customerEnquiryView.addNew}"
+								styleClass="w100 btn-yellow btn-no-shadow"/>
+						</h:panelGrid>
 						<h:panelGrid columns="2" style="width:100%;" columnClasses="ui-grid-col-6, ui-grid-col-6">
-							<p:commandButton id="btnSearchSubmit" value="Submit" actionListener="#{customerEnquiryView.doSearch()}" 
+							<p:commandButton id="btnSearchSubmit" value="#{msg['modal.search.btn.submit']}" 
+							actionListener="#{customerEnquiryView.doSearch()}" 
 							process="@this, frmMain:searchPanel" 
 							onstart="PF('progressDialog').show()"
 							oncomplete="PF('progressDialog').hide()"
 							styleClass="btn-green btn-no-shadow w100"/>
 							
-							<p:commandButton value="Cancel" process="@this" oncomplete="PF('searchDlg').hide()" update="frmMain:searchPanel" styleClass="btn-default btn-no-shadow w100">
-								<p:resetInput target="frmMain:searchPanel" />
+							<p:commandButton value="#{msg['modal.search.btn.cancel']}"
+								actionListener="#{customerEnquiryView.clearSh}" 
+								process="@this" 
+								oncomplete="PF('searchDlg').hide()" 
+								update="frmMain:searchPanel" 
+								styleClass="btn-default btn-no-shadow w100">
 							</p:commandButton>
 						</h:panelGrid>
 					</div>
@@ -165,7 +203,7 @@
 				dynamic="true" modal="true"
 				fitViewport="true" resizable="false" closable="true">
 				<f:facet name="header">
-					<h:outputText value="Customer Results"/>
+					<h:outputText value="#{msg['modal.sc.header']}"/>
 				</f:facet>
 				<ui:include src="dlg-select-customer.xhtml" />
 			</p:dialog>

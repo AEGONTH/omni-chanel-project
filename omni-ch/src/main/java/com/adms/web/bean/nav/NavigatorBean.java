@@ -1,9 +1,12 @@
 package com.adms.web.bean.nav;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.NoneScoped;
+
+import org.omnifaces.util.Faces;
 
 @ManagedBean
 @NoneScoped
@@ -11,15 +14,15 @@ public class NavigatorBean implements Serializable {
 
 	private static final long serialVersionUID = -8193432200159583456L;
 	
-	private final String redirect = "?faces-redirect=true";
+	protected final String redirect = "?faces-redirect=true";
 	
-	private final String toUnderConstruction = "/errors/under-construction";
+	protected final String toUnderConstruction = "/errors/under-construction";
 	
 	private final String toLogin = "/login";
 	
 	private final String toOmniMain = "/secured/omni-main";
-	private final String toOmniMotor = "/secured/omni-motor";
-	private final String toOmniTravel = "/secured/omni-travel";
+	private final String toOmniMotor = "/secured/sales/omni-motor";
+	private final String toOmniTravel = "/secured/sales/omni-travel";
 	
 	private final String toCsEnquiry = "/secured/cs/customer-enquiry";
 	
@@ -27,19 +30,23 @@ public class NavigatorBean implements Serializable {
 		return toLogin + redirect;
 	}
 	
-	public String toOmniMainPage() {
-		return toOmniMain + redirect;
+	public String toOmniMainPage() throws IOException {
+		Faces.redirect(Faces.getRequestContextPath() + toOmniMain);
+		return null;
 	}
 	
-	public String toOmniMotorPage() {
-		return toOmniMotor + redirect;
+	public String toOmniMotorPage() throws IOException {
+		Faces.redirect(Faces.getRequestContextPath() + toOmniMotor);
+		return null;
 	}
 	
-	public String toOmniTravelPage() {
-		return toUnderConstruction + redirect;
+	public String toOmniTravelPage() throws IOException {
+		Faces.redirect(Faces.getRequestContextPath() + toOmniTravel);
+		return null;
 	}
 	
-	public String toCsCustomerEnquiry() {
-		return toCsEnquiry + redirect;
+	public String toCsCustomerEnquiry() throws IOException {
+		Faces.redirect(Faces.getRequestContextPath() + toCsEnquiry);
+		return null;
 	}
 }

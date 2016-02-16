@@ -10,7 +10,7 @@
 	</welcome-file-list>
 
 	<session-config>
-		<session-timeout>30</session-timeout>
+		<session-timeout>15</session-timeout>
 	</session-config>
 
 	<error-page>
@@ -167,16 +167,6 @@
 	<filter-mapping>
 		<filter-name>DefaultUserPagesFilter</filter-name>
 		<url-pattern>/secured/*</url-pattern>
-	</filter-mapping>
-	
-	<filter>
-		<filter-name>AuthFilter</filter-name>
-		<filter-class>com.adms.web.filter.AuthFilter</filter-class>
-		<async-supported>true</async-supported>
-	</filter>
-	<filter-mapping>
-		<filter-name>AuthFilter</filter-name>
-		<url-pattern>/dev/*</url-pattern>
 	</filter-mapping>
 
 	<mime-mapping>

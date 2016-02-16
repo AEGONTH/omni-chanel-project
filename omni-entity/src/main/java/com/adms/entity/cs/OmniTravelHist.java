@@ -81,6 +81,10 @@ public class OmniTravelHist extends BaseAuditDomain {
 	@JoinColumn(name="PLAN_CODE", referencedColumnName="PLAN_CODE")
 	private ProductPlan productPlan;
 	
+	@ManyToOne
+	@JoinColumn(name="LIST_SOURCE_CODE", referencedColumnName="LIST_SOURCE_CODE")
+	private ListSource listSource;
+	
 	@Column(name="LATEST")
 	private String latest;
 
@@ -234,6 +238,15 @@ public class OmniTravelHist extends BaseAuditDomain {
 
 	public OmniTravelHist setProductPlan(ProductPlan productPlan) {
 		this.productPlan = productPlan;
+		return this;
+	}
+
+	public ListSource getListSource() {
+		return listSource;
+	}
+
+	public OmniTravelHist setListSource(ListSource listSource) {
+		this.listSource = listSource;
 		return this;
 	}
 	

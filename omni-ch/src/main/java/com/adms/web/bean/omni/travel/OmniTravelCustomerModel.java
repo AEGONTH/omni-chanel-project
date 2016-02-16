@@ -3,10 +3,12 @@ package com.adms.web.bean.omni.travel;
 import java.util.Date;
 
 import com.adms.entity.cs.Customer;
+import com.adms.entity.cs.OmniTravelHist;
+import com.adms.entity.cs.ProductPlan;
 
 public class OmniTravelCustomerModel {
 	
-	private Long omniChannelLogId;
+	private Long omniTravelHistId;
 	
 	private Customer customer;
 	
@@ -85,293 +87,41 @@ public class OmniTravelCustomerModel {
 		}
 		return this;
 	}
-
-	public Long getOmniChannelLogId() {
-		return omniChannelLogId;
-	}
-
-	public OmniTravelCustomerModel setOmniChannelLogId(Long omniChannelLogId) {
-		this.omniChannelLogId = omniChannelLogId;
+	
+	public OmniTravelCustomerModel setCaseData(OmniTravelHist omniTravelHist) {
+		this.travelPurpose = omniTravelHist.getTravelPurpose();
+		this.destinationCountry = omniTravelHist.getCountry() == null ? null : omniTravelHist.getCountry().getCountryCode();
+		
+		this.departDateTime = omniTravelHist.getDepartureDateTime();
+		this.departFlightNo = omniTravelHist.getDepartureFlightNo();
+		
+		this.arrivalDateTime = omniTravelHist.getArrivalDateTime();
+		this.arrivalFlightNo = omniTravelHist.getArrivalFlightNo();
+		
+		this.listSourceCode = omniTravelHist.getListSource().getListSourceCode();
+		
+		ProductPlan productPlan = omniTravelHist.getProductPlan();
+		this.insurerCode = productPlan == null ? null : productPlan.getProduct().getInsurer().getInsurerCode();
+		this.inceProductCode = productPlan == null ? null : productPlan.getProduct().getProductCode();
+		this.productPlan = productPlan == null ? null : productPlan.getPlanCode();
+		
+		this.channel = omniTravelHist.getChannel() == null ? null : omniTravelHist.getChannel().getCode();
+		this.contactReason = omniTravelHist.getContactReason() == null ? null : omniTravelHist.getContactReason().getCode();
+		this.contactReasonOther = omniTravelHist.getContactReasonDetail();
+		this.trackingStatus = omniTravelHist.getStatus() == null ? null : omniTravelHist.getStatus().getCode();
+		this.contactDetails = omniTravelHist.getDetail();
+		
+		this.dueDate = omniTravelHist.getDueDate();
+		
 		return this;
 	}
 
-	public String getOldTel() {
-		return oldTel;
+	public Long getOmniTravelHistId() {
+		return omniTravelHistId;
 	}
 
-	public OmniTravelCustomerModel setOldTel(String oldTel) {
-		this.oldTel = oldTel;
-		return this;
-	}
-
-	public String getOldCitizenId() {
-		return oldCitizenId;
-	}
-
-	public OmniTravelCustomerModel setOldCitizenId(String oldCitizenId) {
-		this.oldCitizenId = oldCitizenId;
-		return this;
-	}
-
-	public String getOldPassportId() {
-		return oldPassportId;
-	}
-
-	public OmniTravelCustomerModel setOldPassportId(String oldPassportId) {
-		this.oldPassportId = oldPassportId;
-		return this;
-	}
-
-	public String getTel() {
-		return tel;
-	}
-
-	public OmniTravelCustomerModel setTel(String tel) {
-		this.tel = tel;
-		return this;
-	}
-
-	public String getOtherTel() {
-		return otherTel;
-	}
-
-	public OmniTravelCustomerModel setOtherTel(String otherTel) {
-		this.otherTel = otherTel;
-		return this;
-	}
-
-	public String getCitizenId() {
-		return citizenId;
-	}
-
-	public OmniTravelCustomerModel setCitizenId(String citizenId) {
-		this.citizenId = citizenId;
-		return this;
-	}
-
-	public String getPassportId() {
-		return passportId;
-	}
-
-	public OmniTravelCustomerModel setPassportId(String passportId) {
-		this.passportId = passportId;
-		return this;
-	}
-
-	public String getFirstName() {
-		return firstName;
-	}
-
-	public OmniTravelCustomerModel setFirstName(String firstName) {
-		this.firstName = firstName;
-		return this;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public OmniTravelCustomerModel setLastName(String lastName) {
-		this.lastName = lastName;
-		return this;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public OmniTravelCustomerModel setGender(String gender) {
-		this.gender = gender;
-		return this;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public OmniTravelCustomerModel setEmail(String email) {
-		this.email = email;
-		return this;
-	}
-
-	public String getAddress1() {
-		return address1;
-	}
-
-	public OmniTravelCustomerModel setAddress1(String address1) {
-		this.address1 = address1;
-		return this;
-	}
-
-	public String getAddress2() {
-		return address2;
-	}
-
-	public OmniTravelCustomerModel setAddress2(String address2) {
-		this.address2 = address2;
-		return this;
-	}
-
-	public String getAddress3() {
-		return address3;
-	}
-
-	public OmniTravelCustomerModel setAddress3(String address3) {
-		this.address3 = address3;
-		return this;
-	}
-
-	public String getPostCode() {
-		return postCode;
-	}
-
-	public OmniTravelCustomerModel setPostCode(String postCode) {
-		this.postCode = postCode;
-		return this;
-	}
-
-	public String getProvince() {
-		return province;
-	}
-
-	public OmniTravelCustomerModel setProvince(String province) {
-		this.province = province;
-		return this;
-	}
-
-	public String getTravelPurpose() {
-		return travelPurpose;
-	}
-
-	public OmniTravelCustomerModel setTravelPurpose(String travelPurpose) {
-		this.travelPurpose = travelPurpose;
-		return this;
-	}
-
-	public String getDestinationCountry() {
-		return destinationCountry;
-	}
-
-	public OmniTravelCustomerModel setDestinationCountry(String destinationCountry) {
-		this.destinationCountry = destinationCountry;
-		return this;
-	}
-
-	public Date getDepartDateTime() {
-		return departDateTime;
-	}
-
-	public OmniTravelCustomerModel setDepartDateTime(Date departDateTime) {
-		this.departDateTime = departDateTime;
-		return this;
-	}
-
-	public String getDepartFlightNo() {
-		return departFlightNo;
-	}
-
-	public OmniTravelCustomerModel setDepartFlightNo(String departFlightNo) {
-		this.departFlightNo = departFlightNo;
-		return this;
-	}
-
-	public Date getArrivalDateTime() {
-		return arrivalDateTime;
-	}
-
-	public OmniTravelCustomerModel setArrivalDateTime(Date arrivalDateTime) {
-		this.arrivalDateTime = arrivalDateTime;
-		return this;
-	}
-
-	public String getArrivalFlightNo() {
-		return arrivalFlightNo;
-	}
-
-	public OmniTravelCustomerModel setArrivalFlightNo(String arrivalFlightNo) {
-		this.arrivalFlightNo = arrivalFlightNo;
-		return this;
-	}
-
-	public String getInsurerCode() {
-		return insurerCode;
-	}
-
-	public OmniTravelCustomerModel setInsurerCode(String insurerCode) {
-		this.insurerCode = insurerCode;
-		return this;
-	}
-
-	public String getInceProductCode() {
-		return inceProductCode;
-	}
-
-	public OmniTravelCustomerModel setInceProductCode(String inceProductCode) {
-		this.inceProductCode = inceProductCode;
-		return this;
-	}
-
-	public String getProductPlan() {
-		return productPlan;
-	}
-
-	public OmniTravelCustomerModel setProductPlan(String productPlan) {
-		this.productPlan = productPlan;
-		return this;
-	}
-
-	public String getChannel() {
-		return channel;
-	}
-
-	public OmniTravelCustomerModel setChannel(String channel) {
-		this.channel = channel;
-		return this;
-	}
-
-	public String getContactReason() {
-		return contactReason;
-	}
-
-	public OmniTravelCustomerModel setContactReason(String contactReason) {
-		this.contactReason = contactReason;
-		return this;
-	}
-
-	public String getContactReasonOther() {
-		return contactReasonOther;
-	}
-
-	public OmniTravelCustomerModel setContactReasonOther(String contactReasonOther) {
-		this.contactReasonOther = contactReasonOther;
-		return this;
-	}
-
-	public String getTrackingStatus() {
-		return trackingStatus;
-	}
-
-	public OmniTravelCustomerModel setTrackingStatus(String trackingStatus) {
-		this.trackingStatus = trackingStatus;
-		return this;
-	}
-
-	public String getContactDetails() {
-		return contactDetails;
-	}
-
-	public OmniTravelCustomerModel setContactDetails(String contactDetails) {
-		this.contactDetails = contactDetails;
-		return this;
-	}
-
-	public Date getDueDate() {
-		return dueDate;
-	}
-
-	public OmniTravelCustomerModel setDueDate(Date dueDate) {
-		this.dueDate = dueDate;
-		return this;
+	public void setOmniTravelHistId(Long omniTravelHistId) {
+		this.omniTravelHistId = omniTravelHistId;
 	}
 
 	public Customer getCustomer() {
@@ -382,6 +132,86 @@ public class OmniTravelCustomerModel {
 		this.customer = customer;
 	}
 
+	public String getOldTel() {
+		return oldTel;
+	}
+
+	public void setOldTel(String oldTel) {
+		this.oldTel = oldTel;
+	}
+
+	public String getOldCitizenId() {
+		return oldCitizenId;
+	}
+
+	public void setOldCitizenId(String oldCitizenId) {
+		this.oldCitizenId = oldCitizenId;
+	}
+
+	public String getOldPassportId() {
+		return oldPassportId;
+	}
+
+	public void setOldPassportId(String oldPassportId) {
+		this.oldPassportId = oldPassportId;
+	}
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
+	public String getOtherTel() {
+		return otherTel;
+	}
+
+	public void setOtherTel(String otherTel) {
+		this.otherTel = otherTel;
+	}
+
+	public String getCitizenId() {
+		return citizenId;
+	}
+
+	public void setCitizenId(String citizenId) {
+		this.citizenId = citizenId;
+	}
+
+	public String getPassportId() {
+		return passportId;
+	}
+
+	public void setPassportId(String passportId) {
+		this.passportId = passportId;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
 	public Date getDateOfBirth() {
 		return dateOfBirth;
 	}
@@ -390,12 +220,180 @@ public class OmniTravelCustomerModel {
 		this.dateOfBirth = dateOfBirth;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getAddress1() {
+		return address1;
+	}
+
+	public void setAddress1(String address1) {
+		this.address1 = address1;
+	}
+
+	public String getAddress2() {
+		return address2;
+	}
+
+	public void setAddress2(String address2) {
+		this.address2 = address2;
+	}
+
+	public String getAddress3() {
+		return address3;
+	}
+
+	public void setAddress3(String address3) {
+		this.address3 = address3;
+	}
+
+	public String getPostCode() {
+		return postCode;
+	}
+
+	public void setPostCode(String postCode) {
+		this.postCode = postCode;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getTravelPurpose() {
+		return travelPurpose;
+	}
+
+	public void setTravelPurpose(String travelPurpose) {
+		this.travelPurpose = travelPurpose;
+	}
+
+	public String getDestinationCountry() {
+		return destinationCountry;
+	}
+
+	public void setDestinationCountry(String destinationCountry) {
+		this.destinationCountry = destinationCountry;
+	}
+
+	public Date getDepartDateTime() {
+		return departDateTime;
+	}
+
+	public void setDepartDateTime(Date departDateTime) {
+		this.departDateTime = departDateTime;
+	}
+
+	public String getDepartFlightNo() {
+		return departFlightNo;
+	}
+
+	public void setDepartFlightNo(String departFlightNo) {
+		this.departFlightNo = departFlightNo;
+	}
+
+	public Date getArrivalDateTime() {
+		return arrivalDateTime;
+	}
+
+	public void setArrivalDateTime(Date arrivalDateTime) {
+		this.arrivalDateTime = arrivalDateTime;
+	}
+
+	public String getArrivalFlightNo() {
+		return arrivalFlightNo;
+	}
+
+	public void setArrivalFlightNo(String arrivalFlightNo) {
+		this.arrivalFlightNo = arrivalFlightNo;
+	}
+
 	public String getListSourceCode() {
 		return listSourceCode;
 	}
 
 	public void setListSourceCode(String listSourceCode) {
 		this.listSourceCode = listSourceCode;
+	}
+
+	public String getInsurerCode() {
+		return insurerCode;
+	}
+
+	public void setInsurerCode(String insurerCode) {
+		this.insurerCode = insurerCode;
+	}
+
+	public String getInceProductCode() {
+		return inceProductCode;
+	}
+
+	public void setInceProductCode(String inceProductCode) {
+		this.inceProductCode = inceProductCode;
+	}
+
+	public String getProductPlan() {
+		return productPlan;
+	}
+
+	public void setProductPlan(String productPlan) {
+		this.productPlan = productPlan;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public String getContactReason() {
+		return contactReason;
+	}
+
+	public void setContactReason(String contactReason) {
+		this.contactReason = contactReason;
+	}
+
+	public String getContactReasonOther() {
+		return contactReasonOther;
+	}
+
+	public void setContactReasonOther(String contactReasonOther) {
+		this.contactReasonOther = contactReasonOther;
+	}
+
+	public String getTrackingStatus() {
+		return trackingStatus;
+	}
+
+	public void setTrackingStatus(String trackingStatus) {
+		this.trackingStatus = trackingStatus;
+	}
+
+	public String getContactDetails() {
+		return contactDetails;
+	}
+
+	public void setContactDetails(String contactDetails) {
+		this.contactDetails = contactDetails;
+	}
+
+	public Date getDueDate() {
+		return dueDate;
+	}
+
+	public void setDueDate(Date dueDate) {
+		this.dueDate = dueDate;
 	}
 	
 }

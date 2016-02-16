@@ -23,13 +23,24 @@
 					ajax="false" 
 					action="#{navigatorBean.toOmniMotorPage}"
 					process="@this"
+					rendered="#{loginSession.privSales or loginSession.privSysAdmin}"
 					styleClass="big-btn green-btn" 
 					style="margin-bottom: 5px; margin-left: 1em; margin-right: 1em; display:inline-block"/>
+					
 				<p:commandButton value="Travel" icon="fa fa-plane fa-fw fa-2x" 
 					ajax="false" 
 					action="#{navigatorBean.toOmniTravelPage}"
 					process="@this"
+					rendered="#{loginSession.privSales or loginSession.privSysAdmin}"
 					styleClass="big-btn blue-btn" 
+					style="margin-bottom: 5px; margin-left: 1em; margin-right: 1em; display:inline-block"/>
+					
+				<p:commandButton value="Customer Enquiry" icon="fa fa-info fa-fw fa-2x" 
+					ajax="false" 
+					action="#{navigatorBean.toCsCustomerEnquiry}"
+					process="@this"
+					rendered="#{loginSession.privEnquiry or loginSession.privSysAdmin}"
+					styleClass="big-btn yellow-btn" 
 					style="margin-bottom: 5px; margin-left: 1em; margin-right: 1em; display:inline-block"/>
 			</div>
 		</h:form>

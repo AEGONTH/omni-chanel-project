@@ -117,15 +117,15 @@
 				</p:panel>
 			</p:panelGrid>
 			
-			<p:remoteCommand name="updateFrmTest" actionListener="#{omniMainSync.refreshData}" update="dtWaitingList"/>
+			<p:remoteCommand name="updateFrmTest" actionListener="#{omniChannelSync.initOmniMotorData}" update="dtWaitingList"/>
 		</h:form>
 		
 		<h:form id="frmDlg">
-			<ui:include src="/secured/motor-dialog/dlg-case.xhtml" />
+			<ui:include src="/secured/sales/motor-dialog/dlg-case.xhtml" />
 		</h:form>
 		
 		<h:form id="frmPolicy">
-			<ui:include src="/secured/motor-dialog/dlg-policy.xhtml" />
+			<ui:include src="/secured/sales/motor-dialog/dlg-policy.xhtml" />
 		</h:form>
 		
 		<h:form id="initData">
@@ -136,7 +136,6 @@
 		<script>
 			$(document).ready(function() {
 				loadInitial();
-// 				updateFrmTest();
 			});
 			
 			function handleMessage(data) {

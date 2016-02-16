@@ -52,7 +52,7 @@ public class LoginView extends BaseBean {
 		
 	}
 	
-	public String doLogin() {
+	public String doLogin() throws Throwable {
 		if(!StringUtils.isBlank(username) && !StringUtils.isBlank(password)) {
 			if(authService()) {
 				NavigatorBean navBean = Faces.evaluateExpressionGet("#{navigatorBean}");

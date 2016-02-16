@@ -24,6 +24,7 @@ public class LoginSession extends BaseBean {
 	private Collection<String> roles;
 	private Map<String, List<String>> rolePrivileges;
 	private List<String> distinctPrivileges;
+	private List<String> urlAllows;
 	
 	private int sessionTimeOut;
 	
@@ -33,7 +34,7 @@ public class LoginSession extends BaseBean {
 	
 	@PostConstruct
 	private void init() {
-		sessionTimeOut = WebXml.INSTANCE.getSessionTimeout() * 1000 * 60;
+		sessionTimeOut = (WebXml.INSTANCE.getSessionTimeout() * 1000 * 60) - 500;
 	}
 
 	public void signOut() throws Exception {
@@ -49,33 +50,51 @@ public class LoginSession extends BaseBean {
 		Faces.invalidateSession();
 	}
 	
-	public boolean privSysAdmin() throws Throwable {
-		return distinctPrivileges != null && distinctPrivileges.contains("SYSTEM_ADMIN");
+	public boolean isPrivSales() throws Throwable {
+		return distinctPrivileges != null
+				&& !distinctPrivileges.isEmpty()
+				&& distinctPrivileges.contains("OMNI_CHANNEL_SALES");
 	}
 	
-	public boolean privAdmin() throws Throwable {
-		return distinctPrivileges != null 
-				&& (distinctPrivileges.contains("CS_ADMIN")
-						|| distinctPrivileges.contains("SYSTEM_ADMIN"));
+	public boolean isPrivEnquiry() throws Throwable {
+		return distinctPrivileges != null
+				&& !distinctPrivileges.isEmpty()
+				&& distinctPrivileges.contains("OMNI_CH_CS_ENQUIRY");
 	}
 	
-	public boolean privCusEnq() throws Throwable {
-		return distinctPrivileges != null 
-				&& (distinctPrivileges.contains("CUSTOMER_ENQUIRY")
-						|| distinctPrivileges.contains("SYSTEM_ADMIN"));
+	public boolean isPrivSysAdmin() throws Throwable {
+		return distinctPrivileges != null
+				&& !distinctPrivileges.isEmpty()
+				&& distinctPrivileges.contains("SYSTEM_ADMIN");
 	}
 	
-	public boolean privConfCall() throws Throwable {
-		return distinctPrivileges != null 
-				&& (distinctPrivileges.contains("CONFIRMATION_CALL")
-						|| distinctPrivileges.contains("SYSTEM_ADMIN"));
-	}
-	
-	public boolean privOmniCh() throws Throwable {
-		return distinctPrivileges != null 
-				&& (distinctPrivileges.contains("OMNI_CHANNEL_SALES")
-						|| distinctPrivileges.contains("SYSTEM_ADMIN"));
-	}
+//	public boolean privSysAdmin() throws Throwable {
+//		return distinctPrivileges != null && distinctPrivileges.contains("SYSTEM_ADMIN");
+//	}
+//	
+//	public boolean privAdmin() throws Throwable {
+//		return distinctPrivileges != null 
+//				&& (distinctPrivileges.contains("CS_ADMIN")
+//						|| distinctPrivileges.contains("SYSTEM_ADMIN"));
+//	}
+//	
+//	public boolean privCusEnq() throws Throwable {
+//		return distinctPrivileges != null 
+//				&& (distinctPrivileges.contains("CUSTOMER_ENQUIRY")
+//						|| distinctPrivileges.contains("SYSTEM_ADMIN"));
+//	}
+//	
+//	public boolean privConfCall() throws Throwable {
+//		return distinctPrivileges != null 
+//				&& (distinctPrivileges.contains("CONFIRMATION_CALL")
+//						|| distinctPrivileges.contains("SYSTEM_ADMIN"));
+//	}
+//	
+//	public boolean privOmniCh() throws Throwable {
+//		return distinctPrivileges != null 
+//				&& (distinctPrivileges.contains("OMNI_CHANNEL_SALES")
+//						|| distinctPrivileges.contains("SYSTEM_ADMIN"));
+//	}
 	
 	public void checkPermissions() throws Throwable {
 		if(distinctPrivileges == null) {
@@ -123,6 +142,15 @@ public class LoginSession extends BaseBean {
 
 	public int getSessionTimeOut() {
 		return sessionTimeOut;
+	}
+
+	public List<String> getUrlAllows() {
+		return urlAllows;
+	}
+
+	public LoginSession setUrlAllows(List<String> urlAllows) {
+		this.urlAllows = urlAllows;
+		return this;
 	}
 	
 }

@@ -4,8 +4,10 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui"
-	xmlns:pe="http://primefaces.org/ui/extensions">
-
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:of="http://omnifaces.org/functions"
+	>
+	
 	<p:dataTable id="dtSelectCus" 
 		value="#{customerEnquiryView.model.customerFounds}"
 		var="customer"
@@ -17,25 +19,31 @@
 		rows="5"
 		paginatorAlwaysVisible="false"
 		paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-		paginatorPosition="bottom" emptyMessage="No Record Found"
+		paginatorPosition="bottom" emptyMessage="#{globalMsg['common.txt.no.record.found']}"
 		styleClass="tbl-flat"
 		style="max-width:50em;">
 		
 		<p:ajax event="rowSelect" listener="#{customerEnquiryView.onSelectCustomer}" update="@form" />
 		
-		<p:column headerText="Citizen ID" styleClass="txt-center">
+		<p:column headerText="#{msg['modal.sc.col.1']}" styleClass="txt-center">
 			<h:outputText value="#{customer.citizenId}" />
 		</p:column>
 		
-		<p:column headerText="First Name">
+		<p:column headerText="#{msg['modal.sc.col.2']}">
 			<h:outputText value="#{customer.firstName}" styleClass="capitalized"/>
 		</p:column>
 		
-		<p:column headerText="Last Name">
+		<p:column headerText="#{msg['modal.sc.col.3']}">
 			<h:outputText value="#{customer.lastName}" styleClass="capitalized"/>
 		</p:column>
 		
-		<p:column headerText="DOB" styleClass="txt-center">
+		<p:column headerText="#{msg['modal.sc.col.4']}">
+			<h:outputText value="#{not empty customer.homeNo ? customer.homeNo : not empty customer.mobileNo ? customer.mobileNo : ''}" />
+			<h:outputText value=", " rendered="#{not empty customer.homeNo and not empty customer.mobileNo}" />
+			<h:outputText value="#{customer.mobileNo}" rendered="#{not empty customer.homeNo and not empty customer.mobileNo}" />
+		</p:column>
+		
+		<p:column headerText="#{msg['modal.sc.col.5']}" styleClass="txt-center">
 			<h:outputText value="#{customer.dob}" >
 				<f:convertDateTime pattern="dd/MM/yyyy"/>
 			</h:outputText>

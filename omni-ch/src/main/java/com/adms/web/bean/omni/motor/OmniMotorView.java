@@ -29,12 +29,10 @@ import org.primefaces.push.EventBusFactory;
 
 import com.adms.cs.service.CustomerService;
 import com.adms.cs.service.CustomerYesRecordService;
-import com.adms.cs.service.ListSourceService;
 import com.adms.cs.service.OmniChLogService;
 import com.adms.cs.service.OmniMotorHistService;
 import com.adms.entity.cs.Customer;
 import com.adms.entity.cs.CustomerYesRecord;
-import com.adms.entity.cs.ListSource;
 import com.adms.entity.cs.OmniChLog;
 import com.adms.entity.cs.OmniMotorHist;
 import com.adms.web.base.bean.BaseBean;
@@ -48,7 +46,7 @@ public class OmniMotorView extends BaseBean {
 	private static final long serialVersionUID = -1006785263944871332L;
 
 	private final OmniMotorHistService omniMotorHistService = Faces.evaluateExpressionGet("#{omniMotorHistService}");
-	private final OmniChLogService omniLogMotorService = Faces.evaluateExpressionGet("#{omniLogMotorService}");
+	private final OmniChLogService omniChLogService = Faces.evaluateExpressionGet("#{omniChLogService}");
 	private final CustomerYesRecordService customerYesRecordService = Faces.evaluateExpressionGet("#{customerYesRecordService}");
 	private final CustomerService customerService = Faces.evaluateExpressionGet("#{customerService}");
 
@@ -144,9 +142,7 @@ public class OmniMotorView extends BaseBean {
 	
 	@PostConstruct
 	private void init() {
-		System.out.println("URI: " + Faces.getRequestURI());
-		System.out.println("URL: " + Faces.getRequestURL());
-		System.out.println("SessionId: " + Faces.getSessionId());
+		
 	}
 	
 	public void initialData() throws Throwable {
@@ -241,7 +237,7 @@ public class OmniMotorView extends BaseBean {
 					List<Customer> customers = findVisibleCustomer(searchTel, searchCitizen);
 					if(customers != null && customers.size() == 1) {
 						policyModel.setCustomer(customers.get(0));
-						List<OmniMotorHist> histList = findLogMotorForPolicy(policyModel.getCustomer().getId());
+						List<OmniMotorHist> histList = findOmniMotorHistByCustomerId(searchCitizen);
 						if(histList != null && histList.size() > 0) {
 							policyModel.setLogMotors(histList);
 							policyModel.setSelectedOmniMotorHist(null);
@@ -266,6 +262,8 @@ public class OmniMotorView extends BaseBean {
 					policyModel.setPremium(null);
 					policyModel.setEffectiveDate(null);
 					policyModel.setExpireDate(null);
+					
+					policyModel.setCustomer(policyModel.getSelectedOmniMotorHist().getOmniChLog().getCustomer());
 					flag = true;
 				}
 				
@@ -323,10 +321,6 @@ public class OmniMotorView extends BaseBean {
 	}
 	
 	public void saveCustomerInfo() throws Throwable {
-		ListSourceService listSourceService = Faces.evaluateExpressionGet("#{listSourceService}");
-		OmniChLogService logMotorService = Faces.evaluateExpressionGet("#{omniLogMotorService}");
-		OmniMotorHistService omniLogMotorHistService = Faces.evaluateExpressionGet("#{omniLogMotorHistService}");
-		
 		OmniChLog omniLogMotor = null;
 		OmniMotorHist hist = null;
 
@@ -340,7 +334,7 @@ public class OmniMotorView extends BaseBean {
 		if(logId == null) {
 			omniLogMotor = new OmniChLog();
 			omniLogMotor.setCustomer(getValidatedCustomer());
-			omniLogMotor = logMotorService.add(omniLogMotor, loginSession.getUsername());
+			omniLogMotor = omniChLogService.add(omniLogMotor, loginSession.getUsername());
 			
 			hist = new OmniMotorHist();
 			hist.setChannel(omniChannelSync.getCategoryMap().get(channel))
@@ -352,13 +346,13 @@ public class OmniMotorView extends BaseBean {
 				.setCar(omniChannelSync.getCategoryMap().get(this.brandModel))
 				.setCarYear(this.carYear.toString())
 				.setOmniChLog(omniLogMotor)
-				.setListSource(listSourceService.find(new ListSource(listSource)).get(0))
+				.setListSource(omniChannelSync.getListSourceMap().get(listSource))
 				.setProductPlan(omniChannelSync.getProductPlanMap().get(productPlan))
 				.setStatus(omniChannelSync.getCategoryMap().get(trackingStatus))
 				.setLatest("Y");
-			omniLogMotorHistService.add(hist, loginSession.getUsername());
+			omniMotorHistService.add(hist, loginSession.getUsername());
 		} else {
-			hist = omniLogMotorHistService.find(logHistId);
+			hist = omniMotorHistService.find(logHistId);
 			OmniMotorHist newHist = new OmniMotorHist();
 			newHist.setChannel(omniChannelSync.getCategoryMap().get(channel))
 				.setContactReason(omniChannelSync.getCategoryMap().get(contactReason))
@@ -371,14 +365,14 @@ public class OmniMotorView extends BaseBean {
 			newHist.setOmniChLog(omniLogMotor)
 				.setCar(omniChannelSync.getCategoryMap().get(this.brandModel))
 				.setCarYear(this.carYear.toString())
-				.setListSource(listSourceService.find(new ListSource(listSource)).get(0))
+				.setListSource(omniChannelSync.getListSourceMap().get(listSource))
 				.setProductPlan(omniChannelSync.getProductPlanMap().get(productPlan))
 				.setStatus(omniChannelSync.getCategoryMap().get(trackingStatus))
 				.setLatest("Y");
 			
 			hist.setLatest("N");
-			omniLogMotorHistService.update(hist, loginSession.getUsername());
-			omniLogMotorHistService.add(newHist, loginSession.getUsername());
+			omniMotorHistService.update(hist, loginSession.getUsername());
+			omniMotorHistService.add(newHist, loginSession.getUsername());
 		}
 		EventBus eventBus = EventBusFactory.getDefault().eventBus();
         eventBus.publish("/refreshDTCustomerWL", "Successful");
@@ -407,7 +401,7 @@ public class OmniMotorView extends BaseBean {
 		try {
 			logMotor = policyModel.getSelectedOmniMotorHist().getOmniChLog();
 			logMotor.setPolicy(policy);
-			logMotor = omniLogMotorService.update(logMotor, loginSession.getUsername());
+			logMotor = omniChLogService.update(logMotor, loginSession.getUsername());
 			
 			return true;
 		} catch(Exception e) {
@@ -604,11 +598,11 @@ public class OmniMotorView extends BaseBean {
 		return customerService.findByCriteria(criteria);
 	}
 	
-	private List<OmniMotorHist> findLogMotorForPolicy(Long customerId) throws Exception {
+	private List<OmniMotorHist> findOmniMotorHistByCustomerId(String citizenId) throws Exception {
 		DetachedCriteria criteria = DetachedCriteria.forClass(OmniMotorHist.class);
-		criteria.createCriteria("omniLogMotor", JoinType.INNER_JOIN)
+		criteria.createCriteria("omniChLog", JoinType.INNER_JOIN)
 			.createCriteria("customer", JoinType.INNER_JOIN)
-			.add(Restrictions.eq("id", customerId));
+			.add(Restrictions.eq("citizenId", citizenId));
 		criteria.add(Restrictions.eq("latest", "Y"));
 		criteria.addOrder(Order.asc("id"));
 		return omniMotorHistService.findByCriteria(criteria);

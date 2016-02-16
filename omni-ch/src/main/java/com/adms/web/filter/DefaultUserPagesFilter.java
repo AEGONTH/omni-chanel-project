@@ -1,7 +1,6 @@
 package com.adms.web.filter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,9 +22,13 @@ public class DefaultUserPagesFilter extends AbstractFilter {
 	
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
+		//available Privileges in this application
 		if(mapURIPrivs == null) {
 			mapURIPrivs = new HashMap<>();
-			mapURIPrivs.put("secured/", "OMNI_CHANNEL_SALES");
+			mapURIPrivs.put("SYSTEM_ADMIN", "/");
+			mapURIPrivs.put("OMNI_CHANNEL_MAIN", "/secured/omni-main");
+			mapURIPrivs.put("OMNI_CHANNEL_SALES", "/secured/sales/");
+			mapURIPrivs.put("OMNI_CH_CS_ENQUIRY", "/secured/cs/");
 		}
 	}
 
@@ -39,16 +42,23 @@ public class DefaultUserPagesFilter extends AbstractFilter {
 		}
 		LoginSession loginSession = (LoginSession) session.getAttribute("loginSession");
 		String reqURI = req.getRequestURI();
+//		System.out.println("=== User Privs ===");
+//		loginSession.getDistinctPrivileges().forEach(System.out::println);
 		
-		List<String> keys = new ArrayList<>();
-		keys = mapURIPrivs.keySet().stream().filter(p -> reqURI.contains(p)).collect(Collectors.toList());
-		if(keys != null 
-				&& keys.size() == 1
-				&& loginSession.getDistinctPrivileges().contains(mapURIPrivs.get(keys.get(0)))) {
-			chain.doFilter(request, response);
-		} else {
-			accessDenied(request, response, req);
+		List<String> requiredPrivs = mapURIPrivs.entrySet().stream().filter(p -> reqURI.contains(p.getValue())).map(m -> m.getKey()).collect(Collectors.toList());
+//		System.out.println("=== Required Privs ===");
+//		requiredPrivs.forEach(System.out::println);
+		
+		if(requiredPrivs != null
+				&& !requiredPrivs.isEmpty()) {
+			for(String loginPriv : loginSession.getDistinctPrivileges()) {
+				if(requiredPrivs.contains(loginPriv)) {
+					chain.doFilter(request, response);
+					return;
+				}
+			}
 		}
+		accessDenied(request, response, req);
 	}
 
 	@Override

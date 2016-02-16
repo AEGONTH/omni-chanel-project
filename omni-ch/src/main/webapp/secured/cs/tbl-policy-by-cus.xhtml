@@ -6,10 +6,6 @@
 	xmlns:of="http://omnifaces.org/functions"
 	xmlns:p="http://primefaces.org/ui">
 	
-	<style>
-	.ui-button-icon-only .ui-icon {left: 30%;}
-	</style>
-	
 	<h:panelGroup id="panelPolByCus">
 		<p:panel id="pnlpbc" styleClass="custom-panel" style="padding:0;margin-top:5px;" rendered="#{customerEnquiryView.model.customer != null}">
 			<hr class="carved" style="margin:1em 0px"/>
@@ -22,39 +18,40 @@
 				paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
 				paginatorPosition="bottom" 
 				paginatorAlwaysVisible="false"
-				emptyMessage="No Record Found"
+				emptyMessage="#{globalMsg['common.txt.no.record.found']}"
 				rowIndexVar="idx"
 				reflow="true" 
 				rendered="#{customerEnquiryView.model.customer != null}"
 				styleClass="custom-table bottom-shadow tbl-flat">
 				<f:facet name="header">
-					<h:outputText value="Customer's Policy"/>
+					<h:outputText value="#{msg['tb.cus.pol.header']}"/>
 				</f:facet>
 				
-				<p:column headerText="Campaign" styleClass="">
+				<p:column headerText="#{msg['tb.cus.pol.col.1']}" styleClass="">
 					<h:outputText value="#{pol.campaignName}" />
 				</p:column>
 				
-				<p:column headerText="Ref No" styleClass="">
+				<p:column headerText="#{msg['tb.cus.pol.col.2']}" styleClass="">
 					<h:outputText value="#{pol.refNo}"/>
 				</p:column>
 				
-				<p:column headerText="Sale Date" styleClass="txt-center">
+				<p:column headerText="#{msg['tb.cus.pol.col.3']}" styleClass="txt-center">
 					<h:outputText value="#{of:formatDate(pol.objectDate, 'dd-MM-yyyy')}" />
 				</p:column>
 				
-				<p:column headerText="Premium" styleClass=" txt-right">
+				<p:column headerText="#{msg['tb.cus.pol.col.4']}" styleClass=" txt-right">
 					<h:outputText value="#{pol.premium}" >
 						<f:convertNumber minFractionDigits="2" maxFractionDigits="2" />
 					</h:outputText>
 				</p:column>
 				
 				<p:column styleClass="txt-center col-icon-btn-width">
-					<p:commandButton icon="fa fa-list-alt fa-lg" 
+					<p:commandButton icon="fa fa-history" 
 						actionListener="#{customerEnquiryView.doVisibleLogHistory(pol.customerYesRecord)}"
 						process="@this"
 						update="@form"
 						oncomplete="PF('hidShowLogHist').getJQ().click()"
+						title="#{msg['tb.cus.pol.col.5.title']}"
 						styleClass="">
 					</p:commandButton>
 				</p:column>
