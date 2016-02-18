@@ -36,18 +36,21 @@ public class DefaultUserPagesFilter extends AbstractFilter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpSession session = req.getSession(true);
+		
 		if(session == null || session.getAttribute("loginSession") == null) {
 			doLogin(request, response, req);
 			return;
 		}
+		
 		LoginSession loginSession = (LoginSession) session.getAttribute("loginSession");
 		String reqURI = req.getRequestURI();
-//		System.out.println("=== User Privs ===");
-//		loginSession.getDistinctPrivileges().forEach(System.out::println);
+		
+		if(reqURI.contains("/secured/changepwd")) {
+			chain.doFilter(request, response);
+			return;
+		}
 		
 		List<String> requiredPrivs = mapURIPrivs.entrySet().stream().filter(p -> reqURI.contains(p.getValue())).map(m -> m.getKey()).collect(Collectors.toList());
-//		System.out.println("=== Required Privs ===");
-//		requiredPrivs.forEach(System.out::println);
 		
 		if(requiredPrivs != null
 				&& !requiredPrivs.isEmpty()) {

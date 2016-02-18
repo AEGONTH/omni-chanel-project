@@ -1,11 +1,12 @@
 package com.adms.web.bean.omni.motor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -643,17 +644,31 @@ public class OmniMotorView extends BaseBean {
 	}
 	
 	private void initCarYears() throws Throwable {
+		final int year = Calendar.YEAR;
+		final TimeZone bkkTimeZone = TimeZone.getTimeZone("Asia/Bangkok");
 		carYear = null;
 		carYearSelection = new ArrayList<>();
 		
-		LocalDate now = LocalDate.now();
-		LocalDate begin =LocalDate.of(1990, 1, 1);
+		Calendar calNow = Calendar.getInstance(bkkTimeZone);
+		calNow.setTime(new Date());
 		
-		while(now.getYear() >= begin.getYear()) {
-			String label = now.getYear() + " (" + (now.getYear() + 543) + ")";
-			carYearSelection.add(new SelectItem(now.getYear(), label));
-			now = now.minusYears(1);
+		Calendar calBegin = Calendar.getInstance(bkkTimeZone);
+		calBegin.set(1990, 1, 1);
+		
+		while(calNow.get(year) >= calBegin.get(year)) {
+			String label = calNow.get(year) + " (" + (calNow.get(year) + 543) + ")";
+			carYearSelection.add(new SelectItem(calNow.get(year), label));
+			calNow.add(year, -1);
 		}
+		
+//		LocalDate now = LocalDate.now();
+//		LocalDate begin =LocalDate.of(1990, 1, 1);
+//		
+//		while(now.getYear() >= begin.getYear()) {
+//			String label = now.getYear() + " (" + (now.getYear() + 543) + ")";
+//			carYearSelection.add(new SelectItem(now.getYear(), label));
+//			now = now.minusYears(1);
+//		}
 	}
 	
 	private void initInsurers() throws Throwable {

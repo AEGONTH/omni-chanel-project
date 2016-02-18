@@ -43,7 +43,7 @@
 					styleClass="big-btn yellow-btn" 
 					style="margin-bottom: 5px; margin-left: 1em; margin-right: 1em; display:inline-block"/>
 					
-				<p:commandButton value="Refresh" 
+				<p:commandButton value="Refresh"  icon="fa fa-refresh fa-fw fa-2x"
 					actionListener="#{omniChannelSync.initAll}" 
 					rendered="#{loginSession.privCsSuper or loginSession.privSysAdmin}"
 					onstart="PF('progressDialog').show()" 
