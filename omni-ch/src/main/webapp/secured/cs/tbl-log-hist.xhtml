@@ -24,8 +24,8 @@
 	
 	<h:panelGroup id="panelLogHist">
 		<p:panel id="panelLogHistWrapper" styleClass="custom-panel hidden" style="padding:0;">
-			<p:commandButton value="#{msg['btn.add.new.case']}" icon="fa fa-plus fa-fw" process="@this" actionListener="#{customerEnquiryView.doInitLog(null)}" update="frmMain:addCaseDlg" oncomplete="PF('addCaseDlg').show()" styleClass="btn-action btn-no-shadow btn-default"/>
-			<p:commandButton value="#{msg['btn.return']}" icon="fa fa-times fa-fw" process="@this" actionListener="#{customerEnquiryView.clearAddCaseLog}" oncomplete="PF('hidHideLogHist').getJQ().click()" styleClass="btn-action btn-no-shadow btn-default"/>
+			<p:commandButton value="#{msg['btn.add.new.case']}" icon="fa fa-plus fa-fw" process="@this" actionListener="#{customerEnquiryView.doInitLog(null)}" update="frmMain:addCaseDlg" oncomplete="PF('addCaseDlg').show()" styleClass="btn-action yellow-btn"/>
+			<p:commandButton value="#{msg['btn.return']}" icon="fa fa-times fa-fw" process="@this" actionListener="#{customerEnquiryView.clearAddCaseLog}" oncomplete="PF('hidHideLogHist').getJQ().click()" styleClass="btn-action"/>
 			
 			<p:commandButton id="hidHideLogHist" type="button" widgetVar="hidHideLogHist" styleClass="hidden">
 				<p:effect event="click" type="slide" speed="200" for="panelLogHistWrapper">

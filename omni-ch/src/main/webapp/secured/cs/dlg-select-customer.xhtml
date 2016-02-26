@@ -18,29 +18,32 @@
 		paginator="true"
 		rows="5"
 		paginatorAlwaysVisible="false"
-		paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+		paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {PageLinks} {NextPageLink} {LastPageLink}"
 		paginatorPosition="bottom" emptyMessage="#{globalMsg['common.txt.no.record.found']}"
 		styleClass="tbl-flat"
 		style="max-width:50em;">
 		
 		<p:ajax event="rowSelect" listener="#{customerEnquiryView.onSelectCustomer}" update="@form" />
 		
-		<p:column headerText="#{msg['modal.sc.col.1']}" styleClass="txt-center">
+		<p:column headerText="#{msg['modal.sc.col.1']}" 
+		filterBy="#{customer.citizenId}" filterMatchMode="contains"
+		styleClass="txt-center">
 			<h:outputText value="#{customer.citizenId}" />
 		</p:column>
 		
-		<p:column headerText="#{msg['modal.sc.col.2']}">
+		<p:column headerText="#{msg['modal.sc.col.2']}"
+		filterBy="#{customer.firstName}" filterMatchMode="contains">
 			<h:outputText value="#{customer.firstName}" styleClass="capitalized"/>
 		</p:column>
 		
-		<p:column headerText="#{msg['modal.sc.col.3']}">
+		<p:column headerText="#{msg['modal.sc.col.3']}"
+		filterBy="#{customer.lastName}" filterMatchMode="contains">
 			<h:outputText value="#{customer.lastName}" styleClass="capitalized"/>
 		</p:column>
 		
-		<p:column headerText="#{msg['modal.sc.col.4']}">
-			<h:outputText value="#{not empty customer.homeNo ? customer.homeNo : not empty customer.mobileNo ? customer.mobileNo : ''}" />
-			<h:outputText value=", " rendered="#{not empty customer.homeNo and not empty customer.mobileNo}" />
-			<h:outputText value="#{customer.mobileNo}" rendered="#{not empty customer.homeNo and not empty customer.mobileNo}" />
+		<p:column headerText="#{msg['modal.sc.col.4']}"
+		filterBy="#{customer.mobileNo}" filterMatchMode="contains">
+			<h:outputText value="#{customer.mobileNo}" />
 		</p:column>
 		
 		<p:column headerText="#{msg['modal.sc.col.5']}" styleClass="txt-center">

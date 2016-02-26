@@ -254,7 +254,7 @@ public class OmniTravelView extends BaseBean {
 					Messages.addError(msgId, "Please fills some data.");
 				} else {
 					List<Customer> customers = findVisibleCustomer(policyModel.getSearchTel(), policyModel.getSearchCitizenId());
-					if(customers != null && customers.size() == 1) {
+					if(customers != null && !customers.isEmpty() && customers.size() == 1) {
 						policyModel.setCustomer(customers.get(0));
 						List<OmniTravelHist> histList = findOmniMotorHistByCustomerId(policyModel.getSearchCitizenId());
 						if(histList != null && histList.size() > 0) {

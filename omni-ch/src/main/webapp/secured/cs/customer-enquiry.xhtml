@@ -72,7 +72,7 @@
 						<p:inputText id="insuredCitizenId" value="#{cus.citizenId}" styleClass="width-full" readonly="true"/>
 						
 						<h:outputText value="#{msg['table.1.1.2']}" styleClass=""/>
-						<p:inputText id="insuredFullName" value="#{cus.fullName}" styleClass="width-full" readonly="true"/>
+						<p:inputText id="insuredFullName" value="#{cus.firstName} #{cus.lastName}" styleClass="width-full" readonly="true"/>
 						
 						<h:outputText value="#{msg['table.1.1.3']}" styleClass=""/>
 						<p:inputText id="insuredGender" value="#{cus.gender.paramKey}" styleClass="width-full" readonly="true"/>
@@ -201,7 +201,9 @@
 			
 			<p:dialog id="selectCustomerDlg" widgetVar="selectCustomerDlg" 
 				dynamic="true" modal="true"
-				fitViewport="true" resizable="false" closable="true">
+				fitViewport="true" 
+				resizable="false" 
+				closable="true">
 				<f:facet name="header">
 					<h:outputText value="#{msg['modal.sc.header']}"/>
 				</f:facet>

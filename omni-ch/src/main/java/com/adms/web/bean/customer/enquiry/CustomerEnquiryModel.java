@@ -333,7 +333,7 @@ public class CustomerEnquiryModel implements Serializable {
 					concat += (val + ", ");
 				}
 			}
-			concat = concat.substring(0, concat.lastIndexOf(","));
+			if(StringUtils.isNotBlank(concat)) concat = concat.substring(0, concat.lastIndexOf(","));
 		}
 		return concat;
 	}

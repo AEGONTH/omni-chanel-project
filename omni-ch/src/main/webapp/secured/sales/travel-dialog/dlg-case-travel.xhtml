@@ -7,6 +7,12 @@
 	xmlns:of="http://omnifaces.org/functions"
 	xmlns:o="http://omnifaces.org/ui">
 	
+	<style>
+	.filter-w90 div.ui-selectonemenu-filter-container {
+		width: 90%;
+	}
+	</style>
+	
 	<p:dialog id="dlgCustomer" widgetVar="dlgCustomer" 
 	dynamic="true" modal="true"
 	fitViewport="true" resizable="false"
@@ -35,7 +41,7 @@
 			
 			<p:outputLabel value="Citizen ID" for="citizenId" style="font-weight:bold;"/>
 			<h:panelGrid columns="2" columnClasses="col-1, col-2" styleClass="decresed-gap tbl-action">
-				<p:inputText id="citizenId" type="tel" value="#{omniTravelView.customerInfo.citizenId}" maxlength="13" required="true" requiredMessage="Citizen ID is required" readonly="#{not empty omniTravelView.customerInfo.omniTravelHistId or omniTravelView.citizenReadyOnly}" styleClass="w90"></p:inputText>
+				<p:inputText id="citizenId" type="tel" value="#{omniTravelView.customerInfo.citizenId}" maxlength="13" required="false" requiredMessage="Citizen ID is required" readonly="#{not empty omniTravelView.customerInfo.omniTravelHistId or omniTravelView.citizenReadyOnly}" styleClass="w90"></p:inputText>
 				<p:commandButton icon="fa fa-search" actionListener="#{omniTravelView.doSearchCustomer('CITIZEN')}" process="@this, citizenId" disabled="#{not empty omniTravelView.customerInfo.omniTravelHistId or omniTravelView.telReadyOnly or omniTravelView.citizenReadyOnly}" styleClass="decresed-gap"/>
 			</h:panelGrid>
 			
@@ -88,8 +94,10 @@
 		<p:panelGrid id="gridProduct" layout="grid" columns="2" columnClasses="ui-grid-col-4 txt-right, ui-grid-col-8" styleClass="grid-borderless grid-bg-transparent grid-no-line-separate" style="min-width:300px;">
 		
 			<p:outputLabel value="Destination Country" for="destCountry" style="font-weight:bold;"/>
-			<p:selectOneMenu id="destCountry" value="#{omniTravelView.customerInfo.destinationCountry}" 
+			<p:selectOneMenu id="destCountry" value="#{omniTravelView.customerInfo.destinationCountry}"
+				filter="true" filterMatchMode="startsWith" 
 				required="true" requiredMessage="Destination Country is required." 
+				panelStyleClass="filter-w90"
 				styleClass="decresed-gap w90">
 				<f:selectItem itemLabel="Please Select"/>
 				<f:selectItems value="#{omniTravelView.destinationCountrySelection}"/>

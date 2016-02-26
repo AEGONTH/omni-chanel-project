@@ -33,7 +33,7 @@
 			
 			<p:outputLabel value="Citizen ID" for="citizenId" style="font-weight:bold;"/>
 			<h:panelGrid columns="2" columnClasses="col-1, col-2" styleClass="decresed-gap tbl-action">
-				<p:inputText id="citizenId" type="tel" value="#{omniMotorView.citizenId}" maxlength="13" required="true" requiredMessage="Citizen ID is required" readonly="#{not empty omniMotorView.logId or omniMotorView.citizenReadyOnly}" styleClass="w90"></p:inputText>
+				<p:inputText id="citizenId" type="tel" value="#{omniMotorView.citizenId}" maxlength="13" required="false" requiredMessage="Citizen ID is required" readonly="#{not empty omniMotorView.logId or omniMotorView.citizenReadyOnly}" styleClass="w90"></p:inputText>
 				<p:commandButton icon="fa fa-search" actionListener="#{omniMotorView.doSearchCustomer('CITIZEN')}" process="@this, citizenId" disabled="#{not empty omniMotorView.logId or omniMotorView.telReadyOnly or omniMotorView.citizenReadyOnly}" styleClass="decresed-gap"/>
 			</h:panelGrid>
 			
