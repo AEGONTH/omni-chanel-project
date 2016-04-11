@@ -180,17 +180,17 @@
 			</p:selectOneMenu>
 			
 			<p:outputLabel value="Contact Reason" for="stContactReason" style="font-weight:bold;"/>
-			<p:selectOneMenu id="stContactReason" value="#{omniTravelView.customerInfo.contactReason}" styleClass="decresed-gap w90">
+			<p:selectOneMenu id="stContactReason" value="#{omniTravelView.customerInfo.contactReason}" required="true" requiredMessage="Contact Reason is required" styleClass="decresed-gap w90">
 				<p:ajax listener="#{omniTravelView.contactReasonSelectionListener}" update="ctrsOthersTxt, ctrsOthersVal"/>
 				<f:selectItem itemLabel="Please Select"/>
 				<f:selectItems value="#{omniTravelView.contactReasonSelection}" />
 			</p:selectOneMenu>
 			
 			<h:panelGroup id="ctrsOthersTxt">
-				<p:outputLabel value=" " rendered="#{omniTravelView.customerInfo.contactReason eq 'OMNI_CTRS_OTHER'}"/>
+				<p:outputLabel value="Other Reason" for="stOthersVal" rendered="#{omniTravelView.customerInfo.contactReason eq 'OMNI_CTRS_OTHER'}"/>
 			</h:panelGroup>
 			<h:panelGroup id="ctrsOthersVal">
-				<p:inputText value="#{omniTravelView.customerInfo.contactReasonOther}" rendered="#{omniTravelView.customerInfo.contactReason eq 'OMNI_CTRS_OTHER'}" styleClass="w90"/>
+				<p:inputText id="stOthersVal" value="#{omniTravelView.customerInfo.contactReasonOther}" rendered="#{omniTravelView.customerInfo.contactReason eq 'OMNI_CTRS_OTHER'}" required="#{omniTravelView.customerInfo.contactReason eq 'OMNI_CTRS_OTHER'}" requiredMessage="Contact Reason is required" styleClass="w90"/>
 			</h:panelGroup>
 			
 			<p:outputLabel value="Tracking Status" for="stTrackingStat" style="font-weight:bold;"/>

@@ -129,6 +129,12 @@ public class OmniTravelView extends BaseBean {
 				Ajax.update("frmWL:globalMsg");
 				return;
 			}
+
+			if(StringUtils.isNoneBlank(customerInfo.getContactReason()) && customerInfo.getContactReason().equals("OMNI_CTRS_OTHER") && StringUtils.isBlank(customerInfo.getContactReasonOther())) {
+				Messages.addError("dlgMsg", "Contact Reason is required");
+				Ajax.update("frmWL:globalMsg");
+				return;
+			}
 			
 			if(customerInfo.getOmniTravelHistId() == null) {
 				omniChLog = new OmniChLog();
